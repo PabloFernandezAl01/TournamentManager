@@ -1,14 +1,25 @@
 <!DOCTYPE html>
+</html>
 <html lang="en-US">
     <head>
         <title>Tournament Manager</title>
         <link rel="stylesheet" type="text/css" href="./css/styles.css"/>
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
     </head>
     <body>
-        <h1 id="title">VTM (Valorant Tournament Maker)</h1>
+        <nav class="navbar fixed-top navbar-light bg-dark">
+            <div id="title">VTM (Valorant Tournament Maker)</div>
+            <button id= perfilButton>Perfil</button>
+        </nav>
+        <!-- <h1 id="title">VTM (Valorant Tournament Maker)</h1> -->
 
-        <h2>
+        <h1>
             <ul class="menu">
                 <li><a href="">Homepage</a></li>
                 <li><a href="">Create tournament</a></li>
@@ -16,7 +27,7 @@
                 <li><a href="">Current tournaments</a></li>
                 <li><a href="">Tournament history</a></li>
             </ul>
-        </h2>
+        </h1>
 
         <br/>
 
@@ -67,12 +78,17 @@
                 torneo.</li>
             </ul>
         </p>
-
         <div class="alert w3-panel w3-pale-red w3-border">
             La decisión del juego, como objetivo principal, es Valorant, pero en caso de encontrar
             problemas con la API de Riot, nos adaptaremos a cualquier juego competitivo que
             ofrezca acceso a la información necesaria
         </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
+    </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
+    integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
+    </script>
     </body>
 </html>
