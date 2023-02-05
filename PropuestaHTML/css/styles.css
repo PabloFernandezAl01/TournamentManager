@@ -9,6 +9,7 @@ h1 {
 
 p {
     font-size: 20px;
+    margin-left: 10px;
 }
 
 
@@ -16,7 +17,7 @@ p {
     color: darkred;
     background-color: lightgray;
     margin: 0;
-    padding: 10px 10px 10px 10px;
+    padding: 10px;
 }
 
 .menu {
@@ -25,20 +26,29 @@ p {
     padding: 0;
     overflow: hidden;
     background-color: #333333;
-  }
+}
   
-.option  {
+.menu li  {
     float: left;
-  }
+}
   
-.option a {
+.menu li a {
     display: block;
     color: white;
     text-align: center;
     padding: 16px;
     text-decoration: none;
-  }
+}
   
-.option a:hover {
+.menu li a:hover {
     background-color: #111111;
-  }
+}
+
+
+.paragraph ul li{
+    margin: 10px;
+}
+
+.alert {
+    font-size: 30px;
+}
