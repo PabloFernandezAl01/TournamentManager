@@ -2,48 +2,74 @@
 <html lang="en-US">
     <head>
         <title>Tournament Manager</title>
-        <link rel="stylesheet" type="text/css" href="propuesta.css"/>
+        <link rel="stylesheet" type="text/css" href="./css/styles.css"/>
     </head>
     <body>
-        <h1>PROPUESTA PROYECTO - IW</h1>
+        <h1 id="title">VTM (Valorant Tournament Maker)</h1>
+
+        <ul class="menu">
+            <li class="option"><a href="">Homepage</a></li>
+            <li class="option"><a href="">Statistics</a></li>
+            <li class="option"><a href="">Team</a></li>
+            <li class="option"><a href="">Tournaments</a></li>
+            <li class="option"><a href="">Profile</a></li>
+        </ul>
+        
+
+        <br/><br/>
 
         <p> El objetivo de la página web es ofrecer a los usuarios un <b>creador y gestor de torneos</b>
             de VALORANT. Además, mostrará el historial de torneos jugados y sus repectivos equipos ganadores.
         </p>
 
-        <p>
-            En concreto, la     
-        </p>
+        <p> 
+            Como principales tareas de la página tendremos:
+            <ul>
+            <br/><br/>
+            - <li><b>Organizador de torneos:</b> tipo elegido por el administrador de torneos.</li>
+            <br/>
+            - <li><b>Creador de equipos:</b> por rango dentro del juego.</li>
+            <br/>
+            - <li><b>Apartado de estadísticas:</b> con mejores jugadores y equipos de la web.</li>
+            <br/><br/>
+            </ul>
 
-        <p> Como principales tareas de la página tendremos:
-            - Organizador de torneos: tipo elegido por el administrador de torneos.
-            - Creador de equipos: por rango dentro del juego.
-            - Apartado de estadísticas: con mejores jugadores y equipos de la web.
             A su vez, habrá distintos roles encargados de gestionar los torneos y la web:
-            - Administrador de la página web: Representa a los usuarios con la capacidad
+            <br/>
+            - <b>Administrador de la página web:</b> Representa a los usuarios con la capacidad
             de modificar los datos necesarios sobre los torneos, resolver problemas, y
             consultar información oculta para el resto de roles.
-            - Administrador de torneos: Representa a los usuarios con la capacidad de
+            <br/>
+            - <b>Administrador de torneos:</b> Representa a los usuarios con la capacidad de
             crear un torneo, especificando la hora de comienzo y premio, número máximo
             de jugadores, etc.
-            - Coach del equipo: Representa a los usuarios con la capacidad de crear
+            <br/>
+            - <b>Coach del equipo:</b> Representa a los usuarios con la capacidad de crear
             equipo, buscar equipo, o apuntar a tu equipo a un torneo. Además, dentro de
             nuestra web, el rol de coach también se encarga de recibir los premios.
-            - Jugador del equipo: Representa a los usuarios con la capacidad de buscar
+            <br/>
+            - <b>Jugador del equipo:</b> Representa a los usuarios con la capacidad de buscar
             equipo o apuntarse a un torneo de tal manera que se le asigne un equipo
             cualquiera.
+            <br/><br/>
+            
             Por último, habrá dos tipos de torneos:
-            - Round Robin: También llamado Liga, este formato consiste en un todos
+            <br/><br/>
+            - <b>Round Robin:</b> También llamado Liga, este formato consiste en un todos
             contra todos en el que gana el equipo con más victorias.
-            - Eliminación simple: Consta de varias fases, depende del número de equipos
+            <br/>
+            - <b>Eliminación simple:</b> Consta de varias fases, depende del número de equipos
             apuntados. Para pasar a la siguiente fase, cada equipo tiene que ganar a su
             rival, emparejados aleatoriamente. Si pierde, se elimina del torneo.
-            - Eliminación doble: Al igual que Eliminación Simple, consta de varias fases,
+            <br/>
+            - <b>Eliminación doble:</b> Al igual que Eliminación Simple, consta de varias fases,
             depende del número de equipos apuntados. Para pasar a la siguiente fase,
             cada equipo tiene que ganar a su rival, emparejados aleatoriamente. Si
             pierde, pasa a un bracket inferior en el que tendrá que jugar contra equipos
             que también hayan perdido. Si se pierde en este bracket, se elimina del
             torneo.
+            <br/> <br/>
+            
             La decisión del juego, como objetivo principal, es Valorant, pero en caso de encontrar
             problemas con la API de Riot, nos adaptaremos a cualquier juego competitivo que
             ofrezca acceso a la información necesaria

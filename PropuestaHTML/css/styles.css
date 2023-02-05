@@ -1,0 +1,44 @@
+body {
+    background-color: gainsboro;
+}
+
+h1 {
+    font-family: Tahoma;
+    text-align: left;
+}
+
+p {
+    font-size: 20px;
+}
+
+
+#title {
+    color: darkred;
+    background-color: lightgray;
+    margin: 0;
+    padding: 10px 10px 10px 10px;
+}
+
+.menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333333;
+  }
+  
+.option  {
+    float: left;
+  }
+  
+.option a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+  }
+  
+.option a:hover {
+    background-color: #111111;
+  }
