@@ -15,14 +15,14 @@ p {
 
 #title {
     color: darkred;
-    background-color: lightgray;
+    /* background-color: lightgray; */
     margin: 0;
     padding: 10px;
 }
 
 .menu {
     list-style-type: none;
-    margin: 0;
+    margin-top: 2em;
     padding: 0;
     overflow: hidden;
     background-color: #333333;
@@ -51,4 +51,8 @@ p {
 
 .alert {
     font-size: 30px;
+}
+
+#perfilButton{
+    margin-right: 20px;
 }
