@@ -3,19 +3,22 @@
 
 <head>
     <th:block th:replace="fragments/head :: header" />
-    <title>IW: Welcome</title>
+    <title>Tournament Manager</title>
 </head>
 
-<body class="d-flex flex-column h-100">
+<body class="d-flex flex-column h-100 body">
+    <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
     <main class="flex-shrink-0">
-        <div class="container">
-            <h1 class="mt-5">Bienvenid@</h1>
+        <div class="container" th:src="@{/img/cs.jpg}" src="/img/cs.jpg" alt="Background Image">
+            <h1 class="mt-5 text-center page-title">TOURNAMENT MANAGER</h1>
         </div>
     </main>
-
+    
+    <!-- Reemplazo del footer desde el archivo footer.html -->
     <th:block th:replace="fragments/footer.html :: footer" />
+
 </body>
 
 </html>

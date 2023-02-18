@@ -11,7 +11,7 @@
 	<groupId>es.ucm.fdi.iw</groupId>
 	<artifactId>tournament-maker</artifactId>                      
 	<version>0.0.1-SNAPSHOT</version>     
-	<name>Tournament M</name>                             
+	<name>Tournament Manager</name>                             
 	<description>Webpage dedicated to generating tournaments of different types and teams</description>
 	<properties>
 		<java.version>11</java.version>

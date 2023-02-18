@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html class="h-100" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     
-
 <head>
     <title>Nav fragment - rest intentionally left empty</title>
 </head>
@@ -10,19 +9,20 @@
 
     <!-- barra de navegación bootstrap 5 -->
     <header th:fragment="nav">
-        <nav class="customNav navbar navbar-expand-lg navbar-light">
+        <nav class="navbar navbar-expand-lg bg-dark">
             <div class="container-fluid">
+
                 <!-- nombre del sitio; es un enlace que lleva a la página ppal -->
                 <a class="navbar-brand" th:href="@{/}" href="/">
-                    <img th:src="@{/img/logovalorant.png}" src="/img/logovalorant.png" alt="logo IW" width="32" height="32" class="d-inline-block align-text-top"> Tournament Maker
+                    <img th:src="@{/img/logovalorant.png}" src="/img/logovalorant.png" alt="Valorant Logo" width="35" height="25"/>
                 </a>
 
-                <div class="navbar-brand container-fluid divMenu">
-                    <a th:href="@{/login}" href="/"> <div>Homepage</div></a>
-                    <a th:href="@{/}" href="/"> <div>Create Torunament</div></a>
-                    <a th:href="@{/}" href="/"> <div>Join Torunament</div></a>
-                    <a th:href="@{/}" href="/"> <div>Current Torunament</div></a>
-                    <a th:href="@{/}" href="/"> <div>Torunament History</div></a>
+                <div class="navbar-brand nav-menu">
+                    <a th:href="@{/}" href="/"><div>Home</div></a>
+                    <a th:href="@{/}" href="/"><div>Create</div></a>
+                    <a th:href="@{/}" href="/"><div>Join</div></a>
+                    <a th:href="@{/}" href="/"><div>On-Going</div></a>
+                    <a th:href="@{/}" href="/"><div>Record</div></a>
                 </div>
 
                 <!-- menu hamburguesa si no cabe todo -->
@@ -50,13 +50,13 @@
                             </li>
                             <li class="nav-item align-self-center">
                                 <form th:action="@{/logout}" method="post">
-                                    <button type="submit" class="btn btn-outline-secondary btn-sm">logout</button>
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">Cerrar sesión</button>
                                 </form>
                             </li>
                         </th:block>
                         <th:block th:unless="${session.u}">
                             <li class="nav-item mx-2">
-                                <a class="nav-link" th:href="@{/login}" href="/login">INGRESAR</a>
+                                <a class="nav-link" th:href="@{/login}" href="/login">Iniciar sesión</a>
                             </li>
                             <!--/*
                                 Esto es un comentario "thymeleaf" - no se verá en el HTML
@@ -68,14 +68,14 @@
                                 <form class="d-flex" th:action="@{/login}" method="post">
                                     <input type="hidden" name="username" value="a">
                                     <input type="hidden" name="password" value="aa">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">a</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">ADMIN</button>
                                 </form>
                             </li>
                             <li class="nav-item debug align-self-center" th:if="${application.debug}">
                                 <form class="d-flex" th:action="@{/login}" method="post">
                                     <input type="hidden" name="username" value="b">
                                     <input type="hidden" name="password" value="aa">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">b</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">USER</button>
                                 </form>
                             </li>
                         </th:block>
