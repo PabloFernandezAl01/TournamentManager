@@ -28,9 +28,36 @@ img.preview {
 
 /* Nuestro css */
 
+.body {
+    background-image: url("/img/cs.jpg");
+}
+
+h1, h2 {
+     color: white;
+     font-family: Georgia, 'Times New Roman', Times, serif;
+     font-size: 40px;
+     font-weight: bold;
+}
+
+.page-title {
+    font-size: 80px;
+    margin-top: 5rem;
+}
+
+.my-container {
+    /* align-items: center;
+    display: flex; */
+
+    text-align: center;
+}
+
 .nav-menu {
     display: flex;
     flex-direction: row;
+
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
 }
 
 .nav-menu a :hover{  
@@ -46,11 +73,14 @@ img.preview {
     text-decoration: none;
 }
 
-.page-title {
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    font-size: 80px;
+.link-buttons {
+    flex-direction: column;
+    display: flex;
+
+    margin: auto;
+    width: 40%;
 }
 
-.body {
-    background-color: gainsboro;
+.l-button {
+    margin-top: 20px;
 }

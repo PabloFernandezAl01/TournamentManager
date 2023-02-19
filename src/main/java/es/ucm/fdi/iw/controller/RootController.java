@@ -23,4 +23,24 @@ public class RootController {
     public String index(Model model) {
         return "index";
     }
+
+    @GetMapping("/create")
+    public String create(Model model) {
+        return "create";
+    }
+
+    @GetMapping("/join")
+    public String join(Model model) {
+        return "join";
+    }
+
+    @GetMapping("/ongoing")
+    public String ongoing(Model model) {
+        return "ongoing";
+    }
+
+    @GetMapping("/record")
+    public String record(Model model) {
+        return "record";
+    }
 }
