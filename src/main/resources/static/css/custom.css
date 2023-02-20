@@ -84,6 +84,15 @@ h1, h2 {
 .l-button {
     margin-top: 20px;
 }
+/* AUTORELLENADO DE CHROME SIN FONDO BLANCO Y CON LETRA BLANCA */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-text-fill-color: white !important;
+}
+/* AUTORELLENADO DE CHROME SIN FONDO BLANCO Y CON LETRA BLANCA */
 
 /* LOGIN */
 .login{
@@ -94,7 +103,22 @@ h1, h2 {
     padding: 1em;
     border-radius: 10px;
 }
+    /* InputText - rellenar */
+#username{
+    background-color:rgba(78, 84, 90, 0.5);
+    border-color: rgba(78, 84, 90, 0);
+    color: white;
+    
+}
+#password{
+    background-color:rgba(78, 84, 90, 0.5);
+    border-color: rgba(78, 84, 90, 0);
+    color: white;
+}
+    /* InputText - rellenar */
+
 /* LOGIN */
+
 /*NAV BAR*/
 .selected{
     background-color: beige;
