@@ -84,6 +84,17 @@ h1, h2 {
 .l-button {
     margin-top: 20px;
 }
+
+/* LOGIN */
+.login{
+    text-align: center;
+    margin-top: 5em;
+    background-color:rgb(33,37,41,0.9);
+    width: 50%;
+    padding: 1em;
+    border-radius: 10px;
+}
+/* LOGIN */
 /*NAV BAR*/
 .selected{
     background-color: beige;
@@ -93,7 +104,7 @@ h1, h2 {
 }
 /*NAV BAR*/
 
-/*ON GOING */
+/*ON GOING VIEW */
 .titulosOngoing{
     color: white;
     font-size: large;
@@ -105,4 +116,4 @@ h1, h2 {
     border-radius: 10px;
     color: white;
 }
-/*ON GOING */
+/*ON GOING VIEW*/
