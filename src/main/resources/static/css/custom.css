@@ -135,7 +135,7 @@ input:-webkit-autofill:active {
 }
 .table_OnGoing{
     margin-top: 0.5em;
-    padding: 6px;
+    padding: 10px;
     background-color: rgb(33,37,41,0.90);
     border-radius: 10px;
     color: white;
