@@ -84,3 +84,16 @@ h1, h2 {
 .l-button {
     margin-top: 20px;
 }
+
+/*ON GOING */
+.titulosOngoing{
+    color: white;
+    font-size: large;
+}
+.table_OnGoing{
+    margin-top: 0.5em;
+    padding: 6px;
+    background-color: rgb(33,37,41,0.90);
+    border-radius: 10px;
+    color: white;
+}
