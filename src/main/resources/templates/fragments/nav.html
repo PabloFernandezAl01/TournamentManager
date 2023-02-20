@@ -9,7 +9,7 @@
 
     <!-- barra de navegación bootstrap 5 -->
     <header th:fragment="nav">
-        <nav class="navbar navbar-expand-lg fixed-top my-container bg-dark">
+        <nav class="navbar nav-pills navbar-expand-lg fixed-top my-container bg-dark">
             <div class="container-fluid">
 
                 <!-- nombre del sitio; es un enlace que lleva a la página ppal -->
@@ -18,11 +18,11 @@
                 </a>
 
                 <div class="navbar-brand nav-menu">
-                    <a th:href="@{/}" href="/"><div>Home</div></a>
-                    <a th:href="@{/}" href="/"><div>Create</div></a>
-                    <a th:href="@{/}" href="/"><div>Join</div></a>
-                    <a th:href="@{/}" href="/"><div>On-Going</div></a>
-                    <a th:href="@{/}" href="/"><div>Record</div></a>
+                    <a th:href="@{/}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${home} ? active : notSelected">Home</div></a>
+                    <a th:href="@{/create}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${create} ? active : notSelected">Create</div></a>
+                    <a th:href="@{/join}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${join} ? active : notSelected">Join</div></a>
+                    <a th:href="@{/ongoing}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${onGoing} ? active : notSelected">On-Going</div></a>
+                    <a th:href="@{/record}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${record} ? active : notSelected">Record</div></a>
                 </div>
 
                 <!-- menu hamburguesa si no cabe todo -->

@@ -84,6 +84,14 @@ h1, h2 {
 .l-button {
     margin-top: 20px;
 }
+/*NAV BAR*/
+.selected{
+    background-color: beige;
+}
+.notSelected{
+    color: white;
+}
+/*NAV BAR*/
 
 /*ON GOING */
 .titulosOngoing{
@@ -97,3 +105,4 @@ h1, h2 {
     border-radius: 10px;
     color: white;
 }
+/*ON GOING */

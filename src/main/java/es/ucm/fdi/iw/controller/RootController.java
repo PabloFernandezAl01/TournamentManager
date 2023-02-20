@@ -16,31 +16,61 @@ public class RootController {
 
 	@GetMapping("/login")
     public String login(Model model) {
+        model.addAttribute("home", Boolean.FALSE);
+        model.addAttribute("create", Boolean.FALSE);
+        model.addAttribute("join", Boolean.FALSE);
+        model.addAttribute("onGoing", Boolean.FALSE);
+        model.addAttribute("record", Boolean.FALSE);
         return "login";
     }
 
 	@GetMapping("/")
     public String index(Model model) {
+        model.addAttribute("home", Boolean.TRUE);
+        model.addAttribute("create", Boolean.FALSE);
+        model.addAttribute("join", Boolean.FALSE);
+        model.addAttribute("onGoing", Boolean.FALSE);
+        model.addAttribute("record", Boolean.FALSE);
         return "index";
     }
 
     @GetMapping("/create")
     public String create(Model model) {
+        model.addAttribute("home", Boolean.FALSE);
+        model.addAttribute("create", Boolean.TRUE);
+        model.addAttribute("join", Boolean.FALSE);
+        model.addAttribute("onGoing", Boolean.FALSE);
+        model.addAttribute("record", Boolean.FALSE);
         return "create";
     }
 
     @GetMapping("/join")
     public String join(Model model) {
+        model.addAttribute("home", Boolean.FALSE);
+        model.addAttribute("create", Boolean.FALSE);
+        model.addAttribute("join", Boolean.TRUE);
+        model.addAttribute("onGoing", Boolean.FALSE);
+        model.addAttribute("record", Boolean.FALSE);
         return "join";
     }
 
     @GetMapping("/ongoing")
     public String ongoing(Model model) {
+        model.addAttribute("home", Boolean.FALSE);
+        model.addAttribute("create", Boolean.FALSE);
+        model.addAttribute("join", Boolean.FALSE);
+        model.addAttribute("onGoing", Boolean.TRUE);
+        model.addAttribute("record", Boolean.FALSE);
         return "ongoing";
     }
 
     @GetMapping("/record")
     public String record(Model model) {
+        model.addAttribute("home", Boolean.FALSE);
+        model.addAttribute("create", Boolean.FALSE);
+        model.addAttribute("join", Boolean.FALSE);
+        model.addAttribute("onGoing", Boolean.FALSE);
+        model.addAttribute("record", Boolean.TRUE);
         return "record";
     }
 }
