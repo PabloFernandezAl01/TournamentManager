@@ -126,6 +126,16 @@ input:-webkit-autofill:active {
 .notSelected{
     color: white;
 }
+
+.nav-link {
+    color: white;
+    margin: auto;
+}
+
+.nav-link:hover {
+    background-color: grey;
+    color: white;
+}
 /*NAV BAR*/
 
 /*ON GOING VIEW */
@@ -139,5 +149,14 @@ input:-webkit-autofill:active {
     background-color: rgb(33,37,41,0.90);
     border-radius: 10px;
     color: white;
+}
+
+.messages-button{
+    border-color: red;
+}
+
+.messages-button:hover{
+    background-color: gray;
+    border-color: red;
 }
 /*ON GOING VIEW*/

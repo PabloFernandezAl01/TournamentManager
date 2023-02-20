@@ -33,7 +33,8 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto">
                         <th:block th:if="${session.u}">
-                            <li class="nav-item mx-3">
+
+                            <li class="nav-item mx-3" style="margin: auto;">
                                 <a class="nav-link" th:if="${session.u.hasRole('ADMIN')}" th:href="@{/admin/}">Administrar</a>
                             </li>
 
@@ -44,7 +45,7 @@
                                 </a>
                             </li>
                             <li class="nav-item align-self-center me-4">
-                                <button type="button" class="btn btn-outline-primary btn-sm position-relative">
+                                <button type="button" class="btn btn-outline-primary btn-sm position-relative messages-button">
                                     ✉️ <span id="nav-unread" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary">+99 <span class="visually-hidden">unread messages</span></span>
                                 </button>
                             </li>

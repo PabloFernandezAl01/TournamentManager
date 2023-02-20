@@ -23,15 +23,18 @@
 
 .tournament-status {
     font-weight: bold;
+    color: lightsalmon;
 }
 
 .tournament-slots {
     margin-left: 10px;
     margin-right: 10px;
+
+    color: white;
 }
 
 .tournament-join {
-    background-color: #007bff;
+    background-color: gray;
     color: #fff;
     border: none;
     padding: 5px 10px;
@@ -40,5 +43,34 @@
 }
 
 .tournament-join:hover {
-    background-color: #0062cc;
+    background-color: crimson;
+}
+
+.form {
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    padding: 2% 2%;
+    border-radius: 5px;
+    background-color: rgb(33,37,41,0.90);
+}
+
+.form-group {
+    margin: 20px;
+    color: white;
+}
+
+.submit {
+    margin-left: 50%;
+    transform: translate(-50%,0);
+    background-color: gray;
+    border-color: gray;
+}
+
+.submit:hover {
+    background-color: crimson;
+    border-color: crimson;
+}
+
+.submit:focus{
+    background-color: crimson;
+    border-color: crimson;
 }
