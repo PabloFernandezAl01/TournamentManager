@@ -37,18 +37,3 @@ input:-webkit-autofill:active {
     -webkit-text-fill-color: white !important;
 }
 /* AUTORELLENADO DE CHROME SIN FONDO BLANCO Y CON LETRA BLANCA */
-
-/*ON GOING VIEW */
-.titulosOngoing{
-    color: white;
-    font-size: large;
-}
-.table_OnGoing{
-    margin-top: 0.5em;
-    padding: 10px;
-    background-color: rgb(33,37,41,0.90);
-    border-radius: 10px;
-    color: white;
-}
-
-/*ON GOING VIEW*/

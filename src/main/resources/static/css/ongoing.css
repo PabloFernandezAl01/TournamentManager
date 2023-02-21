@@ -1,0 +1,11 @@
+.titulosOngoing{
+    color: white;
+    font-size: large;
+}
+.table_OnGoing{
+    margin-top: 0.5em;
+    padding: 10px;
+    background-color: rgb(33,37,41,0.90);
+    border-radius: 10px;
+    color: white;
+}

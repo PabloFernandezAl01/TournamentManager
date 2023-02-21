@@ -48,4 +48,21 @@ h1, h2 {
 .dropdown:-moz-focusring {
     color: transparent;
     text-shadow: 0 0 0 #000;
-  }
+}
+
+.brackets-button {
+    text-decoration: none;
+    background-color: gray;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.brackets-button:hover {
+    background-color: darkkhaki;
+    color: white;
+}
