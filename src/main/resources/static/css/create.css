@@ -1,3 +1,15 @@
+.create-form{
+    text-align: center;
+    margin-top: 5em;
+    background-color:rgb(33,37,41,0.9);
+    width: 50%;
+    padding: 2em;
+    border-radius: 10px;
+    color: white;
+}
+
+
+/* 
 .tournament-list {
     list-style: none;
     margin: 0;
@@ -44,17 +56,4 @@
 
 .tournament-join:hover {
     background-color: crimson;
-}
-
-.form {
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    padding: 2% 2%;
-    border-radius: 5px;
-    background-color: rgb(33,37,41,0.90);
-}
-
-.form-group {
-    margin: 20px;
-    color: white;
-}
-
+} */
