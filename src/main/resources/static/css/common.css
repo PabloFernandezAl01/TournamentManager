@@ -13,3 +13,18 @@ h1, h2 {
     font-size: 40px;
     font-weight: bold;
 }
+
+.submit {
+    background-color: gray;
+    border-color: gray;
+}
+
+.submit:hover {
+    background-color: crimson;
+    border-color: crimson;
+}
+
+.submit:focus{
+    background-color: crimson;
+    border-color: crimson;
+}
