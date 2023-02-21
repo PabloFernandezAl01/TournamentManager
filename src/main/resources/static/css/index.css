@@ -1,0 +1,11 @@
+.index-buttons {
+    flex-direction: column;
+    display: flex;
+
+    margin: auto;
+    width: 40%;
+}
+
+.index-button {
+    margin-top: 20px;
+}

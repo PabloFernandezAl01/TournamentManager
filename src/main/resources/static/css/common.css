@@ -1,0 +1,15 @@
+.page-title {
+    font-size: 80px;
+    margin-top: 5rem;
+}
+
+.body {
+    background-image: url("/img/cs.jpg");
+}
+
+h1, h2 {
+    color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-size: 40px;
+    font-weight: bold;
+}
