@@ -54,7 +54,7 @@ public class User implements Transferable<User.Transfer> {
     private int earned;
     private int reports;
 
-    @OneToOne
+    @ManyToOne
     private Team team;
 
 
