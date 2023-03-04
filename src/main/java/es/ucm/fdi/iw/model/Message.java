@@ -43,6 +43,9 @@ public class Message implements Transferable<Message.Transfer> {
 	@ManyToOne
 	private User recipient;
 	private String text;
+
+	@ManyToOne
+	private Match match;
 	
 	private LocalDateTime dateSent;
 	private LocalDateTime dateRead;

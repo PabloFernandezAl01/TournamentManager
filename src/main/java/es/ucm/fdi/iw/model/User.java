@@ -39,23 +39,28 @@ public class User implements Transferable<User.Transfer> {
     @SequenceGenerator(name = "gen", sequenceName = "gen")
 	private long id;
 
+    private String firstName;
+    private String lastName;
+
     @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false)
     private String password;
 
-    private String firstName;
-    private String lastName;
-
     private boolean enabled;
-    private String roles; // split by ',' to separate roles
 
-	@OneToMany
-	@JoinColumn(name = "sender_id")
-	private List<Message> sent = new ArrayList<>();
-	@OneToMany
-	@JoinColumn(name = "recipient_id")	
-	private List<Message> received = new ArrayList<>();		
+    // Atributo blob para la imagen de perfil
+
+    private int earned;
+    private int reports;
+
+    @OneToOne
+    private Team team;
+
+
+    // Roles
+
+    private String roles; // split by ',' to separate roles
 
     /**
      * Checks whether this user has a given role.
@@ -66,6 +71,16 @@ public class User implements Transferable<User.Transfer> {
         String roleName = role.name();
         return Arrays.asList(roles.split(",")).contains(roleName);
     }
+
+
+    // Messages
+
+	@OneToMany
+	@JoinColumn(name = "sender_id")
+	private List<Message> sent = new ArrayList<>();
+	@OneToMany
+	@JoinColumn(name = "recipient_id")	
+	private List<Message> received = new ArrayList<>();
 
     @Getter
     @AllArgsConstructor
