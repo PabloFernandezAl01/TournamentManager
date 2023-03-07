@@ -112,7 +112,7 @@ public class RootController {
     }
 
     /**
-	 * Regist user
+	 * Registrar usuario
 	 */
 	@PostMapping("/registUser")
 	@Transactional
