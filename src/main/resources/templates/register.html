@@ -12,21 +12,26 @@
 
     <main class="flex-shrink-0">
         <div class="login container">
-            <form method="post" th:action="@{/login}">
+            <form method="post" th:action="@{/registUser}">
                 <h2>Register</h2>
-                <p th:if="${#request.getQueryString() == 'error'}" class="error">Error en nombre de usuario o contraseña</p>
+                <p th:if="${#request.getQueryString() == 'error'}" class="error">Error al registrar</p>
                 <p>
                     <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Username" required="required">
+                    <input type="text" id="username" name="username" class="inputTextStyle form-control" placeholder="Username" required="required">
+                </p>
+                <p>
+                    <label for="firstname" class="visually-hidden">First Name</label>
+                    <input type="text" id="firstname" name="firstName" class="inputTextStyle form-control" placeholder="First Name" required="required">
+                </p>
+                <p>
+                    <label for="lastname" class="visually-hidden">Last Name</label>
+                    <input type="text" id="lastname" name="lastName" class="inputTextStyle form-control" placeholder="Last Name" required="required">
                 </p>
                 <p>
                     <label for="password" class="visually-hidden">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Password" required="required">
+                    <input type="password" id="password" name="password" class="inputTextStyle form-control" placeholder="Password" required="required">
                 </p>
-                <button type="submit" class="loginButton btn btn-primary submit" style="margin: 0;">Sign in</button>
-                <span class = "or">or</span>
-                <a class="registerButton btn btn-primary submit" th:href="@{/register}" href="/register" style="margin: 0;">Create an account</a>
-
+                <button type="submit" class="registerButton btn btn-primary submit" style="margin: 0;">Create account</button>
             </form>
         </div>
     </main>

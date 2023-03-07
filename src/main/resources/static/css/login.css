@@ -8,16 +8,11 @@
 }
 
 /* InputText - rellenar */
-#username{
+.inputTextStyle{
     background-color:rgba(78, 84, 90, 0.5);
     border-color: rgba(78, 84, 90, 0);
     color: white;
     
-}
-#password{
-    background-color:rgba(78, 84, 90, 0.5);
-    border-color: rgba(78, 84, 90, 0);
-    color: white;
 }
 .or{
     color: white;

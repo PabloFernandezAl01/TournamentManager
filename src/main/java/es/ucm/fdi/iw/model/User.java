@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -83,6 +84,7 @@ public class User implements Transferable<User.Transfer> {
 	private List<Message> received = new ArrayList<>();
 
     @Getter
+    @Setter
     @AllArgsConstructor
     public static class Transfer {
 		private long id;

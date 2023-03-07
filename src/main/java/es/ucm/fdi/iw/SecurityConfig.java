@@ -54,6 +54,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/**").permitAll()            // <-- public api access
 				.antMatchers("/admin/**").hasRole("ADMIN")	   // <-- administration
 	            .antMatchers("/user/**").hasRole("USER")	   // <-- logged-in users
+				.antMatchers("/register", "/register/**").permitAll()
+				.antMatchers("//registUser", "//registUser/**").permitAll()  // <-- permitir página de registro a todos 
 	            .anyRequest().authenticated()
 	            .and()
 			.formLogin()
