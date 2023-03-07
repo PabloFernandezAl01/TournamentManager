@@ -83,4 +83,14 @@ public class RootController {
         model.addAttribute("record", Boolean.FALSE);
         return "bracket";
     }
+
+    @GetMapping("/register")
+    public String register(Model model) {
+        model.addAttribute("home", Boolean.FALSE);
+        model.addAttribute("create", Boolean.FALSE);
+        model.addAttribute("join", Boolean.FALSE);
+        model.addAttribute("onGoing", Boolean.FALSE);
+        model.addAttribute("record", Boolean.FALSE);
+        return "register";
+    }
 }
