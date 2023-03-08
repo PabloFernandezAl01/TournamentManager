@@ -14,6 +14,8 @@ import es.ucm.fdi.iw.model.User;
 import java.io.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import es.ucm.fdi.iw.model.Tournament;
+import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
 
 /**
  *  Non-authenticated requests only.
@@ -124,5 +126,19 @@ public class RootController {
 		entityManager.persist(registered);
 		entityManager.flush(); 
 		return new RedirectView("/login");
+	}
+
+    /**
+	* Crear torneo
+	*/
+	@PostMapping("/createTournament")
+	@Transactional
+	public RedirectView createTournament(@ModelAttribute Tournament tournament, 
+		Model model) throws IOException {
+		tournament.setStatus(TournamentStatus.NOT_STARTED);
+        tournament.getType()
+		entityManager.persist(tournament);
+		entityManager.flush(); 
+		return new RedirectView("/join");
 	}
 }

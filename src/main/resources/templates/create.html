@@ -17,29 +17,29 @@
             <h1 class="text-center page-title">CREADOR DE TORNEOS</h1>
             <h2 class="mt-3 text-center">¡Selecciona modelo de torneo a crear!</h2>
             
-            <div class="create-form container ">
+            <form method="post" th:action="@{/createTournament}" class="create-form container">
                 <h2>Crea tu torneo</h2>
 
                 <p>
-                    <label for="tournament-date" >Numero de jugadores:</label>
-                    <input type="number" id="tentacles" name="tentacles" step="2" min="2" max="128" placeholder="Nº">
+                    <label for="maxTeams" >Numero de equipos:</label>
+                    <input type="number" id="maxTeams" name="maxTeams" step="2" min="2" max="128" placeholder="Nº">
 
                 </p>
-
+                
                 <!-- Nombre del torneo -->
                 <p> 
-                    <label for="tournament-name"  >Nombre del torneo:</label>
-                    <input type="text" class="form-control" placeholder="Nombre del torneo:" id="tournament-name" name="tournament-name">
+                    <label for="name"  >Nombre del torneo:</label>
+                    <input type="text" class="form-control" name="name" placeholder="Nombre del torneo:" id="tournament-name" >
                 </p>
                 
                 <!-- Opciones de cantidad de jugadores -->
                 <p>
-                    <label for="player-count">Tipo de torneo:</label>
-                    <select class="form-control dropdown" id="player_count" onchange="mostrarTexto()" name="player-count" placeholder="Tipo de torneo:">
+                    <label for="type">Tipo de torneo:</label>
+                    <select class="form-control dropdown" id="type" onchange="mostrarTexto()" name="type" placeholder="Tipo de torneo:">
                         <option disabled selected value> -- Selecciona tipo de torneo -- </option>
-                        <option value="1">Round Robin</option>
-                        <option value="2">Eliminación simple</option>
-                        <option value="3">Eliminación doble</option>
+                        <option value="1">Eliminación simple</option>
+                        <option value="2">Eliminación doble</option>
+                        <option value="3">Round Robin</option>
                     </select>
                 </p>
                 <p>
@@ -47,20 +47,37 @@
                 </p>
                 <!-- Calendario para seleccionar fecha -->
                 <p>
-                    <label for="tournament-date" >Fecha de inicio de torneo:</label>
-                    <input type="date" class="form-control" id="tournament-date" name="tournament-date" placeholder="Fecha del torneo:">
+                    <label for="date" >Fecha de inicio de torneo:</label>
+                    <input type="date" class="form-control" id="date" name="date" placeholder="Fecha del torneo:">
                 </p>
-                <p>
+
+                <!-- HAY QUE PENSAR EN SI SE AÑADE FECHA DE FIN, COMO ESTABLECER HORARIOS DE PARTIDOS SI NO CABEN ANTES DE QUE LLEGUE LA FECHA DE FIN -->
+
+                <!-- <p>
                     <label for="tournament-date" >Fecha de fin de torneo:</label>
                     <input type="date" class="form-control" id="tournament-date" name="tournament-date" placeholder="Fecha del torneo:">
-                </p>
+                </p> -->
                 <p>
-                    <label for="tournament-date" >Pricepool:</label>
-                    <input type="text" class="form-control" id="tournament-pricepool" name="tournament-pricepool" placeholder="Pricepool:">
+                    <label for="entryPrice" >Precio de entrada:</label>
+                    <input type="number" class="form-control" id="entryPrice" name="entryPrice" placeholder="Precio de entrada:">
 
                 </p>
-                <button type="submit" class="btn btn-primary submit">Crear torneo</button>
-            </div>
+                <p>
+                    <label for="game" >Juego</label>
+                    <input type="text" class="form-control" id="game" name="game" placeholder="Juego del torneo:">
+
+                </p>
+                <p>
+                    <label for="pricePool" >Pricepool:</label>
+                    <input type="text" class="form-control" id="pricePool" name="pricePool" placeholder="Pricepool:">
+
+                </p>
+                <p>
+                    <label for="description" >Descripción:</label>
+                    <textarea rows="4" cols="50" class="form-control" id="description" name="description" placeholder="Descripción:"></textarea>
+                </p>
+                <button type="submit" class="createButton btn btn-primary submit">Crear torneo</button>
+            </form>
             
         </div>
     </main>

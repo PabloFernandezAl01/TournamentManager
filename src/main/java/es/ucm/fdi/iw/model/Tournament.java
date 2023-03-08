@@ -29,19 +29,25 @@ public class Tournament {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false)
     private int maxTeams;
-
+    @Column(nullable = false)
     private LocalDateTime date;
 
     private float entryPrice;
 
+    @Column(nullable = false)
     private float prizePool;
 
+    @Column(nullable = false)
     private TournamentType type;
 
+    @Column(nullable = false)
     private String game;
 
+    @Column(nullable = false)
     private TournamentStatus status;
+
 
     @OneToOne
     private Team winner;
@@ -51,5 +57,4 @@ public class Tournament {
     // Atributo blob para la imagen del team
 
     private String description;
-
 }

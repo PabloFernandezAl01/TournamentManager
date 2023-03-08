@@ -2,8 +2,10 @@ package es.ucm.fdi.iw.controller;
 
 import es.ucm.fdi.iw.LocalData;
 import es.ucm.fdi.iw.model.Message;
+
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
+
 import es.ucm.fdi.iw.model.User.Role;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +46,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  *  User management.
