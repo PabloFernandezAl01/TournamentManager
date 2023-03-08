@@ -35,4 +35,4 @@ Feature: login en servidor
     And input('#username', 'd')
     And input('#password', 'dd')
     When submit().click(".loginButton")
-    Then waitForUrl(baseUrl + '/user/\\d{3}')
+    Then waitForUrl(baseUrl + '/user/975')
