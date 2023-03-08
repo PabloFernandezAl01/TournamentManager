@@ -15,7 +15,9 @@ import java.io.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.ucm.fdi.iw.model.Tournament;
-import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
+import java.util.List;
+import javax.persistence.NoResultException;
+import java.util.ArrayList;
 
 /**
  *  Non-authenticated requests only.
@@ -32,6 +34,8 @@ public class RootController {
     public String encodePassword(String rawPassword) {
 		return passwordEncoder.encode(rawPassword);
 	}
+
+    
 
 	@GetMapping("/login")
     public String login(Model model) {
@@ -70,6 +74,9 @@ public class RootController {
         model.addAttribute("join", Boolean.TRUE);
         model.addAttribute("onGoing", Boolean.FALSE);
         model.addAttribute("record", Boolean.FALSE);
+        List<String> tournamentNames = null;
+        tournamentNames = entityManager.createQuery("select t.name from Tournament t").getResultList();
+        model.addAttribute("names", tournamentNames);
         return "join";
     }
 

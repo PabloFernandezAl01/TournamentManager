@@ -19,16 +19,16 @@
         
             <!-- CAMBIAR POR TH:FOR cuando tengamos base de datos o datos basura -->
             <ul class="tournament-list">
-                <li>
+                <li th:each="name : ${names}">
                     <div class="tournament-info">
                         <div class="tournament-status">Waiting for teams</div>
-                        <div class="tournament-slots">14/32</div>
+                        <div class="tournament-slots">0</div>
                         <button class="btn btn-primary submit">Join</button>
                         <a class="brackets-button"  th:href="@{/bracket}" href="/bracket">View brackets</a>
                     </div>
-                    <div class="tournament-name">Torneo 1</div>
+                    <div class="tournament-name" th:text="${name}"></div>
                 </li>
-                <li>
+                <!-- <li>
                     <div class="tournament-info">
                         <div class="tournament-status">Waiting for teams</div>
                         <div class="tournament-slots">10/16</div>
@@ -45,7 +45,7 @@
                         <a class="brackets-button" th:href="@{/bracket}" href="/bracket">View brackets</a>
                     </div>
                     <div class="tournament-name">Torneo 3</div>
-                </li>
+                </li> -->
             </ul>
         </div>
     </main>
