@@ -134,9 +134,9 @@ public class RootController {
 	@PostMapping("/createTournament")
 	@Transactional
 	public RedirectView createTournament(@ModelAttribute Tournament tournament, 
-		Model model) throws IOException {
-		tournament.setStatus(TournamentStatus.NOT_STARTED);
-        tournament.getType()
+		Model model) throws Exception {
+        tournament.setType("HOLA");
+		tournament.setStatus("NOT_STARTED");
 		entityManager.persist(tournament);
 		entityManager.flush(); 
 		return new RedirectView("/join");

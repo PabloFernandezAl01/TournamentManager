@@ -29,25 +29,19 @@ public class Tournament {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
-    private int maxTeams;
-    @Column(nullable = false)
-    private LocalDateTime date;
+    private Integer maxTeams;
 
-    private float entryPrice;
+    private String date;
 
-    @Column(nullable = false)
-    private float prizePool;
+    private Double entryPrice;
 
-    @Column(nullable = false)
-    private TournamentType type;
+    private Double prizePool;
 
-    @Column(nullable = false)
+    private String type;
+
     private String game;
 
-    @Column(nullable = false)
-    private TournamentStatus status;
-
+    private String status;
 
     @OneToOne
     private Team winner;
