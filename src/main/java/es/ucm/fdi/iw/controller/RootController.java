@@ -18,6 +18,10 @@ import es.ucm.fdi.iw.model.Tournament;
 import java.util.List;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
+import javax.persistence.TypedQuery;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  *  Non-authenticated requests only.
@@ -74,9 +78,33 @@ public class RootController {
         model.addAttribute("join", Boolean.TRUE);
         model.addAttribute("onGoing", Boolean.FALSE);
         model.addAttribute("record", Boolean.FALSE);
-        List<String> tournamentNames = null;
-        tournamentNames = entityManager.createQuery("select t.name from Tournament t").getResultList();
-        model.addAttribute("names", tournamentNames);
+    
+        List<Long> numTeams = new ArrayList<>();
+
+        List<String> tournamentNames = new ArrayList<>();
+
+        List<Tournament> results = new ArrayList<>();
+        Long nTeams = 0L;
+
+        Map<String, String> mapa = new HashMap<>();
+
+        results = entityManager.createQuery("select t from Tournament t", Tournament.class).getResultList();
+        for (Tournament tournament : results) {
+            long tid = tournament.getId();
+           
+            try {
+                TypedQuery<Long> query = entityManager.createQuery("SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Long.class);
+                nTeams = query.setParameter("tournamentid", tid).getSingleResult();
+                
+
+            }catch(Exception e){
+                nTeams = 0L;
+            }
+            String auxTeams = new String(nTeams+"/"+tournament.getMaxTeams());
+            mapa.put(tournament.getName(), auxTeams);
+        }
+        model.addAttribute("names_teams", mapa);
+
         return "join";
     }
 

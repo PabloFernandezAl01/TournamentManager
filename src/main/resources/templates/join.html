@@ -19,33 +19,16 @@
         
             <!-- CAMBIAR POR TH:FOR cuando tengamos base de datos o datos basura -->
             <ul class="tournament-list">
-                <li th:each="name : ${names}">
+                <li th:each="name_teams : ${names_teams}">
                     <div class="tournament-info">
                         <div class="tournament-status">Waiting for teams</div>
-                        <div class="tournament-slots">0</div>
+                        <div class="tournament-slots" th:text="${name_teams.value}"></div>
                         <button class="btn btn-primary submit">Join</button>
                         <a class="brackets-button"  th:href="@{/bracket}" href="/bracket">View brackets</a>
                     </div>
-                    <div class="tournament-name" th:text="${name}"></div>
+                    <div class="tournament-name" th:text="${name_teams.key}"></div>
                 </li>
-                <!-- <li>
-                    <div class="tournament-info">
-                        <div class="tournament-status">Waiting for teams</div>
-                        <div class="tournament-slots">10/16</div>
-                        <button class="btn btn-primary submit">Join</button>
-                        <a class="brackets-button" th:href="@{/bracket}" href="/bracket">View brackets</a>
-                    </div>
-                    <div class="tournament-name">Torneo 2</div>
-                </li>
-                <li>
-                    <div class="tournament-info">
-                        <div class="tournament-status">Waiting for teams</div>
-                        <div class="tournament-slots">20/20</div>
-                        <button class="btn btn-primary submit">Join</button>
-                        <a class="brackets-button" th:href="@{/bracket}" href="/bracket">View brackets</a>
-                    </div>
-                    <div class="tournament-name">Torneo 3</div>
-                </li> -->
+
             </ul>
         </div>
     </main>

@@ -8,5 +8,8 @@ INSERT INTO IWUser (id, earned, enabled, first_name, last_name, password,
 reports, roles, username, team_id)
 VALUES (2, 0, TRUE,'b','b', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W',0,'USER', 'b',null);  
 
+INSERT INTO TEAM (ID, NAME, COACH_ID) VALUES (2, 'PEPE', 2);
+
 -- start id numbering from a value that is larger than any assigned above
 ALTER SEQUENCE "PUBLIC"."GEN" RESTART WITH 1024;
+
