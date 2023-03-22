@@ -87,6 +87,8 @@ public class RootController {
         Long nTeams = 0L;
 
         Map<String, String> mapa = new HashMap<>();
+        
+        Object hola = new Object();
 
         results = entityManager.createQuery("select t from Tournament t", Tournament.class).getResultList();
         for (Tournament tournament : results) {
@@ -95,11 +97,12 @@ public class RootController {
             try {
                 TypedQuery<Long> query = entityManager.createQuery("SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Long.class);
                 nTeams = query.setParameter("tournamentid", tid).getSingleResult();
-                
 
             }catch(Exception e){
                 nTeams = 0L;
+                
             }
+
             String auxTeams = new String(nTeams+"/"+tournament.getMaxTeams());
             mapa.put(tournament.getName(), auxTeams);
         }

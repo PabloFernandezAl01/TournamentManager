@@ -5,7 +5,7 @@ import es.ucm.fdi.iw.model.Message;
 
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
-
+import es.ucm.fdi.iw.model.TeamMember.RoleInTeam;
 import es.ucm.fdi.iw.model.User.Role;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +31,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
@@ -47,6 +48,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.web.servlet.view.RedirectView;
+import es.ucm.fdi.iw.model.Team;
+import es.ucm.fdi.iw.model.TeamMember;
 
 /**
  *  User management.
@@ -114,6 +117,14 @@ public class UserController {
     public String index(@PathVariable long id, Model model, HttpSession session) {
         User target = entityManager.find(User.class, id);
         model.addAttribute("user", target);
+		Team coachingTeam = new Team();
+		coachingTeam.setName("No team registered");
+		try{
+			model.addAttribute("coachingTeam", 
+			(Team)entityManager.createQuery("select t from Team t join TeamMember tm on t.id = tm.team.id where tm.user.id = :id").setParameter("id", id).getSingleResult());
+		}catch(Exception e){
+			model.addAttribute("coachingTeam", coachingTeam);
+		}
         return "user";
     }
 
@@ -309,5 +320,45 @@ public class UserController {
 
 		messagingTemplate.convertAndSend("/user/"+u.getUsername()+"/queue/updates", json);
 		return "{\"result\": \"message sent.\"}";
-	}	
+	}
+
+	/*CREACION DE EQUIPOS */
+	@PostMapping("{id}/createTeam")
+	@Transactional
+	public String postCreateTeam(@PathVariable long id, HttpServletRequest request, 
+	Model model) throws Exception{
+		String name = request.getParameter("name");
+		Team t = new Team();
+		User u = entityManager.find(User.class, id);
+		TeamMember tm = new TeamMember();
+		
+
+
+		t.setCoach(u);
+		t.setName(name);
+
+		tm.setRole(RoleInTeam.COACH);
+		tm.setTeam(t);
+		tm.setUser(u);
+
+		entityManager.persist(t);
+		entityManager.persist(tm);
+		entityManager.flush(); 
+
+		model.addAttribute("user", u);
+		model.addAttribute("coachingTeam", t);
+
+		return "user";
+	}
+	
+	/*UNIRSE A TORNEO */
+	@GetMapping("{id}/JoinTournament")
+    public String joinTournament(@PathVariable long id) throws Exception {
+
+		User u = entityManager.find(User.class, id);
+
+		entityManager.createQuery("select t.role from TeamMember t join User t on t.user.ide = tm.team.id where tm.user.id = :id").setParameter("id", id).getSingleResult());
+
+        return "join";
+    }
 }
