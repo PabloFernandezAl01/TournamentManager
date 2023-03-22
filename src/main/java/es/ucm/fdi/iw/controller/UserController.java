@@ -351,14 +351,4 @@ public class UserController {
 		return "user";
 	}
 	
-	/*UNIRSE A TORNEO */
-	@GetMapping("{id}/JoinTournament")
-    public String joinTournament(@PathVariable long id) throws Exception {
-
-		User u = entityManager.find(User.class, id);
-
-		entityManager.createQuery("select t.role from TeamMember t join User t on t.user.ide = tm.team.id where tm.user.id = :id").setParameter("id", id).getSingleResult());
-
-        return "join";
-    }
 }
