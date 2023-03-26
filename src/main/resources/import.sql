@@ -12,6 +12,11 @@ INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
 name, prize_pool, rounds, status, type, winner_id)
 VALUES (1026, '2023-03-27', 'descripcion del torneo', 3.0, 1, 6, 'Torneo Prueba', 2.0, 0, 'NOT_STARTED', 1, null);  
 
+INSERT INTO Team (id, name, coach_id)
+VALUES (999, 'Equipo prueba', 1);  
+
+INSERT INTO Team_Member (id, role, team_id, user_id)
+VALUES (13234, 1, 999, 1);  
 -- start id numbering from a value that is larger than any assigned above
 ALTER SEQUENCE "PUBLIC"."GEN" RESTART WITH 1024;
 

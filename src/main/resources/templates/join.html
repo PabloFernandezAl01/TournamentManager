@@ -16,9 +16,6 @@
           ¡Inscribe a tu equipo en el torneo que más te guste!
         </h2>
 
-        <th:block th:if="${session.u}">
-          <div class="tournament-slots" th:text="${session.u.id}"></div>
-        </th:block>
         <!-- CAMBIAR POR TH:FOR cuando tengamos base de datos o datos basura -->
         <ul class="tournament-list">
           <li th:each="tournament : ${tournaments}">

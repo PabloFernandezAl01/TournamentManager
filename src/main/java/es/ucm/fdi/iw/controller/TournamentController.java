@@ -50,6 +50,8 @@ import java.util.stream.Collectors;
 import org.springframework.web.servlet.view.RedirectView;
 import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.model.TeamMember;
+import es.ucm.fdi.iw.model.Tournament;
+import es.ucm.fdi.iw.model.Tournament_Team;
 
 @Controller()
 @RequestMapping("tournament")
@@ -71,18 +73,24 @@ public class TournamentController {
      */
     // th:href="@{/tournament/${tournament.key.id}/${session.u.id}}"
 	@GetMapping("{tournamentId}/{userId}")
-    public String index(@PathVariable long id, Model model, HttpSession session) {
-        // User target = entityManager.find(User.class, id);
+    @Transactional
+    public RedirectView index(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
+        User targetUser = entityManager.find(User.class, userId);
+        Tournament targetTournament = entityManager.find(Tournament.class, tournamentId);
         // model.addAttribute("user", target);
-		// Team coachingTeam = new Team();
+		Team coachingTeam = new Team();
 		// coachingTeam.setName("No team registered");
-		// try{
-		// 	model.addAttribute("coachingTeam", 
-		// 	(Team)entityManager.createQuery("select t from Team t join TeamMember tm on t.id = tm.team.id where tm.user.id = :id").setParameter("id", id).getSingleResult());
-		// }catch(Exception e){
-		// 	model.addAttribute("coachingTeam", coachingTeam);
-		// }
-        return "join";
+		try {
+			coachingTeam = (Team)entityManager.createQuery("select t from Team t where t.coach.id = :id and not exists (Select tt.team.id from Tournament_Team tt where tt.team.id = t.id)").setParameter("id", userId).getSingleResult();
+            Tournament_Team torunamentTeam = new Tournament_Team();
+            torunamentTeam.setTeam(coachingTeam);
+            torunamentTeam.setTournament(targetTournament);
+            entityManager.persist(torunamentTeam);
+
+            
+		} catch(Exception e){
+		}
+        return new RedirectView("/join");
     }
 
 
