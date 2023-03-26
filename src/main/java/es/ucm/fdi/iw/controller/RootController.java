@@ -106,11 +106,6 @@ public class RootController {
             String auxTeams = new String(nTeams+"/"+tournament.getMaxTeams());
             mapa.put(tournament, auxTeams);
         }
-        for (Map.Entry<Tournament, String> entry : mapa.entrySet()) {
-    Tournament tournament = entry.getKey();
-    String teams = entry.getValue();
-    System.out.println(tournament.getName() + ": " + teams);
-}
         model.addAttribute("tournaments", mapa);
 
         return "join";
@@ -178,7 +173,6 @@ public class RootController {
 	@Transactional
 	public RedirectView createTournament(@ModelAttribute Tournament tournament, 
 		Model model) throws Exception {
-        tournament.setType("HOLA");
 		tournament.setStatus("NOT_STARTED");
 		entityManager.persist(tournament);
 		entityManager.flush(); 

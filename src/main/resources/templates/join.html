@@ -25,12 +25,17 @@
             <div class="tournament-info">
               <div class="tournament-status">Waiting for teams</div>
               <div class="tournament-slots" th:text="${tournament.value}"></div>
-              <button class="btn btn-primary submit">Join</button>
+              <a
+                class="btn btn-primary submit"
+                th:href="@{|/tournament/${tournament.key.id}/${session.u.id}|}"
+              >
+                Join
+              </a>
               <a class="brackets-button" th:href="@{/bracket}" href="/bracket"
                 >View brackets</a
               >
             </div>
-            <!-- <div class="tournament-name" th:text="${tournament.key.name}"></div> -->
+            <div class="tournament-name" th:text="${tournament.key.name}"></div>
           </li>
         </ul>
       </div>
