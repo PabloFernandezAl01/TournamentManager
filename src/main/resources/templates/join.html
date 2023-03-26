@@ -1,40 +1,42 @@
 <!DOCTYPE html>
 <html class="h-100" xmlns:th="http://www.thymeleaf.org">
-
-<head>
+  <head>
     <th:block th:replace="fragments/head :: header" />
     <title>Tournament Manager</title>
-    
-</head>
+  </head>
 
-<body class="d-flex flex-column h-100 body">
+  <body class="d-flex flex-column h-100 body">
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
     <main class="flex-shrink-0 main">
-        <div class="container">
-            <h1 class="text-center page-title">ÚNETE A UN TORNEO</h1>
-            <h2 class="mt-3 text-center">¡Inscribe a tu equipo en el torneo que más te guste!</h2>
+      <div class="container">
+        <h1 class="text-center page-title">ÚNETE A UN TORNEO</h1>
+        <h2 class="mt-3 text-center">
+          ¡Inscribe a tu equipo en el torneo que más te guste!
+        </h2>
 
-        
-            <!-- CAMBIAR POR TH:FOR cuando tengamos base de datos o datos basura -->
-            <ul class="tournament-list">
-                <li th:each="name_teams : ${names_teams}">
-                    <div class="tournament-info">
-                        <div class="tournament-status">Waiting for teams</div>
-                        <div class="tournament-slots" th:text="${name_teams.value}"></div>
-                        <button class="btn btn-primary submit">Join</button>
-                        <a class="brackets-button"  th:href="@{/bracket}" href="/bracket">View brackets</a>
-                    </div>
-                    <div class="tournament-name" th:text="${name_teams.key}"></div>
-                </li>
-
-            </ul>
-        </div>
+        <th:block th:if="${session.u}">
+          <div class="tournament-slots" th:text="${session.u.id}"></div>
+        </th:block>
+        <!-- CAMBIAR POR TH:FOR cuando tengamos base de datos o datos basura -->
+        <ul class="tournament-list">
+          <li th:each="tournament : ${tournaments}">
+            <div class="tournament-info">
+              <div class="tournament-status">Waiting for teams</div>
+              <div class="tournament-slots" th:text="${tournament.value}"></div>
+              <button class="btn btn-primary submit">Join</button>
+              <a class="brackets-button" th:href="@{/bracket}" href="/bracket"
+                >View brackets</a
+              >
+            </div>
+            <!-- <div class="tournament-name" th:text="${tournament.key.name}"></div> -->
+          </li>
+        </ul>
+      </div>
     </main>
-    
+
     <!-- Reemplazo del footer desde el archivo footer.html -->
     <th:block th:replace="fragments/footer.html :: footer" />
-</body>
-
+  </body>
 </html>

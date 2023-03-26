@@ -86,7 +86,7 @@ public class RootController {
         List<Tournament> results = new ArrayList<>();
         Long nTeams = 0L;
 
-        Map<String, String> mapa = new HashMap<>();
+        Map<Tournament, String> mapa = new HashMap<>();
         
         Object hola = new Object();
 
@@ -104,9 +104,14 @@ public class RootController {
             }
 
             String auxTeams = new String(nTeams+"/"+tournament.getMaxTeams());
-            mapa.put(tournament.getName(), auxTeams);
+            mapa.put(tournament, auxTeams);
         }
-        model.addAttribute("names_teams", mapa);
+        for (Map.Entry<Tournament, String> entry : mapa.entrySet()) {
+    Tournament tournament = entry.getKey();
+    String teams = entry.getValue();
+    System.out.println(tournament.getName() + ": " + teams);
+}
+        model.addAttribute("tournaments", mapa);
 
         return "join";
     }
