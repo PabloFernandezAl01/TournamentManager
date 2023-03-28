@@ -33,6 +33,10 @@ public class Tournament {
 
     private String date;
 
+    private String creationDate;
+
+    private String staringHour;
+
     private Double entryPrice;
 
     private Double prizePool;
