@@ -17,14 +17,14 @@ public class Tournament {
 
     public enum TournamentStatus {
         NOT_STARTED,
-        ON_GOING, 
+        ON_GOING,
         FINISHED
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-	private long id;
+    private long id;
 
     @Column(nullable = false, unique = true)
     private String name;
@@ -35,7 +35,7 @@ public class Tournament {
 
     private String creationDate;
 
-    private String staringHour;
+    private String startingHour;
 
     private Double entryPrice;
 
@@ -45,7 +45,7 @@ public class Tournament {
 
     private String game;
 
-    private String status;
+    private TournamentStatus status;
 
     @OneToOne
     private Team winner;
