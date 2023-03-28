@@ -20,7 +20,7 @@
         <ul class="tournament-list">
           <li th:each="tournament : ${tournaments}">
             <div class="tournament-info">
-              <div class="tournament-status" th:text="${tournament.name}">Waiting for teams</div>
+              <div class="tournament-status">Waiting for teams</div>
               <div class="tournament-slots" th:text="${tournament.value}"></div>
               <a
                 class="btn btn-primary submit"
