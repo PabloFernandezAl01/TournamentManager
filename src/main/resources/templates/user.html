@@ -6,52 +6,106 @@
     <title>IW: Perfil</title>
 </head>
 
-<body class="d-flex flex-column h-100">
+<body class="d-flex flex-column h-100 body">
     <header th:replace="fragments/nav.html :: nav"></header>
 
     <main class="flex-shrink-0">
-        <div id="books" class="border border-2 border-primary rounded">
-            <label for="isbn">ISBN</label><input id="isbn" value="9780140328721" />
-            <button id="fetchBook">Buscar datos online</button>
-            <img class="preview" id="portada" alt="portada del libro" />
-            <form th:action="@{/user/__${user.id}__/pic}">
-                <button id="postPortada" class="perfilable">Usar como foto de perfil</button>
-            </form>
-        </div>
-        <div id="movies" class="border border-2 border-secondary rounded">
-            <label for="imdb">IMDB</label><input id="imdb" value="tt11286314" />
-            <button id="fetchMovie">Buscar datos online</button>
-            <img class="preview" id="poster" alt="poster de la pelicula" />
-            <form th:action="@{/user/__${user.id}__/pic}">
-                <button id="postPoster" class="perfilable">Usar como foto de perfil</button>
-            </form>
-        </div>
-        <div id="profile" class="border border-2 border-tertiary rounded">
-            <input type="file" id="f_avatar" accept="image/jpeg,image/png">
-            <img class="preview" id="avatar" alt="careto a subir" />
-            <form th:action="@{/user/__${user.id}__/pic}">
-                <button id="postAvatar">Usar como foto de perfil</button>
-            </form>
-        </div>
-
-        <div class="container">
-            <h1 class="mt-5">Perfil de <span th:text="${user.username}">Paco</span></h1>
-            <!-- recepción de mensajes -->
-            <div class="py-5 row" id="mensajes">
+        <div class ="userProfile container">
+            <h1 class="mt-5">Profile of <span th:text="${user.username}"></span></h1>
+            <div>
+                <span style="color: white">Current Coaching Team: </span> <span style="color: grey" th:text="${coachingTeam.name}"></span>
             </div>
-            <!-- envío de mensajes -->
-            <div class="py-5 row ">
-                <form th:action="@{/user/__${user.id}__/msg}" method="POST">
-                    <input type="text" id="message" placeholder="escribe a este usuario" />
-                    <button id="sendmsg" class="btn btn-secondary" type="submit">Enviar</button>
+            <span style="color: grey" th:text="${excepcion}"></span>
+            <p></p>
+            <button class="btn btn-primary submit" id="myBtn">Create new team</button>
+
+            <div id="myModal" class="modal">
+                
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <form method="post" th:action="@{/user/__${user.id}__/createTeam}">
+                        <h2>Team Creation</h2>
+                        <p th:if="${#request.getQueryString() == 'error'}" class="error">Error creating team</p>
+                        <p>
+                            <label for="name" class="visually-hidden">name</label>
+                            <input type="text" id="name" name="name" class="inputTextStyle form-control" placeholder="Name of the team" required="required">
+                        </p>
+                        <button type="submit" class="registerButton btn btn-primary submit" style="margin: 0;">Create team</button>
+                    </form>
+                </div>
+              
+            </div>
+            <div id="books" class="border border-2 border-primary rounded">
+                <label for="isbn">ISBN</label><input id="isbn" value="9780140328721" />
+                <button id="fetchBook">Buscar datos online</button>
+                <img class="preview" id="portada" alt="portada del libro" />
+                <form th:action="@{/user/__${user.id}__/pic}">
+                    <button id="postPortada" class="perfilable">Usar como foto de perfil</button>
                 </form>
+            </div>
+            <div id="movies" class="border border-2 border-secondary rounded">
+                <label for="imdb">IMDB</label><input id="imdb" value="tt11286314" />
+                <button id="fetchMovie">Buscar datos online</button>
+                <img class="preview" id="poster" alt="poster de la pelicula" />
+                <form th:action="@{/user/__${user.id}__/pic}">
+                    <button id="postPoster" class="perfilable">Usar como foto de perfil</button>
+                </form>
+            </div>
+            <div id="profile" class="border border-2 border-tertiary rounded">
+                <input type="file" id="f_avatar" accept="image/jpeg,image/png">
+                <img class="preview" id="avatar" alt="careto a subir" />
+                <form th:action="@{/user/__${user.id}__/pic}">
+                    <button id="postAvatar">Usar como foto de perfil</button>
+                </form>
+            </div>
+            
+            <div class="container"> 
+                <!-- recepción de mensajes -->
+                <div class="py-5 row" style="color: white"id="mensajes">
+                </div>
+                <!-- envío de mensajes -->
+                <div class="py-5 row ">
+                    <form th:action="@{/user/__${user.id}__/msg}" method="POST">
+                        <input type="text" id="message" placeholder="escribe a este usuario" />
+                        <button id="sendmsg" class="btn btn-secondary" type="submit">Enviar</button>
+                    </form>
+                </div>
             </div>
         </div>
     </main>
 
     <th:block th:replace="fragments/footer.html :: footer" />
 
+    <script>
+        // Get the modal
+        var modal = document.getElementById("myModal");
+        
+        // Get the button that opens the modal
+        var btn = document.getElementById("myBtn");
+        
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        
+        // When the user clicks the button, open the modal 
+        btn.onclick = function() {
+        modal.style.display = "block";
+        }
+        
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+        modal.style.display = "none";
+        }
+        
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+        }
+    </script>
     <script th:src="@{/js/ajax-demo.js}"></script>
+    
 </body>
 
 </html>

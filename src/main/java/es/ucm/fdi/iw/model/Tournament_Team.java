@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Entity
 @Data
-public class TournamentTeam {
+@Table(name="TOURNAMENT_TEAM")
+public class Tournament_Team {
     
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")

@@ -1,42 +1,76 @@
 <!DOCTYPE html>
 <html class="h-100" xmlns:th="http://www.thymeleaf.org">
-
-<head>
+  <head>
     <th:block th:replace="fragments/head :: header" />
     <title>Create Account</title>
-</head>
+  </head>
 
-<body class="d-flex flex-column h-100 body">
+  <body class="d-flex flex-column h-100 body">
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
     <main class="flex-shrink-0">
-        <div class="login container">
-            <form method="post" th:action="@{/registUser}">
-                <h2>Register</h2>
-                <p th:if="${#request.getQueryString() == 'error'}" class="error">Error al registrar</p>
-                <p>
-                    <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" class="inputTextStyle form-control" placeholder="Username" required="required">
-                </p>
-                <p>
-                    <label for="firstName" class="visually-hidden">First Name</label>
-                    <input type="text" id="firstName" name="firstName" class="inputTextStyle form-control" placeholder="First Name" required="required">
-                </p>
-                <p>
-                    <label for="lastName" class="visually-hidden">Last Name</label>
-                    <input type="text" id="lastName" name="lastName" class="inputTextStyle form-control" placeholder="Last Name" required="required">
-                </p>
-                <p>
-                    <label for="password" class="visually-hidden">Password</label>
-                    <input type="password" id="password" name="password" class="inputTextStyle form-control" placeholder="Password" required="required">
-                </p>
-                <button type="submit" class="registerButton btn btn-primary submit" style="margin: 0;">Create account</button>
-            </form>
-        </div>
+      <div class="login container">
+        <form method="post" th:action="@{/registUser}">
+          <h2>Register</h2>
+          <p th:if="${#request.getQueryString() == 'error'}" class="error">
+            Error al registrar
+          </p>
+          <p>
+            <label for="username" class="visually-hidden">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              class="inputTextStyle form-control"
+              placeholder="Username"
+              required
+            />
+          </p>
+          <p>
+            <label for="firstName" class="visually-hidden">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              class="inputTextStyle form-control"
+              placeholder="First Name"
+              required
+            />
+          </p>
+          <p>
+            <label for="lastName" class="visually-hidden">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              class="inputTextStyle form-control"
+              placeholder="Last Name"
+              required
+            />
+          </p>
+          <p>
+            <label for="password" class="visually-hidden">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="inputTextStyle form-control"
+              placeholder="Password"
+              required
+            />
+          </p>
+          <button
+            type="submit"
+            class="registerButton btn btn-primary submit"
+            style="margin: 0"
+          >
+            Create account
+          </button>
+        </form>
+      </div>
     </main>
 
     <th:block th:replace="fragments/footer.html :: footer" />
-</body>
-
+  </body>
 </html>

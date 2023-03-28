@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name="TEAM_MEMBER")
 public class TeamMember {
 
     public enum RoleInTeam {
