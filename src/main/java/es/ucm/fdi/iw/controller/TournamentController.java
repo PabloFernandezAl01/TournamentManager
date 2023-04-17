@@ -40,6 +40,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import java.io.*;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -59,39 +62,65 @@ import es.ucm.fdi.iw.model.Tournament_Team;
 public class TournamentController {
     private static final Logger log = LogManager.getLogger(TournamentController.class);
 
-	@Autowired
-	private EntityManager entityManager;
+    @Autowired
+    private EntityManager entityManager;
 
-	@Autowired
+    @Autowired
     private LocalData localData;
 
-	@Autowired
-	private SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
-     /**
+    /**
      * Landing page for a user profile
      */
     // th:href="@{/tournament/${tournament.key.id}/${session.u.id}}"
-	@GetMapping("{tournamentId}/{userId}")
+    @GetMapping("{tournamentId}/{userId}")
     @Transactional
     public RedirectView index(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
         User targetUser = entityManager.find(User.class, userId);
         Tournament targetTournament = entityManager.find(Tournament.class, tournamentId);
         // model.addAttribute("user", target);
-		Team coachingTeam = new Team();
-		// coachingTeam.setName("No team registered");
-		try {
-			coachingTeam = (Team)entityManager.createQuery("select t from Team t where t.coach.id = :id and not exists (Select tt.team.id from Tournament_Team tt where tt.team.id = t.id)").setParameter("id", userId).getSingleResult();
+        Team coachingTeam = new Team();
+        // coachingTeam.setName("No team registered");
+        try {
+            coachingTeam = (Team) entityManager.createQuery(
+                    "select t from Team t where t.coach.id = :id and not exists (Select tt.team.id from Tournament_Team tt where tt.team.id = t.id)")
+                    .setParameter("id", userId).getSingleResult();
             Tournament_Team torunamentTeam = new Tournament_Team();
             torunamentTeam.setTeam(coachingTeam);
             torunamentTeam.setTournament(targetTournament);
             entityManager.persist(torunamentTeam);
 
-            
-		} catch(Exception e){
-		}
+        } catch (Exception e) {
+        }
         return new RedirectView("/join");
+
     }
 
+    @GetMapping("{tournamentId}/{userId}/bracket")
+    @Transactional
+    public String bracket(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
+        model.addAttribute("home", Boolean.FALSE);
+        model.addAttribute("create", Boolean.FALSE);
+        model.addAttribute("join", Boolean.FALSE);
+        model.addAttribute("onGoing", Boolean.TRUE);
+        model.addAttribute("record", Boolean.FALSE);
 
+        // List<Team> teams = new ArrayList<>();
+
+        // try {
+        // Tournament_Team tournament_Team = (Tournament_Team)
+        // entityManager.createQuery(
+        // "select t from Tournament_Team t where t.id = :id")
+        // .setParameter("id", tournamentId).getResultList();
+
+        // Team t = tournament_Team.getTeam();
+        // teams.add(t);
+
+        // model.addAttribute("teams", teams);
+        // } catch (Exception e) {
+        // }
+        return "bracket";
+    }
 }

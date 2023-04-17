@@ -5,13 +5,13 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name="TOURNAMENT_TEAM")
+@Table(name = "TOURNAMENT_TEAM")
 public class Tournament_Team {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-	private long id;
+    private long id;
 
     @OneToOne
     private Tournament tournament;

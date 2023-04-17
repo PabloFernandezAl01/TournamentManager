@@ -28,8 +28,12 @@
               >
                 Join
               </a>
-              <a class="brackets-button" th:href="@{/bracket}" href="/bracket"
-                >View brackets</a
+              <a 
+                class="brackets-button" 
+                th:href="@{|/tournament/${tournament.key.id}/${session.u.id}/bracket|}"
+              >
+                View brackets
+              </a
               >
             </div>
             <div class="tournament-name" th:text="${tournament.key.name}"></div>

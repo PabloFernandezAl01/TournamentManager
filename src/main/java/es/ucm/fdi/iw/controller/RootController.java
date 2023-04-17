@@ -90,8 +90,6 @@ public class RootController {
 
         Map<Tournament, String> mapa = new HashMap<>();
 
-        Object hola = new Object();
-
         results = entityManager.createQuery("select t from Tournament t", Tournament.class).getResultList();
         for (Tournament tournament : results) {
             long tid = tournament.getId();
@@ -132,6 +130,17 @@ public class RootController {
         return "ongoing";
     }
 
+    @GetMapping("/bracket")
+    public String bracket(Model model) {
+        model.addAttribute("home", Boolean.FALSE);
+        model.addAttribute("create", Boolean.FALSE);
+        model.addAttribute("join", Boolean.FALSE);
+        model.addAttribute("onGoing", Boolean.TRUE);
+        model.addAttribute("record", Boolean.FALSE);
+
+        return "bracket";
+    }
+
     @GetMapping("/record")
     public String record(Model model) {
         model.addAttribute("home", Boolean.FALSE);
@@ -140,16 +149,6 @@ public class RootController {
         model.addAttribute("onGoing", Boolean.FALSE);
         model.addAttribute("record", Boolean.TRUE);
         return "record";
-    }
-
-    @GetMapping("/bracket")
-    public String bracket(Model model) {
-        model.addAttribute("home", Boolean.FALSE);
-        model.addAttribute("create", Boolean.FALSE);
-        model.addAttribute("join", Boolean.TRUE);
-        model.addAttribute("onGoing", Boolean.FALSE);
-        model.addAttribute("record", Boolean.FALSE);
-        return "bracket";
     }
 
     @GetMapping("/register")
