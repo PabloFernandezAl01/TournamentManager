@@ -42,44 +42,39 @@ public class RootController {
         return passwordEncoder.encode(rawPassword);
     }
 
-    @GetMapping("/login")
-    public String login(Model model) {
+    private void disableViews(Model model) {
         model.addAttribute("home", Boolean.FALSE);
         model.addAttribute("create", Boolean.FALSE);
         model.addAttribute("join", Boolean.FALSE);
         model.addAttribute("onGoing", Boolean.FALSE);
         model.addAttribute("record", Boolean.FALSE);
+    }
+
+    @GetMapping("/login")
+    public String login(Model model) {
+        disableViews(model);
         return "login";
     }
 
     @GetMapping("/")
     public String index(Model model) {
+        disableViews(model);
         model.addAttribute("home", Boolean.TRUE);
-        model.addAttribute("create", Boolean.FALSE);
-        model.addAttribute("join", Boolean.FALSE);
-        model.addAttribute("onGoing", Boolean.FALSE);
-        model.addAttribute("record", Boolean.FALSE);
         return "index";
     }
 
     @GetMapping("/create")
     public String create(Model model) {
-        model.addAttribute("home", Boolean.FALSE);
+        disableViews(model);
         model.addAttribute("create", Boolean.TRUE);
-        model.addAttribute("join", Boolean.FALSE);
-        model.addAttribute("onGoing", Boolean.FALSE);
-        model.addAttribute("record", Boolean.FALSE);
         return "create";
     }
 
     @GetMapping("/join")
     @Transactional
     public String join(Model model) {
-        model.addAttribute("home", Boolean.FALSE);
-        model.addAttribute("create", Boolean.FALSE);
+        disableViews(model);
         model.addAttribute("join", Boolean.TRUE);
-        model.addAttribute("onGoing", Boolean.FALSE);
-        model.addAttribute("record", Boolean.FALSE);
 
         List<Long> numTeams = new ArrayList<>();
 
@@ -122,42 +117,28 @@ public class RootController {
 
     @GetMapping("/ongoing")
     public String ongoing(Model model) {
-        model.addAttribute("home", Boolean.FALSE);
-        model.addAttribute("create", Boolean.FALSE);
-        model.addAttribute("join", Boolean.FALSE);
+        disableViews(model);
         model.addAttribute("onGoing", Boolean.TRUE);
-        model.addAttribute("record", Boolean.FALSE);
         return "ongoing";
-    }
-
-    @GetMapping("/bracket")
-    public String bracket(Model model) {
-        model.addAttribute("home", Boolean.FALSE);
-        model.addAttribute("create", Boolean.FALSE);
-        model.addAttribute("join", Boolean.FALSE);
-        model.addAttribute("onGoing", Boolean.TRUE);
-        model.addAttribute("record", Boolean.FALSE);
-
-        return "bracket";
     }
 
     @GetMapping("/record")
     public String record(Model model) {
-        model.addAttribute("home", Boolean.FALSE);
-        model.addAttribute("create", Boolean.FALSE);
-        model.addAttribute("join", Boolean.FALSE);
-        model.addAttribute("onGoing", Boolean.FALSE);
+        disableViews(model);
         model.addAttribute("record", Boolean.TRUE);
         return "record";
     }
 
+    @GetMapping("/bracket")
+    public String bracket(Model model) {
+        disableViews(model);
+        model.addAttribute("join", Boolean.TRUE);
+        return "bracket";
+    }
+
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("home", Boolean.FALSE);
-        model.addAttribute("create", Boolean.FALSE);
-        model.addAttribute("join", Boolean.FALSE);
-        model.addAttribute("onGoing", Boolean.FALSE);
-        model.addAttribute("record", Boolean.FALSE);
+        disableViews(model);
         return "register";
     }
 
