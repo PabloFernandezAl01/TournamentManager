@@ -50,11 +50,18 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.web.servlet.view.RedirectView;
+import java.util.HashMap;
+import java.util.Map;
 import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.model.TeamMember;
 import es.ucm.fdi.iw.model.Tournament;
+import es.ucm.fdi.iw.model.Match;
 import es.ucm.fdi.iw.model.Tournament_Team;
+
 
 @Controller()
 @RequestMapping("tournament")
@@ -105,20 +112,47 @@ public class TournamentController {
         
 
         List<Team> teams = new ArrayList<>();
-        
+        Tournament tournament = new Tournament();
         String exception = "HOLA";
-
+        List<Match> matches = new ArrayList<>();
         try{
             teams = entityManager.createQuery(
                 "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",Team.class).setParameter("tournamentid", tournamentId)
+                .getResultList();
+            tournament = (Tournament)entityManager.createQuery(
+                "SELECT t FROM Tournament t WHERE t.id = :tournamentid",Tournament.class).setParameter("tournamentid", tournamentId)
+                .getSingleResult();
+            matches = entityManager.createQuery(
+                "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid",Match.class).setParameter("tournamentid", tournamentId)
                 .getResultList();
 
         } catch(Exception e){
             exception = e.getMessage();
         }
+
+        Map<Integer, Boolean> partidosRonda = new HashMap<>();
+
+        for(Match match: matches){
+            partidosRonda.put(match.getRoundNumber(), true);
+        }
+
+        List<Integer> partidosRondaJugables = new ArrayList<>();
+        int playerLastRound = tournament.getMaxTeams()/2;
+
+        for(int i = 1; i <= tournament.getRounds(); ++i){
+
+            partidosRondaJugables.add(playerLastRound);
+            playerLastRound /= 2;
+        }
+
         model.addAttribute("exception", exception);
         model.addAttribute("teams", teams);
         model.addAttribute("numTeams", teams.size());
+        model.addAttribute("tournament", tournament);
+        model.addAttribute("matches", matches);
+        model.addAttribute("partidosRonda", partidosRonda);
+        model.addAttribute("partidosRondaJugables", partidosRondaJugables);
+        model.addAttribute("partidos", partidosRondaJugables.get(1));
         return "bracket";
     }
 }

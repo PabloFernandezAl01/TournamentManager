@@ -17,7 +17,7 @@ VALUES (4, 0, TRUE,'d','d', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924
 
 INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
 name, prize_pool, rounds, status, type, winner_id)
-VALUES (1026, '2023-03-27', 'descripcion del torneo', 3.0, 1, 6, 'Torneo Prueba', 2.0, 0, 0, 1, null);  
+VALUES (1026, '2023-03-27', 'descripcion del torneo', 3.0, 1, 4, 'Torneo Prueba', 2.0, 3, 0, 1, null);  
 
 INSERT INTO Team (id, name, coach_id)
 VALUES (999, 'Primer Equipo', 1);  
@@ -54,6 +54,13 @@ VALUES (3, 1001, 1026);
 
 INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
 VALUES (4, 1002, 1026); 
+
+INSERT INTO MATCH (id, match_number, result, round_number, team1_id, team2_id, tournament_id, winner_id)
+VALUES (1, 1, 'TBD', 1, 999, 1000, 1026, null);
+
+INSERT INTO MATCH (id, match_number, result, round_number, team1_id, team2_id, tournament_id, winner_id)
+VALUES (2, 1, 'TBD', 1, 1001, 1002, 1026, null);
+
 -- start id numbering from a value that is larger than any assigned above
 ALTER SEQUENCE "PUBLIC"."GEN" RESTART WITH 1024;
 
