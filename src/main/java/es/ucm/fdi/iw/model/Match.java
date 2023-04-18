@@ -15,6 +15,9 @@ public class Match {
     @Column(nullable = false)
     private int roundNumber;
 
+    @Column(nullable = false)
+    private int matchNumber;
+
     @OneToOne
     private Team team1;
 
@@ -25,6 +28,7 @@ public class Match {
     private Tournament tournament;
 
     private String result;
+
 
     @OneToOne
     private Team winner;

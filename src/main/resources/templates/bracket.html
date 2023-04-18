@@ -40,21 +40,36 @@
         teams.forEach(function (team) {
             var teamName = team.name;
             exampleTeams.push(teamName);
-            console.log(teamName); // Imprime el nombre del equipo en la consola
         });
 
-        getBracket(numTeams);
 
-        function getBracket(base) {
+        
+        var winners = [];
+        winners.push({
+            round: 1,
+            game: 1,
+            team: "Primer Equipo" 
+        });
+        winners.push({
+            round: 1,
+            game: 2,
+            team: "Cuarto Equipo" 
+        });
 
-            // Generar la primera ronda de emparejamientos
+        getBracket(numTeams,winners);
+        
+        function getBracket(base, winners) {
+            var closest = _.find(knownBrackets, function (k) { return k >= base; }),
+                byes = closest - base;
+
+            if (byes > 0) base = closest;
+
             var brackets = [],
                 round = 1,
                 baseT = base / 2,
                 baseC = base / 2,
                 teamMark = 0,
-                nextInc = base / 2,
-                byes = 0;
+                nextInc = base / 2;
 
             for (i = 1; i <= (base - 1); i++) {
                 var baseR = i / baseT,
@@ -65,10 +80,39 @@
                     byes--;
                 }
 
+                var last = _.map(_.filter(brackets, function (b) { 
+                    return b.nextGame == i; }), function (b) { 
+                        return { 
+                            game: b.bracketNo,
+                            teams: b.teamnames 
+                        }; 
+                    });
+
+               
+
+                var teamnames;
+                if (round == 1) {
+                    teamnames = [exampleTeams[teamMark], exampleTeams[teamMark + 1]];
+                } else {
+                    console.log('Ejecutando filtro');
+                    console.log(round);
+                    var previousWinners = _.filter(winners, function (winner) { 
+                        return winner.round === round - 1 && (winner.game === last[0].game || winner.game === last[1].game);
+                     });
+                     console.log(previousWinners);
+                     
+                    if (previousWinners.length === 2) {
+                        teamnames = [previousWinners[0].team, previousWinners[1].team];
+                    } else {
+                        // handle the case where not all previous games have been played yet
+                        teamnames = ['TBD', 'TBD'];
+                    }
+                }
+
                 brackets.push({
-                    lastGames: null,
+                    lastGames: round == 1 ? null : [last[0].game, last[1].game],
                     nextGame: nextInc + i > base - 1 ? null : nextInc + i,
-                    teamnames: [exampleTeams[teamMark], exampleTeams[teamMark + 1]],
+                    teamnames: teamnames,
                     bracketNo: i,
                     roundNo: round,
                     bye: isBye
@@ -84,16 +128,7 @@
                 }
             }
 
-            // Mostrar los emparejamientos generados
             renderBrackets(brackets);
-
-            // Esperar a que se registren los resultados antes de generar la siguiente ronda
-            // y volver a mostrar los emparejamientos actualizados
-
-            // Generar la siguiente ronda de emparejamientos
-            // y volver a mostrar los emparejamientos actualizados
-            // (y repetir hasta que se hayan generado todas las rondas)
-
         }
 
         /*
@@ -112,6 +147,7 @@
                         round.append('<div></div>');
                     else
                         round.append('<div><div class="bracketbox"><span class="info">' + gg.bracketNo + '</span><span class="teama">' + gg.teamnames[0] + '</span><span class="teamb">' + gg.teamnames[1] + '</span></div></div>');
+
                 });
                 group.append(round);
             }
