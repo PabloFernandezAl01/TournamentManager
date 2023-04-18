@@ -10,11 +10,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
-import es.ucm.fdi.iw.model.User;
-import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
+
 
 import java.io.*;
 import java.time.LocalDate;
+
+import es.ucm.fdi.iw.model.Team;
+import es.ucm.fdi.iw.model.User;
+import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -76,12 +79,9 @@ public class RootController {
         disableViews(model);
         model.addAttribute("join", Boolean.TRUE);
 
-        List<Long> numTeams = new ArrayList<>();
-
-        List<String> tournamentNames = new ArrayList<>();
-
         List<Tournament> results = new ArrayList<>();
         Long nTeams = 0L;
+
 
         Map<Tournament, String> mapa = new HashMap<>();
 
@@ -100,6 +100,7 @@ public class RootController {
                 TypedQuery<Long> query = entityManager.createQuery(
                         "SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
                         Long.class);
+
                 nTeams = query.setParameter("tournamentid", tid).getSingleResult();
 
             } catch (Exception e) {
@@ -129,12 +130,12 @@ public class RootController {
         return "record";
     }
 
-    @GetMapping("/bracket")
+    /*@GetMapping("/bracket")
     public String bracket(Model model) {
         disableViews(model);
-        model.addAttribute("join", Boolean.TRUE);
+        model.addAttribute("onGoing", Boolean.TRUE);
         return "bracket";
-    }
+    }*/
 
     @GetMapping("/register")
     public String register(Model model) {

@@ -28,9 +28,9 @@ html, body, .brackets {
 .brackets div.bracketbox {
   position: relative;
   width: 100%; height: 100%;
-  border-top: 1px solid #555;
-  border-right: 1px solid #555;
-  border-bottom: 1px solid #555;
+  border-top: 1px solid #ffffff;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
 }
 .brackets div.bracketbox > span.info {
   position: absolute;

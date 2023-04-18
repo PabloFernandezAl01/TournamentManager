@@ -1,8 +1,9 @@
+
 $(document).on('ready', function() {
 				
     var knownBrackets = [2,4,8,16,32], // brackets with "perfect" proportions (full fields, no byes)
     
-        exampleTeams  = _.shuffle(["New Jersey Devils","New York Islanders","New York Rangers","Philadelphia Flyers","Pittsburgh Penguins","Boston Bruins","Buffalo Sabres","Montreal Canadiens","Ottawa Senators","Toronto Maple Leafs","Carolina Hurricanes","Florida Panthers","Tampa Bay Lightning","Washington Capitals","Winnipeg Jets","Chicago Blackhawks","Columbus Blue Jackets","Detroit Red Wings","Nashville Predators","St. Louis Blues","Calgary Flames","Colorado Avalanche","Edmonton Oilers","Minnesota Wild","Vancouver Canucks","Anaheim Ducks","Dallas Stars","Los Angeles Kings","Phoenix Coyotes","San Jose Sharks","Montreal Wanderers","Quebec Nordiques","Hartford Whalers"]), // because a bracket needs some teams!
+        exampleTeams  = _.shuffle(["New Jersey Devils","New York Islanders"]), // because a bracket needs some teams!
         
         bracketCount = 0;
     

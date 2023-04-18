@@ -101,26 +101,24 @@ public class TournamentController {
     @GetMapping("{tournamentId}/{userId}/bracket")
     @Transactional
     public String bracket(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
-        model.addAttribute("home", Boolean.FALSE);
-        model.addAttribute("create", Boolean.FALSE);
-        model.addAttribute("join", Boolean.FALSE);
-        model.addAttribute("onGoing", Boolean.TRUE);
-        model.addAttribute("record", Boolean.FALSE);
+        model.addAttribute("ongoing", Boolean.TRUE);
+        
 
-        // List<Team> teams = new ArrayList<>();
+        List<Team> teams = new ArrayList<>();
+        
+        String exception = "HOLA";
 
-        // try {
-        // Tournament_Team tournament_Team = (Tournament_Team)
-        // entityManager.createQuery(
-        // "select t from Tournament_Team t where t.id = :id")
-        // .setParameter("id", tournamentId).getResultList();
+        try{
+            teams = entityManager.createQuery(
+                "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",Team.class).setParameter("tournamentid", tournamentId)
+                .getResultList();
 
-        // Team t = tournament_Team.getTeam();
-        // teams.add(t);
-
-        // model.addAttribute("teams", teams);
-        // } catch (Exception e) {
-        // }
+        } catch(Exception e){
+            exception = e.getMessage();
+        }
+        model.addAttribute("exception", exception);
+        model.addAttribute("teams", teams);
+        model.addAttribute("numTeams", teams.size());
         return "bracket";
     }
 }
