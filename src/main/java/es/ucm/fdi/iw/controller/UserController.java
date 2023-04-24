@@ -135,6 +135,7 @@ public class UserController {
 
 	@PostMapping("sendMsg/{userId}/{matchId}")
 	@Transactional
+	@ResponseBody
 	public void sendMessage() {
 
 	}

@@ -59,11 +59,11 @@ VALUES (3, 1001, 1026);
 INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
 VALUES (4, 1002, 1026); 
 
-INSERT INTO MATCH (id, match_number, result, round_number, team1_id, team2_id, tournament_id, winner_id)
-VALUES (1, 1, 'TBD', 1, 999, 1000, 1026, null);
+-- INSERT INTO MATCH (id, match_number, result, round_number, team1_id, team2_id, tournament_id, winner_id)
+-- VALUES (1, 1, 'TBD', 1, 999, 1000, 1026, null);
 
-INSERT INTO MATCH (id, match_number, result, round_number, team1_id, team2_id, tournament_id, winner_id)
-VALUES (2, 1, 'TBD', 1, 1001, 1002, 1026, null);
+-- INSERT INTO MATCH (id, match_number, result, round_number, team1_id, team2_id, tournament_id, winner_id)
+-- VALUES (2, 1, 'TBD', 1, 1001, 1002, 1026, null);
 
 -- start id numbering from a value that is larger than any assigned above
 ALTER SEQUENCE "PUBLIC"."GEN" RESTART WITH 1024;
