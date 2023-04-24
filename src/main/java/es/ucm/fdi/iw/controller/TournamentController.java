@@ -101,7 +101,7 @@ public class TournamentController {
                     .setParameter("id", userId).getSingleResult();
 
             team_ids = entityManager
-                    .createQuery("SELECT t.team FROM TOURNAMENT_TEAM t WHERE t.tournament.id = :tournamentId")
+                    .createQuery("SELECT t.team FROM Tournament_Team t WHERE t.tournament.id = :tournamentId")
                     .setParameter("tournamentId", tournamentId).getResultList();
             boolean existe = false;
             long id = 0;
