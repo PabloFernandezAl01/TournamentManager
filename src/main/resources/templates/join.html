@@ -21,21 +21,30 @@
           <li th:each="tournament : ${tournaments}">
             <div class="tournament-info">
               <div class="tournament-status">Waiting for teams</div>
-              <div class="tournament-slots" th:text="${tournament.value}"></div>
-              <a
-                class="btn btn-primary submit"
-                th:href="@{|/tournament/${tournament.key.id}/${session.u.id}|}"
-                id="#"
+              <div class="tournament-slots">
+                <span th:text="${tournament.value.getFirst()}"></span>
+                <!-- Acceder al primer valor del Pair -->
+                <span>/</span>
+                <span th:text="${tournament.value.getSecond()}"></span>
+                <!-- Acceder al segundo valor del Pair -->
+              </div>
+              <span
+                th:if="${tournament.value.getFirst() < tournament.value.getSecond()}"
               >
-                Join
-              </a>
-              <a 
-                class="brackets-button" 
+                <a
+                  class="btn btn-primary submit"
+                  th:href="@{|/tournament/${tournament.key.id}/${session.u.id}|}"
+                >
+                  Join
+                </a>
+              </span>
+
+              <a
+                class="brackets-button"
                 th:href="@{|/tournament/${tournament.key.id}/${session.u.id}/bracket|}"
               >
                 View brackets
-              </a
-              >
+              </a>
             </div>
             <div class="tournament-name" th:text="${tournament.key.name}"></div>
           </li>
@@ -46,5 +55,4 @@
     <!-- Reemplazo del footer desde el archivo footer.html -->
     <th:block th:replace="fragments/footer.html :: footer" />
   </body>
-  
 </html>

@@ -88,6 +88,7 @@ public class TournamentController {
     public RedirectView index(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
         User targetUser = entityManager.find(User.class, userId);
         Tournament targetTournament = entityManager.find(Tournament.class, tournamentId);
+        
         // model.addAttribute("user", target);
         Team coachingTeam = new Team();
         // coachingTeam.setName("No team registered");

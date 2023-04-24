@@ -19,6 +19,7 @@ import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.ucm.fdi.iw.model.Tournament;
 import java.util.List;
@@ -84,8 +85,10 @@ public class RootController {
 
         List<Tournament> results = new ArrayList<>();
         Long nTeams = 0L;
+        log.info("ANTES DEL MAPA");
+        //Map<Tournament, String> mapa = new HashMap<>();
 
-        Map<Tournament, String> mapa = new HashMap<>();
+        Map<Tournament, Pair<Long, Integer>> mapa = new HashMap<>();
 
         results = entityManager.createQuery("select t from Tournament t", Tournament.class).getResultList();
         for (Tournament tournament : results) {
@@ -111,9 +114,12 @@ public class RootController {
             }
 
             String auxTeams = new String(nTeams + "/" + tournament.getMaxTeams());
-            mapa.put(tournament, auxTeams);
+            Pair<Long, Integer> numT = Pair.of(nTeams, tournament.getMaxTeams());
+            log.info("VALOR MAPA" + numT.getFirst() + numT.getSecond());
+            mapa.put(tournament, numT);
         }
         model.addAttribute("tournaments", mapa);
+        
 
         // lista aquí con todos los topicId de los torneos en los que está este usuario
         // topics: "[[${session.u != null} ? ${session.u.topics} : false]]", ESTO VA EN

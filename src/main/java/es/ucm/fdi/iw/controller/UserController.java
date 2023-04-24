@@ -116,7 +116,7 @@ public class UserController {
 	 */
 	@GetMapping("{id}")
 	public String index(@PathVariable long id, Model model, HttpSession session) {
-		log.info("ENTRA EN EL USER/ID");
+		log.warn("ENTRA EN EL USER/ID");
 		User target = entityManager.find(User.class, id);
 		model.addAttribute("user", target);
 		Team coachingTeam = new Team();
@@ -147,6 +147,7 @@ public class UserController {
 
 		User requester = (User) session.getAttribute("u");
 		User target = null;
+		
 		if (id == -1 && requester.hasRole(Role.ADMIN)) {
 			// create new user with random password
 			target = new User();
