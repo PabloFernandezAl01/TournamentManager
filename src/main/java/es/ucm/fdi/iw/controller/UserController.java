@@ -133,6 +133,13 @@ public class UserController {
 		return "user";
 	}
 
+	@PostMapping("sendMsg/{userId}/{matchId}")
+	@Transactional
+	public void sendMessage() {
+
+	}
+
+
 	/**
 	 * Alter or create a user
 	 */

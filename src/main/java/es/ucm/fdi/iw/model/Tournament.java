@@ -37,8 +37,6 @@ public class Tournament {
 
     private String startingHour;
 
-    private String topicId;
-
     private Double entryPrice;
 
     private Double prizePool;

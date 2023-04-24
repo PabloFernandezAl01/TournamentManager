@@ -59,16 +59,30 @@
       <div id="chat" class="chat col-md-6">
         <div id="messages" class="messages"></div>
         <div class="input-group">
-          <input
-            type="text"
-            id="messageInput"
-            class="form-control"
-            placeholder="Escribe tu mensaje..."
-          />
-          <button id="sendButton" class="btn btn-primary">Enviar</button>
+          <form th:action="@{/user/sendMessage/${match.id}}" method="POST">
+            <input
+              type="text"
+              id="messageInput"
+              class="form-control"
+              placeholder="Escribe tu mensaje..."
+            />
+            <button id="sendButton" class="btn btn-primary" type="submit">Enviar</button>
+          </form>
         </div>
       </div>
     </div>
     <th:block th:replace="fragments/footer.html :: footer" />
   </body>
 </html>
+
+<script>
+let chatButton = document.getElementById("sendButton");
+chatButton.onclick = (e) => {
+      e.preventDefault();
+      go(chatButton.parentNode.action, 'POST', {
+              message: document.getElementById("messageInput").value
+          })
+          .then(d => console.log("message sent", d))
+          .catch(e => console.log("message not sent", e))
+  }
+</script>

@@ -167,6 +167,10 @@ public class TournamentController {
             partidosRondaJugables.add(playerLastRound);
             playerLastRound /= 2;
         }
+        
+        // lista aquí con todos los topicId de los partidos en los que está el equipo del usuario
+        // topics: "[[${session.u != null} ? ${session.u.topics} : false]]", ESTO VA EN
+        // EL HEAD ENTRE ADMINID Y USERID
 
         model.addAttribute("exception", exception);
         model.addAttribute("teams", teams);

@@ -120,10 +120,6 @@ public class RootController {
         }
         model.addAttribute("tournaments", mapa);
         
-
-        // lista aquí con todos los topicId de los torneos en los que está este usuario
-        // topics: "[[${session.u != null} ? ${session.u.topics} : false]]", ESTO VA EN
-        // EL HEAD ENTRE ADMINID Y USERID
         return "join";
     }
 
