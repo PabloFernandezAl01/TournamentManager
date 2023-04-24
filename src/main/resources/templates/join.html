@@ -25,6 +25,7 @@
               <a
                 class="btn btn-primary submit"
                 th:href="@{|/tournament/${tournament.key.id}/${session.u.id}|}"
+                id="#"
               >
                 Join
               </a>
@@ -45,4 +46,5 @@
     <!-- Reemplazo del footer desde el archivo footer.html -->
     <th:block th:replace="fragments/footer.html :: footer" />
   </body>
+  
 </html>

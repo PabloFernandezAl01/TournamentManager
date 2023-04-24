@@ -11,7 +11,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-
 import java.io.*;
 import java.time.LocalDate;
 
@@ -26,6 +25,8 @@ import java.util.List;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
 import javax.persistence.TypedQuery;
+import javax.servlet.http.HttpSession;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -75,13 +76,14 @@ public class RootController {
 
     @GetMapping("/join")
     @Transactional
-    public String join(Model model) {
+    public String join(Model model, HttpSession session) {
         disableViews(model);
         model.addAttribute("join", Boolean.TRUE);
 
+        User u = entityManager.find(User.class, ((User) session.getAttribute("u")).getId());
+
         List<Tournament> results = new ArrayList<>();
         Long nTeams = 0L;
-
 
         Map<Tournament, String> mapa = new HashMap<>();
 
@@ -113,6 +115,9 @@ public class RootController {
         }
         model.addAttribute("tournaments", mapa);
 
+        // lista aquí con todos los topicId de los torneos en los que está este usuario
+        // topics: "[[${session.u != null} ? ${session.u.topics} : false]]", ESTO VA EN
+        // EL HEAD ENTRE ADMINID Y USERID
         return "join";
     }
 
@@ -130,12 +135,14 @@ public class RootController {
         return "record";
     }
 
-    /*@GetMapping("/bracket")
-    public String bracket(Model model) {
-        disableViews(model);
-        model.addAttribute("onGoing", Boolean.TRUE);
-        return "bracket";
-    }*/
+    /*
+     * @GetMapping("/bracket")
+     * public String bracket(Model model) {
+     * disableViews(model);
+     * model.addAttribute("onGoing", Boolean.TRUE);
+     * return "bracket";
+     * }
+     */
 
     @GetMapping("/register")
     public String register(Model model) {
@@ -168,7 +175,8 @@ public class RootController {
         tournament.setStatus(TournamentStatus.NOT_STARTED);
         tournament.setCreationDate(LocalDate.now().toString());
 
-        tournament.setRounds(((int)Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2)))+1);
+        tournament.setRounds(((int) Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2))) + 1);
+        tournament.setTopicId(UserController.generateRandomBase64Token(6));
 
         entityManager.persist(tournament);
         entityManager.flush();

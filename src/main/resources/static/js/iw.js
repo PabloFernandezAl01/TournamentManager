@@ -197,6 +197,12 @@ function postImage(img, endpoint, name, filename) {
 document.addEventListener("DOMContentLoaded", () => {
     if (config.socketUrl) {
         let subs = config.admin ? ["/topic/admin", "/user/queue/updates"] : ["/user/queue/updates"]
+        if (config.topics) {
+            // config.topics = ["a", "b", "c"]; => me suscribo a "/topic/a", "/topic/b" ...
+            for (let t of config.topics) {
+                subs.push("/topic/" + t); 
+            }
+        }
         ws.initialize(config.socketUrl, subs);
 
         let p = document.querySelector("#nav-unread");

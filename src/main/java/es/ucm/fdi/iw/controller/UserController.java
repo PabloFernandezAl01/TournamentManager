@@ -116,10 +116,12 @@ public class UserController {
 	 */
 	@GetMapping("{id}")
 	public String index(@PathVariable long id, Model model, HttpSession session) {
+		log.info("ENTRA EN EL USER/ID");
 		User target = entityManager.find(User.class, id);
 		model.addAttribute("user", target);
 		Team coachingTeam = new Team();
 		coachingTeam.setName("No team registered");
+
 		try {
 			model.addAttribute("coachingTeam",
 					(Team) entityManager.createQuery(

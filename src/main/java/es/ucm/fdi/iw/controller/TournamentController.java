@@ -1,5 +1,6 @@
 package es.ucm.fdi.iw.controller;
 
+import es.ucm.fdi.iw.IwUserDetailsService;
 import es.ucm.fdi.iw.LocalData;
 import es.ucm.fdi.iw.model.Message;
 
@@ -7,6 +8,7 @@ import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.TeamMember.RoleInTeam;
 import es.ucm.fdi.iw.model.User.Role;
+import lombok.extern.java.Log;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,11 +64,11 @@ import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.Match;
 import es.ucm.fdi.iw.model.Tournament_Team;
 
-
 @Controller()
 @RequestMapping("tournament")
 
 public class TournamentController {
+
     private static final Logger log = LogManager.getLogger(TournamentController.class);
 
     @Autowired
@@ -78,10 +80,9 @@ public class TournamentController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    /**
-     * Landing page for a user profile
+    /*
+     * 
      */
-    // th:href="@{/tournament/${tournament.key.id}/${session.u.id}}"
     @GetMapping("{tournamentId}/{userId}")
     @Transactional
     public RedirectView index(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
@@ -90,56 +91,77 @@ public class TournamentController {
         // model.addAttribute("user", target);
         Team coachingTeam = new Team();
         // coachingTeam.setName("No team registered");
+        List<Long> team_ids = new ArrayList<>();
+        log.info("ANTES DEL TRY");
         try {
             coachingTeam = (Team) entityManager.createQuery(
-                    "select t from Team t where t.coach.id = :id and not exists (Select tt.team.id from Tournament_Team tt where tt.team.id = t.id)")
+                    "select t from Team t where t.coach.id = :id ") // and not exists (Select tt.team.id from
+                                                                    // Tournament_Team tt where tt.team.id = t.id)
                     .setParameter("id", userId).getSingleResult();
-            Tournament_Team torunamentTeam = new Tournament_Team();
-            torunamentTeam.setTeam(coachingTeam);
-            torunamentTeam.setTournament(targetTournament);
-            entityManager.persist(torunamentTeam);
+
+            team_ids = entityManager
+                    .createQuery("SELECT t.team FROM TOURNAMENT_TEAM t WHERE t.tournament.id = :tournamentId")
+                    .setParameter("tournamentId", tournamentId).getResultList();
+            boolean existe = false;
+            long id = 0;
+            for (Long team_id : team_ids) {
+                if ((long) team_id == coachingTeam.getId()) {
+                    existe = true;
+                    id = team_id;
+                }
+            }
+            if (!existe) {
+                Tournament_Team torunamentTeam = new Tournament_Team();
+                torunamentTeam.setTeam(coachingTeam);
+                torunamentTeam.setTournament(targetTournament);
+                entityManager.persist(torunamentTeam);
+            }
 
         } catch (Exception e) {
+            model.addAttribute("exception", e.getMessage());
+            log.info("Viendo tournament", e);
         }
         return new RedirectView("/join");
-
     }
 
     @GetMapping("{tournamentId}/{userId}/bracket")
     @Transactional
     public String bracket(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
         model.addAttribute("ongoing", Boolean.TRUE);
-        
 
         List<Team> teams = new ArrayList<>();
         Tournament tournament = new Tournament();
         String exception = "HOLA";
         List<Match> matches = new ArrayList<>();
-        try{
+        try {
             teams = entityManager.createQuery(
-                "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",Team.class).setParameter("tournamentid", tournamentId)
-                .getResultList();
-            tournament = (Tournament)entityManager.createQuery(
-                "SELECT t FROM Tournament t WHERE t.id = :tournamentid",Tournament.class).setParameter("tournamentid", tournamentId)
-                .getSingleResult();
+                    "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Team.class)
+                    .setParameter("tournamentid", tournamentId)
+                    .getResultList();
+            tournament = (Tournament) entityManager.createQuery(
+                    "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
+                    .setParameter("tournamentid", tournamentId)
+                    .getSingleResult();
             matches = entityManager.createQuery(
-                "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid",Match.class).setParameter("tournamentid", tournamentId)
-                .getResultList();
+                    "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
+                    .setParameter("tournamentid", tournamentId)
+                    .getResultList();
 
-        } catch(Exception e){
-            exception = e.getMessage();
+        } catch (Exception e) {
+            log.warn("Error creating tournament", e);
+            throw e;
         }
 
         Map<Integer, Boolean> partidosRonda = new HashMap<>();
 
-        for(Match match: matches){
+        for (Match match : matches) {
             partidosRonda.put(match.getRoundNumber(), true);
         }
 
         List<Integer> partidosRondaJugables = new ArrayList<>();
-        int playerLastRound = tournament.getMaxTeams()/2;
+        int playerLastRound = tournament.getMaxTeams() / 2;
 
-        for(int i = 1; i <= tournament.getRounds(); ++i){
+        for (int i = 1; i <= tournament.getRounds(); ++i) {
 
             partidosRondaJugables.add(playerLastRound);
             playerLastRound /= 2;

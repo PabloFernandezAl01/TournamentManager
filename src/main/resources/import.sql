@@ -35,13 +35,13 @@ INSERT INTO Team_Member (id, role, team_id, user_id)
 VALUES (13234, 1, 999, 1);  
 
 INSERT INTO Team_Member (id, role, team_id, user_id)
-VALUES (13234, 1, 1000, 2);  
+VALUES (13235, 1, 1000, 2);  
 
 INSERT INTO Team_Member (id, role, team_id, user_id)
-VALUES (13234, 1, 1001, 3);  
+VALUES (13236, 1, 1001, 3);  
 
 INSERT INTO Team_Member (id, role, team_id, user_id)
-VALUES (13234, 1, 1002, 4);  
+VALUES (13237, 1, 1002, 4);  
 
 INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
 VALUES (1, 999, 1026);
