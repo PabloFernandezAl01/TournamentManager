@@ -21,7 +21,7 @@ VALUES (1026, '2023-03-27', 'descripcion del torneo', 3.0, 1, 4, 'Torneo Prueba'
 
 INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
 name, prize_pool, rounds, status, type, winner_id)
-VALUES (1027, '2023-03-27', 'descripcion del torneo 2', 3.0, 1, 4, 'Torneo Prueba 2', 2.0, 3, 0, 1, null);  
+VALUES (1027, '2023-05-27', 'descripcion del torneo 2', 3.0, 1, 4, 'Torneo Prueba 2', 2.0, 3, 0, 1, null);  
 
 INSERT INTO Team (id, name, coach_id)
 VALUES (999, 'Primer Equipo', 1);  

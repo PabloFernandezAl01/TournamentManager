@@ -93,7 +93,14 @@ public class RootController {
 
         Map<Tournament, Pair<Long, Integer>> mapa = new HashMap<>();
 
-        results = entityManager.createQuery("select t from Tournament t", Tournament.class).getResultList();
+        // TypedQuery<Tournament> query = entityManager.createQuery(
+        //     "SELECT t FROM Tournament t WHERE t.status = :notStartedStatus", Tournament.class);
+        // query.setParameter("notStartedStatus", TournamentStatus.NOT_STARTED);
+        // List<Tournament> tournaments = query.getResultList();
+
+        results = entityManager.createQuery("select t from Tournament t where t.status = :notStartedStatus", Tournament.class)
+        .setParameter("notStartedStatus", TournamentStatus.NOT_STARTED)
+        .getResultList();
         for (Tournament tournament : results) {
             long tid = tournament.getId();
             try {
