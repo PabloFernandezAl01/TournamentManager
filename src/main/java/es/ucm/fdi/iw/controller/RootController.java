@@ -2,12 +2,14 @@ package es.ucm.fdi.iw.controller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.engine.transaction.spi.JoinStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
+
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.ucm.fdi.iw.model.Tournament;
+import es.ucm.fdi.iw.model.Match;
 import java.util.List;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
@@ -94,8 +97,10 @@ public class RootController {
         for (Tournament tournament : results) {
             long tid = tournament.getId();
             try {
-                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate()))) {
+                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate())) && tournament.getStatus() == TournamentStatus.NOT_STARTED) {
                     tournament.setStatus(TournamentStatus.ON_GOING);
+                    
+                    createMatches(tournament);
                 }
 
             } catch (Exception e) {
@@ -122,6 +127,44 @@ public class RootController {
         
         return "join";
     }
+
+    private void createMatches(Tournament tournament) {
+        //crear partidos
+        List<Team> teams = new ArrayList<>();
+        TypedQuery<Team> query = entityManager.createQuery(
+            "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+            Team.class);
+
+        teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
+
+        //Hacerlo random en el futuro
+        //si es potencia de dos
+        if((teams.size() & (teams.size() - 1)) == 0) {
+            Integer nMatches = teams.size() / 2;
+            Integer matchNumber = 1;
+            for(Integer i = 0; i < teams.size(); i+=2){
+                Match match = new Match();
+                match.setRoundNumber(1);
+                match.setMatchNumber(matchNumber);
+            
+                match.setTeam1(teams.get(i));
+                match.setTeam2(teams.get(i+1));
+            
+                match.setTopicId(UserController.generateRandomBase64Token(6));
+            
+                match.setTournament(tournament);
+            
+                entityManager.persist(match);
+                entityManager.flush();
+            
+                matchNumber++;
+            }                                     
+ }
+ else {
+     //Aqui no se pueden hacer todos los matches (distinto roundnumber)
+ }
+    }
+
 
     @GetMapping("/ongoing")
     public String ongoing(Model model) {
@@ -178,7 +221,6 @@ public class RootController {
         tournament.setCreationDate(LocalDate.now().toString());
 
         tournament.setRounds(((int) Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2))) + 1);
-        tournament.setTopicId(UserController.generateRandomBase64Token(6));
 
         entityManager.persist(tournament);
         entityManager.flush();
