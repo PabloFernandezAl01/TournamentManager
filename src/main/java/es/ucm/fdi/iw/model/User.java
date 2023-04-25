@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import net.bytebuddy.asm.Advice.AssignReturned.ToReturned;
 
 import javax.persistence.*;
 
@@ -19,26 +20,24 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @NamedQueries({
-        @NamedQuery(name="User.byUsername",
-                query="SELECT u FROM User u "
-                        + "WHERE u.username = :username AND u.enabled = TRUE"),
-        @NamedQuery(name="User.hasUsername",
-                query="SELECT COUNT(u) "
-                        + "FROM User u "
-                        + "WHERE u.username = :username")
+        @NamedQuery(name = "User.byUsername", query = "SELECT u FROM User u "
+                + "WHERE u.username = :username AND u.enabled = TRUE"),
+        @NamedQuery(name = "User.hasUsername", query = "SELECT COUNT(u) "
+                + "FROM User u "
+                + "WHERE u.username = :username")
 })
-@Table(name="IWUser")
+@Table(name = "IWUser")
 public class User implements Transferable<User.Transfer> {
 
     public enum Role {
-        USER,			// normal users 
-        ADMIN,          // admin users
+        USER, // normal users
+        ADMIN, // admin users
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
-	private long id;
+    private long id;
 
     private String firstName;
     private String lastName;
@@ -58,13 +57,13 @@ public class User implements Transferable<User.Transfer> {
     @ManyToOne
     private Team team;
 
-
     // Roles
 
     private String roles; // split by ',' to separate roles
 
     /**
      * Checks whether this user has a given role.
+     * 
      * @param role to check
      * @return true iff this user has that role.
      */
@@ -73,34 +72,32 @@ public class User implements Transferable<User.Transfer> {
         return Arrays.asList(roles.split(",")).contains(roleName);
     }
 
-
     // Messages
 
-	@OneToMany
-	@JoinColumn(name = "sender_id")
-	private List<Message> sent = new ArrayList<>();
-	@OneToMany
-	@JoinColumn(name = "recipient_id")	
-	private List<Message> received = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "sender_id")
+    private List<Message> sent = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "recipient_id")
+    private List<Message> received = new ArrayList<>();
 
     @Getter
     @Setter
     @AllArgsConstructor
     public static class Transfer {
-		private long id;
+        private long id;
         private String username;
-		private int totalReceived;
-		private int totalSent;
+        private int totalReceived;
+        private int totalSent;
     }
 
-	@Override
+    @Override
     public Transfer toTransfer() {
-		return new Transfer(id,	username, received.size(), sent.size());
-	}
-	
-	@Override
-	public String toString() {
-		return toTransfer().toString();
-	}
-}
+        return new Transfer(id, username, received.size(), sent.size());
+    }
 
+    @Override
+    public String toString() {
+        return username;
+    }
+}

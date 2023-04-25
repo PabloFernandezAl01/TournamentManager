@@ -22,14 +22,14 @@
             <div class="tournament-info">
               <div class="tournament-status">Waiting for teams</div>
               <div class="tournament-slots">
-                <span th:text="${tournament.value.getFirst()}"></span>
+                <span th:text="${tournament.value.getNTeams()}"></span>
                 <!-- Acceder al primer valor del Pair -->
                 <span>/</span>
-                <span th:text="${tournament.value.getSecond()}"></span>
+                <span th:text="${tournament.value.getMaxTeams()}"></span>
                 <!-- Acceder al segundo valor del Pair -->
               </div>
               <span
-                th:if="${tournament.value.getFirst() < tournament.value.getSecond()}"
+                th:if="${tournament.value.getNTeams() < tournament.value.getMaxTeams()}"
               >
                 <a
                   class="btn btn-primary submit"

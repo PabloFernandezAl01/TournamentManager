@@ -1,9 +1,12 @@
 package es.ucm.fdi.iw;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import es.ucm.fdi.iw.model.Match;
+import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.User.Role;
 
@@ -84,8 +89,13 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		session.setAttribute("url", url);
 		session.setAttribute("ws", ws);
 
-		// FIXME: mete los topics de este usuario
-		session.setAttribute("topics", new String[] {});
+		// INSERTAR TOPICSIDS DE USUARIO
+		List<Tournament> tournaments = getAllUserTournaments(u);
+		List<Match> matches = getAllUserMatches(u);
+
+		List<String> topics = getAllTopicIds(tournaments, matches);
+		session.setAttribute("topics", topics);
+		log.info("Topics for {} are {}", u.getUsername(), topics);
 
 		// redirects to 'admin' or 'user/{id}', depending on the user
 		String nextUrl = u.hasRole(User.Role.ADMIN) ? "admin/" : "user/" + u.getId();
@@ -95,6 +105,51 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 		// note that this is a 302, and will result in a new request
 		response.sendRedirect(nextUrl);
+	}
+
+	private List<Tournament> getAllUserTournaments(User u) {
+		if (u.getTeam() == null) {
+			return new ArrayList<>();
+		}
+		List<Tournament> query = entityManager.createQuery(
+				"SELECT e.tournament FROM Tournament_Team e WHERE e.team.id = :teamId",
+				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
+
+		for (Tournament m : query) {
+			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
+		}
+		return query;
+	}
+
+	private List<Match> getAllUserMatches(User u) {
+
+		if (u.getTeam() == null) {
+			return new ArrayList<>();
+		}
+		List<Match> query = entityManager.createQuery(
+				"SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId",
+				Match.class).setParameter("teamId", u.getTeam().getId()).getResultList();
+
+		for (Match m : query) {
+			log.info("My team is {}, and one of my matches is {}", u.getTeam().getId(), m.getId());
+		}
+		return query;
+	}
+
+	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
+		List<String> topicsId = new ArrayList<>();
+		for (Tournament tournament : tournaments) {
+			if (tournament.getTopicId() != null) {
+				log.info("my topicid tournament", tournament.getTopicId());
+				topicsId.add(tournament.getTopicId());
+			}
+		}
+		for (Match match : matches) {
+			if (match.getTopicId() != null) {
+				topicsId.add(match.getTopicId());
+			}
+		}
+		return topicsId;
 	}
 
 	/**

@@ -19,6 +19,8 @@ import java.time.LocalDate;
 import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
@@ -89,25 +91,28 @@ public class RootController {
         List<Tournament> results = new ArrayList<>();
         Long nTeams = 0L;
         log.info("ANTES DEL MAPA");
-        //Map<Tournament, String> mapa = new HashMap<>();
+        // Map<Tournament, String> mapa = new HashMap<>();
 
-        Map<Tournament, Pair<Long, Integer>> mapa = new HashMap<>();
+        Map<Tournament, TourneyData> mapa = new HashMap<>();
 
         // TypedQuery<Tournament> query = entityManager.createQuery(
-        //     "SELECT t FROM Tournament t WHERE t.status = :notStartedStatus", Tournament.class);
+        // "SELECT t FROM Tournament t WHERE t.status = :notStartedStatus",
+        // Tournament.class);
         // query.setParameter("notStartedStatus", TournamentStatus.NOT_STARTED);
         // List<Tournament> tournaments = query.getResultList();
 
-        results = entityManager.createQuery("select t from Tournament t where t.status = :notStartedStatus", Tournament.class)
-        .setParameter("notStartedStatus", TournamentStatus.NOT_STARTED)
-        .getResultList();
+        results = entityManager
+                .createQuery("select t from Tournament t where t.status = :notStartedStatus", Tournament.class)
+                .setParameter("notStartedStatus", TournamentStatus.NOT_STARTED)
+                .getResultList();
         for (Tournament tournament : results) {
             long tid = tournament.getId();
             try {
-                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate())) && tournament.getStatus() == TournamentStatus.NOT_STARTED) {
+                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate()))
+                        && tournament.getStatus() == TournamentStatus.NOT_STARTED) {
                     tournament.setStatus(TournamentStatus.ON_GOING);
-                    
-                    createMatches(tournament);
+
+                    createMatches(tournament, session);
                 }
 
             } catch (Exception e) {
@@ -126,52 +131,70 @@ public class RootController {
             }
 
             String auxTeams = new String(nTeams + "/" + tournament.getMaxTeams());
-            Pair<Long, Integer> numT = Pair.of(nTeams, tournament.getMaxTeams());
-            log.info("VALOR MAPA" + numT.getFirst() + numT.getSecond());
-            mapa.put(tournament, numT);
+            TourneyData td = new TourneyData(nTeams.intValue(), tournament.getMaxTeams(), tournament.getTopicId());
+            log.info("VALOR MAPA" + td.getNTeams() + td.getMaxTeams());
+            mapa.put(tournament, td);
         }
         model.addAttribute("tournaments", mapa);
-        
+
         return "join";
     }
 
-    private void createMatches(Tournament tournament) {
-        //crear partidos
+    @Data
+    @AllArgsConstructor
+    public static class TourneyData {
+        int nTeams;
+        int maxTeams;
+        String topicId;
+    }
+
+    private void createMatches(Tournament tournament, HttpSession session) {
+        // crear partidos
         List<Team> teams = new ArrayList<>();
         TypedQuery<Team> query = entityManager.createQuery(
-            "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
-            Team.class);
+                "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+                Team.class);
 
         teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
 
-        //Hacerlo random en el futuro
-        //si es potencia de dos
-        if((teams.size() & (teams.size() - 1)) == 0) {
-            Integer nMatches = teams.size() / 2;
-            Integer matchNumber = 1;
-            for(Integer i = 0; i < teams.size(); i+=2){
+        // Hacerlo random en el futuro
+        // si es potencia de dos
+        if ((teams.size() & (teams.size() - 1)) == 0) {
+            int nMatches = teams.size() / 2;
+            int matchNumber = 1;
+            for (int i = 0; i < teams.size(); i += 2) {
                 Match match = new Match();
                 match.setRoundNumber(1);
                 match.setMatchNumber(matchNumber);
-            
-                match.setTeam1(teams.get(i));
-                match.setTeam2(teams.get(i+1));
-            
-                match.setTopicId(UserController.generateRandomBase64Token(6));
-            
-                match.setTournament(tournament);
-            
-                entityManager.persist(match);
-                entityManager.flush();
-            
-                matchNumber++;
-            }                                     
- }
- else {
-     //Aqui no se pueden hacer todos los matches (distinto roundnumber)
- }
-    }
 
+                match.setTeam1(teams.get(i));
+                match.setTeam2(teams.get(i + 1));
+
+                match.setTopicId(UserController.generateRandomBase64Token(6));
+                List<String> topics = new ArrayList<>();
+                log.info("hola");
+                log.info("topics 1", session.getAttribute("topics"));
+                User u = entityManager.find(User.class, ((User) session.getAttribute("u")).getId());
+                if (u.getTeam().getId() == match.getTeam1().getId()
+                        || u.getTeam().getId() == match.getTeam2().getId()) {
+                    if (session.getAttribute("topics") != null) {
+                        topics = (ArrayList) session.getAttribute("topics");
+                        log.info("topics 1", topics);
+                    }
+                    topics.add(match.getTopicId());
+                    session.setAttribute("topics", topics);
+                }
+
+                match.setTournament(tournament);
+                entityManager.persist(match);
+
+                matchNumber++;
+            }
+        } else {
+            // Aqui no se pueden hacer todos los matches (distinto roundnumber)
+        }
+        entityManager.flush();
+    }
 
     @GetMapping("/ongoing")
     public String ongoing(Model model) {
@@ -212,6 +235,7 @@ public class RootController {
         registered.setEnabled(true);
         registered.setRoles("USER");
         registered.setPassword(encodePassword(registered.getPassword()));
+        registered.setTeam(null);
         entityManager.persist(registered);
         entityManager.flush();
         return new RedirectView("/login");

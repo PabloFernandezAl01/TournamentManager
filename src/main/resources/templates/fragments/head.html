@@ -20,6 +20,7 @@
         <link rel="stylesheet" th:href="@{/css/user.css}" href="css/ongoing.css" type="text/css" />
 
         <link rel="icon" th:href="@{/img/favicon.ico}" href="/img/favicon.ico" type="image/x-icon">
+        <!-- [[${session.topics}?${session.topics}:'ni idea de topics']] -->
         <script type="text/javascript">
             const config = {
                 socketUrl: "[[${session.ws}?:'']]", // empty is false, will result in no WS being opened
@@ -29,7 +30,7 @@
                     value: "[[${_csrf.token}]]"
                 },
                 admin: "[[${session.u != null && session.u.hasRole('ADMIN')} ? true : false]]",
-                
+                topics: "[[${session.u != null} ? ${session.topics} : false]]",
                 userId: +"[[${session.u != null} ? ${session.u.id} : -1]]"
             };
             config.admin = config.admin == "true"; // ensure boolean

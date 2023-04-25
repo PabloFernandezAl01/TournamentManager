@@ -33,7 +33,7 @@ INSERT INTO Team (id, name, coach_id)
 VALUES (1001, 'Tercer Equipo', 3);  
 
 INSERT INTO Team (id, name, coach_id)
-VALUES (1002, 'Cuarto Equipo', 3);
+VALUES (1002, 'Cuarto Equipo', 4);
 
 INSERT INTO Team_Member (id, role, team_id, user_id)
 VALUES (13234, 1, 999, 1);  
@@ -46,6 +46,22 @@ VALUES (13236, 1, 1001, 3);
 
 INSERT INTO Team_Member (id, role, team_id, user_id)
 VALUES (13237, 1, 1002, 4);  
+
+UPDATE IWUSER
+SET TEAM_ID = 999
+WHERE ID = 1;
+
+UPDATE IWUSER
+SET TEAM_ID = 1000
+WHERE ID = 2;
+
+UPDATE IWUSER
+SET TEAM_ID = 1001
+WHERE ID = 3;
+
+UPDATE IWUSER
+SET TEAM_ID = 1002
+WHERE ID = 4;
 
 INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
 VALUES (1, 999, 1026);
