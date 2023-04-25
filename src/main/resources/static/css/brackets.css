@@ -4,6 +4,7 @@ body,
   width: 100%;
   min-height: 100%;
   font-family: "Arial", sans-serif;
+  margin-top: 5em;
   color: white;
 }
 .metroBtn {
@@ -121,8 +122,8 @@ body,
 }
 
 .chat {
-  background-color: #f8f9fa;
-  border: 1px solid #ced4da;
+  margin-bottom: 2em;
+  background-color: rgb(33,37,41,1);
   border-radius: 5px;
   padding: 10px;
 }
@@ -131,10 +132,9 @@ body,
   height: 200px;
   overflow-y: auto;
   margin-bottom: 10px;
-  border: 1px solid #ced4da;
   border-radius: 5px;
   padding: 10px;
-  background-color: #fff;
+  background-color: rgba(69, 76, 82, 0.9)
 }
 
 .input-group {

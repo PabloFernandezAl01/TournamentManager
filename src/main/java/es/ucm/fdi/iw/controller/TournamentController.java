@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -88,7 +89,7 @@ public class TournamentController {
     public RedirectView index(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
         User targetUser = entityManager.find(User.class, userId);
         Tournament targetTournament = entityManager.find(Tournament.class, tournamentId);
-        
+
         // model.addAttribute("user", target);
         Team coachingTeam = new Team();
         // coachingTeam.setName("No team registered");
@@ -167,10 +168,16 @@ public class TournamentController {
             partidosRondaJugables.add(playerLastRound);
             playerLastRound /= 2;
         }
-        
-        // lista aquí con todos los topicId de los partidos en los que está el equipo del usuario
-        // topics: "[[${session.u != null} ? ${session.u.topics} : false]]", ESTO VA EN
-        // EL HEAD ENTRE ADMINID Y USERID
+
+        // lista aquí con todos los topicId de los partidos en los que está el equipo
+        // del usuario
+
+        // COGER EL PARTIDO DE ESTE TORNEO, EN EL QUE ESTA EL EQUIPO DEL USUARIO PARA
+        // CARGAR LOS MENSAJES
+        User u = entityManager.find(User.class, userId);
+        Match matchUserTournament = getUserMatchFromTournament(u, tournament);
+        // COGER EL PARTIDO DE ESTE TORNEO, EN EL QUE ESTA EL EQUIPO DEL USUARIO PARA
+        // CARGAR LOS MENSAJES
 
         model.addAttribute("exception", exception);
         model.addAttribute("teams", teams);
@@ -180,6 +187,33 @@ public class TournamentController {
         model.addAttribute("partidosRonda", partidosRonda);
         model.addAttribute("partidosRondaJugables", partidosRondaJugables);
         model.addAttribute("partidos", partidosRondaJugables.get(1));
+
+        // AÑADIR EL MATCH DEL USUARIO AL MODELO PARA SABER EL MATCH AL QUE MANDAR MENSAJES
+        model.addAttribute("userMatch", matchUserTournament);
+
         return "bracket";
+    }
+
+    private Match getUserMatchFromTournament(User u, Tournament tournament) {
+
+        if (u.getTeam() == null) {
+            return null;
+        }
+        try {
+            Match match = entityManager.createQuery(
+                    "SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId and e.tournament.id = :tournamentId",
+                    Match.class)
+                    .setParameter("teamId", u.getTeam().getId())
+                    .setParameter("tournamentId", tournament.getId())
+                    .getSingleResult();
+
+            log.info("My Match is", match.getMatchNumber());
+            return match;
+
+        } catch (NoResultException e) {
+            // Manejar la excepción aquí, por ejemplo:
+            log.info("No se encontró Match para este usuario en este torneo");
+            return null;
+        }
     }
 }

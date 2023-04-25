@@ -101,9 +101,10 @@ public class RootController {
         // query.setParameter("notStartedStatus", TournamentStatus.NOT_STARTED);
         // List<Tournament> tournaments = query.getResultList();
 
+        //where t.status = :notStartedStatus
         results = entityManager
-                .createQuery("select t from Tournament t where t.status = :notStartedStatus", Tournament.class)
-                .setParameter("notStartedStatus", TournamentStatus.NOT_STARTED)
+                .createQuery("select t from Tournament t", Tournament.class)
+                //.setParameter("notStartedStatus", TournamentStatus.NOT_STARTED)
                 .getResultList();
         for (Tournament tournament : results) {
             long tid = tournament.getId();
@@ -172,7 +173,6 @@ public class RootController {
 
                 match.setTopicId(UserController.generateRandomBase64Token(6));
                 List<String> topics = new ArrayList<>();
-                log.info("hola");
                 log.info("topics 1", session.getAttribute("topics"));
                 User u = entityManager.find(User.class, ((User) session.getAttribute("u")).getId());
                 if (u.getTeam().getId() == match.getTeam1().getId()

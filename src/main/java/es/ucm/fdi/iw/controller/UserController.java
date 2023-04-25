@@ -1,6 +1,7 @@
 package es.ucm.fdi.iw.controller;
 
 import es.ucm.fdi.iw.LocalData;
+import es.ucm.fdi.iw.model.Match;
 import es.ucm.fdi.iw.model.Message;
 
 import es.ucm.fdi.iw.model.Transferable;
@@ -30,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -43,6 +45,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.*;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
@@ -292,7 +295,6 @@ public class UserController {
 	public String postMsg(@PathVariable long id,
 			@RequestBody JsonNode o, Model model, HttpSession session)
 			throws JsonProcessingException {
-
 		String text = o.get("message").asText();
 		User u = entityManager.find(User.class, id);
 		User sender = entityManager.find(
@@ -355,12 +357,71 @@ public class UserController {
 	}
 
 	/* ENVIO MENSAJES POR MATCH */
-	@PostMapping("sendMsg/{id}/{matchId}")
+	/**
+	 * Posts a message to a match.
+	 * 
+	 * @param id of target user (source user is from ID)
+	 * @param o  JSON-ized message, similar to {"message": "text goes here"}
+	 * @throws JsonProcessingException
+	 */
+	@PostMapping("sendMsg/{id}/{matchId}/{topicId}")
 	@Transactional
 	@ResponseBody
-	public void sendMessage(@PathVariable long id,
+	public String sendMessage(@PathVariable long id, @PathVariable long matchId, @PathVariable String topicId,
 			@RequestBody JsonNode o, Model model, HttpSession session)
 			throws JsonProcessingException {
-		log.info("VOY A ENVIAR UN MENSAJE");
+
+		log.info("VOY A ENVIAR UN MENSAJE AL CANAL 1" + topicId);
+		String text = o.get("message").asText();
+		User u = entityManager.find(User.class, id);
+		User sender = entityManager.find(
+				User.class, ((User) session.getAttribute("u")).getId());
+		model.addAttribute("user", u);
+
+		// RECOJER MATCH DEL MENSAJE
+		Match match = entityManager.find(Match.class, matchId);
+		// construye mensaje, lo guarda en BD
+
+		List<User> recipients = new ArrayList<>();
+
+		try {
+			recipients = entityManager
+					.createQuery("select t.user from TeamMember t where t.team.id = :team1Id OR t.team.id = :team2Id",
+							User.class)
+					.setParameter("team1Id", match.getTeam1().getId())
+					.setParameter("team2Id", match.getTeam2().getId())
+					.getResultList();
+		} catch (Exception e) {
+			log.info("La consulta no ha funcionado ", e);
+		}
+
+		for (User recipient : recipients) {
+			Message m = new Message();
+			m.setRecipient(recipient);
+			m.setSender(sender);
+			m.setDateSent(LocalDateTime.now());
+			m.setText(text);
+			m.setMatch(match);
+			entityManager.persist(m);
+
+			ObjectMapper mapper = new ObjectMapper();
+			/*
+			 * // construye json: método manual
+			 * ObjectNode rootNode = mapper.createObjectNode();
+			 * rootNode.put("from", sender.getUsername());
+			 * rootNode.put("to", u.getUsername());
+			 * rootNode.put("text", text);
+			 * rootNode.put("id", m.getId());
+			 * String json = mapper.writeValueAsString(rootNode);
+			 */
+			// persiste objeto a json usando Jackson
+			String json = mapper.writeValueAsString(m.toTransfer());
+
+			log.info("Sending a message to {} with contents '{}'", id, json);
+
+			messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
+		}
+		entityManager.flush(); // to get Id before commit
+		return "{\"result\": \"message sent.\"}";
 	}
 }

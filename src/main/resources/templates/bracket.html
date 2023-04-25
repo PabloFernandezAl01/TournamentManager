@@ -1,87 +1,58 @@
 <!DOCTYPE html>
 <html class="h-100" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <th:block th:replace="fragments/head :: header" />
-    <title>Tournament Bracket Generator</title>
 
-    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-    <script src="http://underscorejs.org/underscore-min.js"></script>
-  </head>
+<head>
+  <th:block th:replace="fragments/head :: header" />
+  <title>Tournament Bracket Generator</title>
 
-  <body class="d-flex flex-column h-100 body">
-    <!-- Reemplazo del header desde el archivo nav.html -->
-    <header th:replace="fragments/nav.html :: nav"></header>
+  <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+  <script src="http://underscorejs.org/underscore-min.js"></script>
+</head>
 
-    <div id="brackets" class="brackets">
-      <div th:attr="class='group' + ${tournament.rounds}" id="b0">
-        <div
-          th:each="i: ${#numbers.sequence(1, tournament.rounds)}"
-          th:attr="class='r' + ${i}"
-        >
-          <div
-            th:each="match : ${matches}"
-            th:if="${match.roundNumber == i}"
-            id="conEquipos"
-            class="bracketbox"
-          >
-            <span class="info"></span>
-            <span
-              class="teama"
-              th:text="${match.team1 != null ? match.team1.name : 'EMPTY'}"
-            ></span>
-            <span
-              class="teamb"
-              th:text="${match.team2 != null ? match.team2.name : 'EMPTY'}"
-            ></span>
-          </div>
-          <div
-            th:each="j: ${#numbers.sequence(1, partidosRondaJugables[i-1])}"
-            th:if="${!partidosRonda.containsKey(i) && (i != tournament.rounds)}"
-            id="sinEquipos"
-            class="bracketbox"
-          >
-            <span class="info"></span>
-            <span class="teama">EMPTY</span>
-            <span class="teamb">EMPTY</span>
-          </div>
-          <div th:if="${i == tournament.rounds}">
-            <div class="final">
-              <div class="bracketbox">
-                <span class="teamc">EMPTY</span>
-              </div>
+<body class="d-flex flex-column h-100 body">
+  <!-- Reemplazo del header desde el archivo nav.html -->
+  <header th:replace="fragments/nav.html :: nav"></header>
+
+  <div id="brackets" class="brackets">
+    <div th:attr="class='group' + ${tournament.rounds}" id="b0">
+      <div th:each="i: ${#numbers.sequence(1, tournament.rounds)}" th:attr="class='r' + ${i}">
+        <div th:each="match : ${matches}" th:if="${match.roundNumber == i}" id="conEquipos" class="bracketbox">
+          <span class="info"></span>
+          <span class="teama" th:text="${match.team1 != null ? match.team1.name : 'EMPTY'}"></span>
+          <span class="teamb" th:text="${match.team2 != null ? match.team2.name : 'EMPTY'}"></span>
+        </div>
+        <div th:each="j: ${#numbers.sequence(1, partidosRondaJugables[i-1])}"
+          th:if="${!partidosRonda.containsKey(i) && (i != tournament.rounds)}" id="sinEquipos" class="bracketbox">
+          <span class="info"></span>
+          <span class="teama">EMPTY</span>
+          <span class="teamb">EMPTY</span>
+        </div>
+        <div th:if="${i == tournament.rounds}">
+          <div class="final">
+            <div class="bracketbox">
+              <span class="teamc">EMPTY</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="d-flex justify-content-center align-items-center h-100">
-      <div id="chat" class="chat col-md-6">
-        <div id="messages" class="messages"></div>
-        <div class="input-group">
-          <form th:action="@{/user/sendMsg/__${user.id}__/${match.id}}" method="POST">
-            <input
-              type="text"
-              id="messageInput"
-              class="form-control"
-              placeholder="Escribe tu mensaje..."
-            />
-            <button id="sendButton" class="btn btn-primary" type="submit">Enviar</button>
-          </form>
-        </div>
+  </div>
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <div id="chat" class="chat col-md-6">
+      <!--RECEPCIÓN DE MENSAJES-->
+      <div id="mensajes" class="messages"></div>
+      <!--ENVÍO DE MENSAJES-->
+      <div class="input-group">
+        <form th:action="@{|/user/sendMsg/${session.u.id}/${userMatch.id}/${userMatch.topicId}|}" method="POST">
+          <input type="text" id="messageInput" class="form-control" placeholder="Escribe tu mensaje..." />
+          <button id="sendButton" class="btn btn-primary" type="submit">Enviar</button>
+        </form>
       </div>
     </div>
-    <th:block th:replace="fragments/footer.html :: footer" />
-  </body>
+  </div>
+  <th:block th:replace="fragments/footer.html :: footer" />
+  <script th:src="@{/js/ajax-message-match.js}"></script>
+</body>
+
 </html>
 
-<script>
-let chatButton = document.getElementById("sendButton");
-chatButton.onclick = (e) => {
-      e.preventDefault();
-      go(chatButton.parentNode.action, 'POST', {
-              message: document.getElementById("messageInput").value
-          })
-          .then(d => console.log("message sent", d))
-          .catch(e => console.log("message not sent", e))
-  }
-</script>
