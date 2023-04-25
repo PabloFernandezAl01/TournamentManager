@@ -133,14 +133,6 @@ public class UserController {
 		return "user";
 	}
 
-	@PostMapping("sendMsg/{userId}/{matchId}")
-	@Transactional
-	@ResponseBody
-	public void sendMessage() {
-
-	}
-
-
 	/**
 	 * Alter or create a user
 	 */
@@ -155,7 +147,7 @@ public class UserController {
 
 		User requester = (User) session.getAttribute("u");
 		User target = null;
-		
+
 		if (id == -1 && requester.hasRole(Role.ADMIN)) {
 			// create new user with random password
 			target = new User();
@@ -362,4 +354,13 @@ public class UserController {
 		return "user";
 	}
 
+	/* ENVIO MENSAJES POR MATCH */
+	@PostMapping("sendMsg/{id}/{matchId}")
+	@Transactional
+	@ResponseBody
+	public void sendMessage(@PathVariable long id,
+			@RequestBody JsonNode o, Model model, HttpSession session)
+			throws JsonProcessingException {
+		log.info("VOY A ENVIAR UN MENSAJE");
+	}
 }
