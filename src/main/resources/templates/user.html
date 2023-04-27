@@ -13,11 +13,12 @@
         <div class ="userProfile container">
             <h1 class="mt-5">Profile of <span th:text="${user.username}"></span></h1>
             <div>
-                <span style="color: white">Current Coaching Team: </span> <span style="color: grey" th:text="${coachingTeam.name}"></span>
+                <span style="color: white">Current Coaching Team:</span> 
+                <span style="color: grey" th:text="${coachingTeam} != null ? ${coachingTeam.name} : 'You are not coaching any team'"></span>
             </div>
             <span style="color: grey" th:text="${excepcion}"></span>
             <p></p>
-            <button class="btn btn-primary submit" id="myBtn">Create new team</button>
+            <button th:if="${user.team} == null" class="btn btn-primary submit" id="myBtn">Create new team</button>
 
             <div id="myModal" class="modal">
                 
@@ -31,47 +32,14 @@
                             <label for="name" class="visually-hidden">name</label>
                             <input type="text" id="name" name="name" class="inputTextStyle form-control" placeholder="Name of the team" required="required">
                         </p>
+
                         <button type="submit" class="registerButton btn btn-primary submit" style="margin: 0;">Create team</button>
+                        
                     </form>
                 </div>
               
             </div>
-            <div id="books" class="border border-2 border-primary rounded">
-                <label for="isbn">ISBN</label><input id="isbn" value="9780140328721" />
-                <button id="fetchBook">Buscar datos online</button>
-                <img class="preview" id="portada" alt="portada del libro" />
-                <form th:action="@{/user/__${user.id}__/pic}">
-                    <button id="postPortada" class="perfilable">Usar como foto de perfil</button>
-                </form>
-            </div>
-            <div id="movies" class="border border-2 border-secondary rounded">
-                <label for="imdb">IMDB</label><input id="imdb" value="tt11286314" />
-                <button id="fetchMovie">Buscar datos online</button>
-                <img class="preview" id="poster" alt="poster de la pelicula" />
-                <form th:action="@{/user/__${user.id}__/pic}">
-                    <button id="postPoster" class="perfilable">Usar como foto de perfil</button>
-                </form>
-            </div>
-            <div id="profile" class="border border-2 border-tertiary rounded">
-                <input type="file" id="f_avatar" accept="image/jpeg,image/png">
-                <img class="preview" id="avatar" alt="careto a subir" />
-                <form th:action="@{/user/__${user.id}__/pic}">
-                    <button id="postAvatar">Usar como foto de perfil</button>
-                </form>
-            </div>
             
-            <div class="container"> 
-                <!-- recepción de mensajes -->
-                <div class="py-5 row" style="color: white"id="mensajes">
-                </div>
-                <!-- envío de mensajes -->
-                <div class="py-5 row ">
-                    <form th:action="@{/user/__${user.id}__/msg}" method="POST">
-                        <input type="text" id="message" placeholder="escribe a este usuario" />
-                        <button id="sendmsg" class="btn btn-secondary" type="submit">Enviar</button>
-                    </form>
-                </div>
-            </div>
         </div>
     </main>
 

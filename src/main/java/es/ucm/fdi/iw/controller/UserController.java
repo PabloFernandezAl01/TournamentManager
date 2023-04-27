@@ -118,21 +118,23 @@ public class UserController {
 	 * Landing page for a user profile
 	 */
 	@GetMapping("{id}")
-	public String index(@PathVariable long id, Model model, HttpSession session) {
+	public String user(@PathVariable long id, Model model, HttpSession session) {
 		log.warn("ENTRA EN EL USER/ID");
-		User target = entityManager.find(User.class, id);
-		model.addAttribute("user", target);
-		Team coachingTeam = new Team();
-		coachingTeam.setName("No team registered");
 
-		try {
-			model.addAttribute("coachingTeam",
-					(Team) entityManager.createQuery(
-							"select t from Team t join TeamMember tm on t.id = tm.team.id where tm.user.id = :id")
-							.setParameter("id", id).getSingleResult());
-		} catch (Exception e) {
-			model.addAttribute("coachingTeam", coachingTeam);
+		User user = entityManager.find(User.class, id);
+		model.addAttribute("user", user);
+		
+		Team coachingTeam = null;
+
+		try{
+			coachingTeam = (Team) entityManager.createQuery(
+				"select t from Team t join TeamMember tm on t.id = tm.team.id where tm.user.id = :id")
+				.setParameter("id", id).getSingleResult();
 		}
+		catch (Exception e) {}
+
+		model.addAttribute("coachingTeam", coachingTeam);
+
 		return "user";
 	}
 

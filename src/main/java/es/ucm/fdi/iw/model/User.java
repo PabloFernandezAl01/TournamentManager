@@ -72,8 +72,8 @@ public class User implements Transferable<User.Transfer> {
         return Arrays.asList(roles.split(",")).contains(roleName);
     }
 
+    
     // Messages
-
     @OneToMany
     @JoinColumn(name = "sender_id")
     private List<Message> sent = new ArrayList<>();

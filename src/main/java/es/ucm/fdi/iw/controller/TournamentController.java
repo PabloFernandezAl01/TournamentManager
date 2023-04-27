@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 
+import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
 import org.springframework.web.servlet.view.RedirectView;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +65,7 @@ import es.ucm.fdi.iw.model.TeamMember;
 import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.Match;
 import es.ucm.fdi.iw.model.Tournament_Team;
+import java.time.LocalDate;
 
 @Controller()
 @RequestMapping("tournament")
@@ -215,5 +217,19 @@ public class TournamentController {
             log.info("No se encontró Match para este usuario en este torneo");
             return null;
         }
+    }
+
+    @PostMapping("/createTournament")
+    @Transactional
+    public RedirectView createTournament(@ModelAttribute Tournament tournament,
+            Model model) throws Exception {
+        tournament.setStatus(TournamentStatus.NOT_STARTED);
+        tournament.setCreationDate(LocalDate.now().toString());
+
+        tournament.setRounds(((int) Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2))) + 1);
+
+        entityManager.persist(tournament);
+        entityManager.flush();
+        return new RedirectView("/join");
     }
 }

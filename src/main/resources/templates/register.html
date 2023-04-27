@@ -11,11 +11,13 @@
 
     <main class="flex-shrink-0">
       <div class="login container">
-        <form method="post" th:action="@{/registUser}">
+        <form method="post" th:action="@{/register}">
           <h2>Register</h2>
+          
           <p th:if="${#request.getQueryString() == 'error'}" class="error">
             Error al registrar
           </p>
+
           <p>
             <label for="username" class="visually-hidden">Username</label>
             <input
@@ -27,6 +29,7 @@
               required
             />
           </p>
+          
           <p>
             <label for="firstName" class="visually-hidden">First Name</label>
             <input

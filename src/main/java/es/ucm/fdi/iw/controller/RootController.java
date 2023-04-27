@@ -43,6 +43,7 @@ import java.util.Map;
 public class RootController {
 
     private static final Logger log = LogManager.getLogger(RootController.class);
+
     @Autowired
     private EntityManager entityManager;
     @Autowired
@@ -60,17 +61,18 @@ public class RootController {
         model.addAttribute("record", Boolean.FALSE);
     }
 
+
+    @GetMapping("/")
+    public String homepage(Model model) {
+        disableViews(model);
+        model.addAttribute("home", Boolean.TRUE);
+        return "index";
+    }
+
     @GetMapping("/login")
     public String login(Model model) {
         disableViews(model);
         return "login";
-    }
-
-    @GetMapping("/")
-    public String index(Model model) {
-        disableViews(model);
-        model.addAttribute("home", Boolean.TRUE);
-        return "index";
     }
 
     @GetMapping("/create")
@@ -210,14 +212,6 @@ public class RootController {
         return "record";
     }
 
-    /*
-     * @GetMapping("/bracket")
-     * public String bracket(Model model) {
-     * disableViews(model);
-     * model.addAttribute("onGoing", Boolean.TRUE);
-     * return "bracket";
-     * }
-     */
 
     @GetMapping("/register")
     public String register(Model model) {
@@ -225,13 +219,12 @@ public class RootController {
         return "register";
     }
 
-    /**
-     * Registrar usuario
-     */
-    @PostMapping("/registUser")
+
+    @PostMapping("/register")
     @Transactional
-    public RedirectView registUser(@ModelAttribute User registered,
+    public RedirectView register(@ModelAttribute User registered,
             Model model) throws IOException {
+
         registered.setEnabled(true);
         registered.setRoles("USER");
         registered.setPassword(encodePassword(registered.getPassword()));
@@ -239,22 +232,5 @@ public class RootController {
         entityManager.persist(registered);
         entityManager.flush();
         return new RedirectView("/login");
-    }
-
-    /**
-     * Crear torneo
-     */
-    @PostMapping("/createTournament")
-    @Transactional
-    public RedirectView createTournament(@ModelAttribute Tournament tournament,
-            Model model) throws Exception {
-        tournament.setStatus(TournamentStatus.NOT_STARTED);
-        tournament.setCreationDate(LocalDate.now().toString());
-
-        tournament.setRounds(((int) Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2))) + 1);
-
-        entityManager.persist(tournament);
-        entityManager.flush();
-        return new RedirectView("/join");
     }
 }
