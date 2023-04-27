@@ -44,6 +44,14 @@ public class RootController {
 
     private static final Logger log = LogManager.getLogger(RootController.class);
 
+    @Data
+    @AllArgsConstructor
+    public static class TourneyData {
+        int nTeams;
+        int maxTeams;
+        String topicId;
+    }
+
     @Autowired
     private EntityManager entityManager;
     @Autowired
@@ -76,7 +84,8 @@ public class RootController {
     }
 
     @GetMapping("/create")
-    public String create(Model model) {
+    public String create(Model model, String exception) {
+        
         disableViews(model);
         model.addAttribute("create", Boolean.TRUE);
         return "create";
@@ -88,67 +97,55 @@ public class RootController {
         disableViews(model);
         model.addAttribute("join", Boolean.TRUE);
 
-        User u = entityManager.find(User.class, ((User) session.getAttribute("u")).getId());
-
-        List<Tournament> results = new ArrayList<>();
-        Long nTeams = 0L;
         log.info("ANTES DEL MAPA");
-        // Map<Tournament, String> mapa = new HashMap<>();
 
+        List<Tournament> tournaments = new ArrayList<>();
         Map<Tournament, TourneyData> mapa = new HashMap<>();
+        Long nTeams = 0L;
 
-        // TypedQuery<Tournament> query = entityManager.createQuery(
-        // "SELECT t FROM Tournament t WHERE t.status = :notStartedStatus",
-        // Tournament.class);
-        // query.setParameter("notStartedStatus", TournamentStatus.NOT_STARTED);
-        // List<Tournament> tournaments = query.getResultList();
-
-        //where t.status = :notStartedStatus
-        results = entityManager
+        tournaments = entityManager
                 .createQuery("select t from Tournament t", Tournament.class)
                 //.setParameter("notStartedStatus", TournamentStatus.NOT_STARTED)
                 .getResultList();
-        for (Tournament tournament : results) {
+
+        for (Tournament tournament : tournaments) {
             long tid = tournament.getId();
             try {
-                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate()))
-                        && tournament.getStatus() == TournamentStatus.NOT_STARTED) {
-                    tournament.setStatus(TournamentStatus.ON_GOING);
+                
+                TypedQuery<Long> query = entityManager.createQuery(
+                    "SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+                    Long.class);
 
-                    createMatches(tournament, session);
+                nTeams = query.setParameter("tournamentid", tid).getSingleResult();
+
+                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate()))) {
+
+                    if(nTeams < tournament.getMaxTeams()){
+                        tournament.setStatus(TournamentStatus.CANCELED);
+                    }
+                    else {
+                        tournament.setStatus(TournamentStatus.ON_GOING);
+
+                        //TODO: HACER ESTO DE MANERA ASINCRONA CON WEBSOCKETS
+                        createMatches(tournament, session);
+                    }
+                    continue;
                 }
 
             } catch (Exception e) {
                 model.addAttribute("exception", e.getMessage());
-            }
-            try {
-                TypedQuery<Long> query = entityManager.createQuery(
-                        "SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
-                        Long.class);
-
-                nTeams = query.setParameter("tournamentid", tid).getSingleResult();
-
-            } catch (Exception e) {
                 nTeams = 0L;
-
             }
 
-            String auxTeams = new String(nTeams + "/" + tournament.getMaxTeams());
-            TourneyData td = new TourneyData(nTeams.intValue(), tournament.getMaxTeams(), tournament.getTopicId());
-            log.info("VALOR MAPA" + td.getNTeams() + td.getMaxTeams());
-            mapa.put(tournament, td);
+            TourneyData tourneyData = new TourneyData(nTeams.intValue(), tournament.getMaxTeams(), tournament.getTopicId());
+            mapa.put(tournament, tourneyData);
+
+            log.info("VALOR MAPA" + tourneyData.getNTeams() + tourneyData.getMaxTeams());
         }
+
         model.addAttribute("tournaments", mapa);
 
         return "join";
-    }
-
-    @Data
-    @AllArgsConstructor
-    public static class TourneyData {
-        int nTeams;
-        int maxTeams;
-        String topicId;
     }
 
     private void createMatches(Tournament tournament, HttpSession session) {
@@ -163,7 +160,6 @@ public class RootController {
         // Hacerlo random en el futuro
         // si es potencia de dos
         if ((teams.size() & (teams.size() - 1)) == 0) {
-            int nMatches = teams.size() / 2;
             int matchNumber = 1;
             for (int i = 0; i < teams.size(); i += 2) {
                 Match match = new Match();

@@ -223,13 +223,20 @@ public class TournamentController {
     @Transactional
     public RedirectView createTournament(@ModelAttribute Tournament tournament,
             Model model) throws Exception {
+
+        if(LocalDateTime.now().isAfter(LocalDateTime.parse(tournament.getDate() + "T" + tournament.getStartingHour() + ":00"))) {
+            return new RedirectView("/create?exception=Incorrect starting date. Date cannot be previous to the current one.");
+        }
+
         tournament.setStatus(TournamentStatus.NOT_STARTED);
+
         tournament.setCreationDate(LocalDate.now().toString());
 
         tournament.setRounds(((int) Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2))) + 1);
 
         entityManager.persist(tournament);
         entityManager.flush();
+
         return new RedirectView("/join");
     }
 }

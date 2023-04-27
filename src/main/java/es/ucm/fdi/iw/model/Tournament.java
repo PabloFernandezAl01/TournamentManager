@@ -16,6 +16,7 @@ public class Tournament {
     }
 
     public enum TournamentStatus {
+        CANCELED,
         NOT_STARTED,
         ON_GOING,
         FINISHED
