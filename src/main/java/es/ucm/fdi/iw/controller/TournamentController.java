@@ -31,8 +31,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import javax.management.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -83,48 +85,22 @@ public class TournamentController {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    /*
-     * 
-     */
-    @GetMapping("{tournamentId}/{userId}")
+    @PostMapping("/joinTournament")
     @Transactional
-    public RedirectView index(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
-        User targetUser = entityManager.find(User.class, userId);
+    public RedirectView joinTournament(@RequestParam("tournamentId") long tournamentId, @RequestParam("userId") long userId) {
         Tournament targetTournament = entityManager.find(Tournament.class, tournamentId);
 
-        // model.addAttribute("user", target);
-        Team coachingTeam = new Team();
-        // coachingTeam.setName("No team registered");
-        List<Long> team_ids = new ArrayList<>();
-        log.info("ANTES DEL TRY");
-        try {
-            coachingTeam = (Team) entityManager.createQuery(
-                    "select t from Team t where t.coach.id = :id ") // and not exists (Select tt.team.id from
-                                                                    // Tournament_Team tt where tt.team.id = t.id)
-                    .setParameter("id", userId).getSingleResult();
+        //Equipo del que somos entrenador
+        Team coachingTeam = (Team) entityManager.createQuery(
+            "select t from Team t where t.coach.id = :id ")                                                   
+            .setParameter("id", userId).getSingleResult();
 
-            team_ids = entityManager
-                    .createQuery("SELECT t.team FROM Tournament_Team t WHERE t.tournament.id = :tournamentId")
-                    .setParameter("tournamentId", tournamentId).getResultList();
-            boolean existe = false;
-            long id = 0;
-            for (Long team_id : team_ids) {
-                if ((long) team_id == coachingTeam.getId()) {
-                    existe = true;
-                    id = team_id;
-                }
-            }
-            if (!existe) {
-                Tournament_Team torunamentTeam = new Tournament_Team();
-                torunamentTeam.setTeam(coachingTeam);
-                torunamentTeam.setTournament(targetTournament);
-                entityManager.persist(torunamentTeam);
-            }
 
-        } catch (Exception e) {
-            model.addAttribute("exception", e.getMessage());
-            log.info("Viendo tournament", e);
-        }
+        Tournament_Team torunamentTeam = new Tournament_Team();
+        torunamentTeam.setTeam(coachingTeam);
+        torunamentTeam.setTournament(targetTournament);
+        entityManager.persist(torunamentTeam);
+       
         return new RedirectView("/join");
     }
 

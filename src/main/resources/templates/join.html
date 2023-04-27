@@ -2,6 +2,7 @@
 <html class="h-100" xmlns:th="http://www.thymeleaf.org">
   <head>
     <th:block th:replace="fragments/head :: header" />
+    <th:import type="es.ucm.fdi.iw.model.Tournament.TournamentStatus"/>
     <title>Tournament Manager</title>
   </head>
 
@@ -16,11 +17,15 @@
           ¡Inscribe a tu equipo en el torneo que más te guste!
         </h2>
 
-        <!-- CAMBIAR POR TH:FOR cuando tengamos base de datos o datos basura -->
+        <h3 class="text-center" th:if="${tournaments.isEmpty()}">No tournaments found.</h3>
+
         <ul class="tournament-list">
           <li th:each="tournament : ${tournaments}">
             <div class="tournament-info">
-              <div class="tournament-status">Waiting for teams</div>
+
+              <div th:classappend="${tournament.value.getNTeams()} == ${tournament.value.getMaxTeams()} ? tournament-full : tournament-status" 
+              th:text="${tournament.value.getNTeams()} == ${tournament.value.getMaxTeams()} ? 'Tournament full' : 'Waiting for teams'"></div>
+              
               <div class="tournament-slots">
                 <span th:text="${tournament.value.getNTeams()}"></span>
                 <!-- Acceder al primer valor del Pair -->
@@ -28,16 +33,18 @@
                 <span th:text="${tournament.value.getMaxTeams()}"></span>
                 <!-- Acceder al segundo valor del Pair -->
               </div>
+
               <span
-                th:if="${tournament.value.getNTeams() < tournament.value.getMaxTeams()}"
+                th:if="${tournament.value.getNTeams() < tournament.value.getMaxTeams() && isUserCoach && !tournament.value.isMyTeamJoined()}"
               >
-                <a
-                  class="btn btn-primary submit"
-                  th:href="@{|/tournament/${tournament.key.id}/${session.u.id}|}"
-                >
-                  Join
-                </a>
+                <form method="post" th:action="@{/tournament/joinTournament}">
+                  <input type="hidden" name="tournamentId" th:value="${tournament.key.id}" />
+                  <input type="hidden" name="userId" th:value="${session.u.id}" />
+                  <button class="btn btn-primary submit" type="submit">Join</button>
+                </form>          
               </span>
+
+              <div class="tournament-joined" th:if="${tournament.value.isMyTeamJoined()}">Your team is already in this tournament!</div>
 
               <a
                 class="brackets-button"

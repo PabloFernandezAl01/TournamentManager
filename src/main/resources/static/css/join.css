@@ -25,9 +25,21 @@
     align-items: center;
 }
 
+.tournament-joined {
+  display: flex;
+  align-items: center;
+  color: lightgreen;
+}
+
+
 .tournament-status {
     font-weight: bold;
     color: lightsalmon;
+}
+
+.tournament-full {
+  font-weight: bold;
+  color: crimson;
 }
 
 .tournament-slots {
