@@ -42,6 +42,13 @@
   color: crimson;
 }
 
+.tournament-ongoing {
+  margin-left: 10px;
+  margin-right: 20px;
+
+  color: white;
+}
+
 .tournament-slots {
     margin-left: 10px;
     margin-right: 10px;

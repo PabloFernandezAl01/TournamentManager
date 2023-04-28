@@ -110,16 +110,33 @@ public class RootController {
     }
 
     @GetMapping("/ongoing")
-    public String ongoing(Model model) {
+    public String ongoing(Model model, HttpSession session) {
         disableViews(model);
         model.addAttribute("onGoing", Boolean.TRUE);
+
+        Map<Tournament, TourneyData> tournaments = getModelTournaments(model, session);
+
+        tournaments = getOngoingTournaments(tournaments);
+
+        model.addAttribute("isUserCoach", isUserCoach(session));
+        model.addAttribute("tournaments", tournaments);
+
         return "ongoing";
     }
 
     @GetMapping("/record")
-    public String record(Model model) {
+    public String record(Model model, HttpSession session) {
         disableViews(model);
         model.addAttribute("record", Boolean.TRUE);
+
+        Map<Tournament, TourneyData> tournaments = getModelTournaments(model, session);
+
+        Map<Tournament, TourneyData> finishedTournaments = getFinishedTournaments(tournaments);
+        Map<Tournament, TourneyData> canceledTournaments = getCanceledTournaments(tournaments);
+
+        model.addAttribute("finishedTournaments", finishedTournaments);
+        model.addAttribute("canceledTournaments", canceledTournaments);
+
         return "record";
     }
 
@@ -227,6 +244,42 @@ public class RootController {
         return notStarted;
     }
 
+    private Map<Tournament, TourneyData> getOngoingTournaments(Map<Tournament, TourneyData> mapa) {
+        Map<Tournament, TourneyData> ongoing = new HashMap<>();
+
+        for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
+            TourneyData tourneyData = entry.getValue();
+            if (tourneyData.getStatus() == TournamentStatus.ON_GOING) {
+                ongoing.put(entry.getKey(), tourneyData);
+            }
+        }
+        return ongoing;
+    }
+
+    private Map<Tournament, TourneyData> getFinishedTournaments(Map<Tournament, TourneyData> mapa) {
+        Map<Tournament, TourneyData> finished = new HashMap<>();
+
+        for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
+            TourneyData tourneyData = entry.getValue();
+            if (tourneyData.getStatus() == TournamentStatus.FINISHED) {
+                finished.put(entry.getKey(), tourneyData);
+            }
+        }
+        return finished;
+    }
+
+    private Map<Tournament, TourneyData> getCanceledTournaments(Map<Tournament, TourneyData> mapa) {
+        Map<Tournament, TourneyData> canceled = new HashMap<>();
+
+        for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
+            TourneyData tourneyData = entry.getValue();
+            if (tourneyData.getStatus() == TournamentStatus.CANCELED) {
+                canceled.put(entry.getKey(), tourneyData);
+            }
+        }
+        return canceled;
+    }
+
     private void createMatches(Tournament tournament, HttpSession session) {
         // crear partidos
         List<Team> teams = new ArrayList<>();
@@ -236,33 +289,24 @@ public class RootController {
 
         teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
 
-        // Hacerlo random en el futuro
-        // si es potencia de dos
+        // Hacerlo random en el futuro, en lugar de por orden de union
         int matchNumber = 1;
         for (int i = 0; i < teams.size(); i += 2) {
             Match match = new Match();
+
             match.setRoundNumber(1);
+
             match.setMatchNumber(matchNumber);
+
             match.setTeam1(teams.get(i));
             match.setTeam2(teams.get(i + 1));
 
             match.setTopicId(UserController.generateRandomBase64Token(6));
             
-            List<String> topics = new ArrayList<>();
-            log.info("topics 1", session.getAttribute("topics"));
-            User u = entityManager.find(User.class, ((User) session.getAttribute("u")).getId());
-            if (u.getTeam().getId() == match.getTeam1().getId()
-                    || u.getTeam().getId() == match.getTeam2().getId()) {
-                if (session.getAttribute("topics") != null) {
-                    topics = (ArrayList) session.getAttribute("topics");
-                    log.info("topics 1", topics);
-                }
-                topics.add(match.getTopicId());
-                session.setAttribute("topics", topics);
-            }
             match.setTournament(tournament);
-            entityManager.persist(match);
             matchNumber++;
+
+            entityManager.persist(match);
         }
     
         entityManager.flush();
