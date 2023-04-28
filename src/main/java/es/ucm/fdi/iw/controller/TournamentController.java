@@ -119,50 +119,26 @@ public class TournamentController {
         
         //Match al que mandar mensajes en el chat
         model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
-
-
-
-        List<Team> teams = entityManager.createQuery(
-            "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Team.class)
-            .setParameter("tournamentid", tournamentId)
-            .getResultList();
-
+        
         List<Match> matches = entityManager.createQuery(
             "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
             .setParameter("tournamentid", tournamentId)
             .getResultList();
         
-
-
-
-
-        Map<Integer, Boolean> partidosRonda = new HashMap<>();
+            
+        Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
 
         for (Match match : matches) {
-            partidosRonda.put(match.getRoundNumber(), true);
+            
+            int ronda = match.getRoundNumber();
+
+            List<Match> partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
+
+            partidosEnRonda.add(match);
+            partidosPorRonda.put(ronda, partidosEnRonda);
         }
-
-        log.warn("lolazo3");
-
-        List<Integer> partidosRondaJugables = new ArrayList<>();
-        int playerLastRound = tournament.getMaxTeams() / 2;
-
-        for (int i = 1; i <= tournament.getRounds(); ++i) {
-
-            partidosRondaJugables.add(playerLastRound);
-            playerLastRound /= 2;
-        }
-
-
-
-        model.addAttribute("teams", teams);
-        model.addAttribute("numTeams", teams.size());
-        model.addAttribute("tournament", tournament);
-        model.addAttribute("matches", matches);
-        model.addAttribute("partidosRonda", partidosRonda);
-        model.addAttribute("partidosRondaJugables", partidosRondaJugables);
-        model.addAttribute("partidos", partidosRondaJugables.get(1));
-
+       
+        model.addAttribute("partidosPorRonda", partidosPorRonda);
 
         return "bracket";
     }

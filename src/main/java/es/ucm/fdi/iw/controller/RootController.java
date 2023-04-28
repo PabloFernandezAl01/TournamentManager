@@ -110,6 +110,7 @@ public class RootController {
     }
 
     @GetMapping("/ongoing")
+    @Transactional
     public String ongoing(Model model, HttpSession session) {
         disableViews(model);
         model.addAttribute("onGoing", Boolean.TRUE);
@@ -163,26 +164,25 @@ public class RootController {
     }
 
     private Map<Tournament, TourneyData> getModelTournaments(Model model, HttpSession session) {
-        List<Tournament> tournaments = new ArrayList<>();
         Map<Tournament, TourneyData> mapa = new HashMap<>();
+
         Long nTeams = 0L;
 
-        tournaments = entityManager
+        List<Tournament> tournaments = entityManager
                 .createQuery("select t from Tournament t", Tournament.class)
                 .getResultList();
 
         for (Tournament tournament : tournaments) {
-            long tid = tournament.getId();
+            long tournamentId = tournament.getId();
             try {
-                
                 TypedQuery<Long> query = entityManager.createQuery(
                     "SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
                     Long.class);
 
-                nTeams = query.setParameter("tournamentid", tid).getSingleResult();
-                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate()))
-                 && tournament.getStatus() == TournamentStatus.NOT_STARTED) {
+                nTeams = query.setParameter("tournamentid", tournamentId).getSingleResult();
 
+                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate()))
+                 && (tournament.getStatus() == TournamentStatus.NOT_STARTED)) {
                     if(nTeams < tournament.getMaxTeams()){
                         tournament.setStatus(TournamentStatus.CANCELED);
                     }
@@ -295,7 +295,6 @@ public class RootController {
             Match match = new Match();
 
             match.setRoundNumber(1);
-
             match.setMatchNumber(matchNumber);
 
             match.setTeam1(teams.get(i));
@@ -304,6 +303,7 @@ public class RootController {
             match.setTopicId(UserController.generateRandomBase64Token(6));
             
             match.setTournament(tournament);
+
             matchNumber++;
 
             entityManager.persist(match);
