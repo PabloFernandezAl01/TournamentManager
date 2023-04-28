@@ -46,13 +46,6 @@
               </span>
 
               <div class="tournament-joined" th:if="${tournament.value.isMyTeamJoined()}">Your team is already in this tournament!</div>
-
-              <a
-                class="brackets-button"
-                th:href="@{|/tournament/${tournament.key.id}/${session.u.id}/bracket|}"
-              >
-                View brackets
-              </a>
             </div>
             <div class="tournament-name" th:text="${tournament.key.name}"></div>
           </li>

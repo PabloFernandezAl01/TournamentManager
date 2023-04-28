@@ -104,39 +104,45 @@ public class TournamentController {
         return new RedirectView("/join");
     }
 
-    @GetMapping("{tournamentId}/{userId}/bracket")
+    @GetMapping("{tournamentId}/bracket")
     @Transactional
-    public String bracket(@PathVariable long tournamentId, @PathVariable long userId, Model model) {
+    public String bracket(HttpSession session, @PathVariable long tournamentId, Model model) {
         model.addAttribute("ongoing", Boolean.TRUE);
 
-        List<Team> teams = new ArrayList<>();
-        Tournament tournament = new Tournament();
-        String exception = "HOLA";
-        List<Match> matches = new ArrayList<>();
-        try {
-            teams = entityManager.createQuery(
-                    "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Team.class)
-                    .setParameter("tournamentid", tournamentId)
-                    .getResultList();
-            tournament = (Tournament) entityManager.createQuery(
-                    "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
-                    .setParameter("tournamentid", tournamentId)
-                    .getSingleResult();
-            matches = entityManager.createQuery(
-                    "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
-                    .setParameter("tournamentid", tournamentId)
-                    .getResultList();
+        User user = (User) session.getAttribute("u");
 
-        } catch (Exception e) {
-            log.warn("Error creating tournament", e);
-            throw e;
-        }
+        Tournament tournament = (Tournament) entityManager.createQuery(
+            "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
+            .setParameter("tournamentid", tournamentId)
+            .getSingleResult();
+
+        
+        //Match al que mandar mensajes en el chat
+        model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
+
+
+
+        List<Team> teams = entityManager.createQuery(
+            "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Team.class)
+            .setParameter("tournamentid", tournamentId)
+            .getResultList();
+
+        List<Match> matches = entityManager.createQuery(
+            "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
+            .setParameter("tournamentid", tournamentId)
+            .getResultList();
+        
+
+
+
 
         Map<Integer, Boolean> partidosRonda = new HashMap<>();
 
         for (Match match : matches) {
             partidosRonda.put(match.getRoundNumber(), true);
         }
+
+        log.warn("lolazo3");
 
         List<Integer> partidosRondaJugables = new ArrayList<>();
         int playerLastRound = tournament.getMaxTeams() / 2;
@@ -147,17 +153,8 @@ public class TournamentController {
             playerLastRound /= 2;
         }
 
-        // lista aquí con todos los topicId de los partidos en los que está el equipo
-        // del usuario
 
-        // COGER EL PARTIDO DE ESTE TORNEO, EN EL QUE ESTA EL EQUIPO DEL USUARIO PARA
-        // CARGAR LOS MENSAJES
-        User u = entityManager.find(User.class, userId);
-        Match matchUserTournament = getUserMatchFromTournament(u, tournament);
-        // COGER EL PARTIDO DE ESTE TORNEO, EN EL QUE ESTA EL EQUIPO DEL USUARIO PARA
-        // CARGAR LOS MENSAJES
 
-        model.addAttribute("exception", exception);
         model.addAttribute("teams", teams);
         model.addAttribute("numTeams", teams.size());
         model.addAttribute("tournament", tournament);
@@ -166,31 +163,28 @@ public class TournamentController {
         model.addAttribute("partidosRondaJugables", partidosRondaJugables);
         model.addAttribute("partidos", partidosRondaJugables.get(1));
 
-        // AÑADIR EL MATCH DEL USUARIO AL MODELO PARA SABER EL MATCH AL QUE MANDAR MENSAJES
-        model.addAttribute("userMatch", matchUserTournament);
 
         return "bracket";
     }
 
-    private Match getUserMatchFromTournament(User u, Tournament tournament) {
+    private Match getUserMatchFromTournament(User user, Tournament tournament) {
 
-        if (u.getTeam() == null) {
+        if (user.getTeam() == null) {
             return null;
         }
+
         try {
             Match match = entityManager.createQuery(
-                    "SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId and e.tournament.id = :tournamentId",
+                    "SELECT m FROM Match m WHERE m.team1.id = :teamId OR m.team2.id = :teamId AND m.tournament.id = :tournamentId",
                     Match.class)
-                    .setParameter("teamId", u.getTeam().getId())
+                    .setParameter("teamId", user.getTeam().getId())
                     .setParameter("tournamentId", tournament.getId())
                     .getSingleResult();
 
-            log.info("My Match is", match.getMatchNumber());
+
             return match;
 
         } catch (NoResultException e) {
-            // Manejar la excepción aquí, por ejemplo:
-            log.info("No se encontró Match para este usuario en este torneo");
             return null;
         }
     }
