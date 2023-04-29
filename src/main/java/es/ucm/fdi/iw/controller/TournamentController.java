@@ -140,29 +140,10 @@ public class TournamentController {
        
         model.addAttribute("partidosPorRonda", partidosPorRonda);
 
+        Team myTeam =  getUserTeamFromMatch(user, getUserMatchFromTournament(user, tournament));
+        model.addAttribute("myTeam", myTeam);
+
         return "bracket";
-    }
-
-    private Match getUserMatchFromTournament(User user, Tournament tournament) {
-
-        if (user.getTeam() == null) {
-            return null;
-        }
-
-        try {
-            Match match = entityManager.createQuery(
-                    "SELECT m FROM Match m WHERE m.team1.id = :teamId OR m.team2.id = :teamId AND m.tournament.id = :tournamentId",
-                    Match.class)
-                    .setParameter("teamId", user.getTeam().getId())
-                    .setParameter("tournamentId", tournament.getId())
-                    .getSingleResult();
-
-
-            return match;
-
-        } catch (NoResultException e) {
-            return null;
-        }
     }
 
     @PostMapping("/createTournament")
@@ -184,5 +165,43 @@ public class TournamentController {
         entityManager.flush();
 
         return new RedirectView("/join");
+    }
+
+    private Team getUserTeamFromMatch(User user, Match match) {
+        try {
+            Team team = entityManager.createQuery(
+                    "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
+                    Team.class)
+                    .setParameter("matchTeam1", match.getTeam1().getId())
+                    .setParameter("matchTeam2", match.getTeam2().getId())
+					.setParameter("userId", user.getId())
+                    .getSingleResult();
+            return team;
+
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    private Match getUserMatchFromTournament(User user, Tournament tournament) {
+
+        if (user.getTeam() == null) {
+            return null;
+        }
+
+        try {
+            Match match = entityManager.createQuery(
+                    "SELECT m FROM Match m WHERE m.team1.id = :teamId OR m.team2.id = :teamId AND m.tournament.id = :tournamentId AND m.winner IS null",
+                    Match.class)
+                    .setParameter("teamId", user.getTeam().getId())
+                    .setParameter("tournamentId", tournament.getId())
+                    .getSingleResult();
+
+
+            return match;
+
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

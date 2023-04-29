@@ -46,7 +46,10 @@ public class Message implements Transferable<Message.Transfer> {
 
 	@ManyToOne
 	private Match match;
-	
+
+	private String senderTeamName;
+	private boolean iamSender;
+
 	private LocalDateTime dateSent;
 	private LocalDateTime dateRead;
 	
@@ -62,24 +65,29 @@ public class Message implements Transferable<Message.Transfer> {
 		private String sent;
 		private String received;
 		private String text;
+		private String fromTeam;
+		private boolean iamSender;
 		long id;
+
 		public Transfer(Message m) {
 			this.from = m.getSender().getUsername();
 			this.to = m.getRecipient().getUsername();
-			this.sent = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(m.getDateSent());
+			this.sent = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(m.getDateSent());
 			this.received = m.getDateRead() == null ?
 					null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(m.getDateRead());
 			this.text = m.getText();
 			this.id = m.getId();
+			this.fromTeam = m.getSenderTeamName();
+			this.iamSender = m.isIamSender();
 		}
 	}
 
 	@Override
 	public Transfer toTransfer() {
 		return new Transfer(sender.getUsername(), recipient.getUsername(), 
-			DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateSent),
+			DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(dateSent),
 			dateRead == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateRead),
-			text, id
+			text, senderTeamName, iamSender ,id
         );
     }
 }

@@ -52,6 +52,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.web.servlet.view.RedirectView;
 import es.ucm.fdi.iw.model.Team;
+import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.TeamMember;
 
 /**
@@ -256,81 +257,6 @@ public class UserController {
 		return "{\"status\":\"photo uploaded correctly\"}";
 	}
 
-	/**
-	 * Returns JSON with all received messages
-	 */
-	@GetMapping(path = "received", produces = "application/json")
-	@Transactional // para no recibir resultados inconsistentes
-	@ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
-	public List<Message.Transfer> retrieveMessages(HttpSession session) {
-		long userId = ((User) session.getAttribute("u")).getId();
-		User u = entityManager.find(User.class, userId);
-		log.info("Generating message list for user {} ({} messages)",
-				u.getUsername(), u.getReceived().size());
-		return u.getReceived().stream().map(Transferable::toTransfer).collect(Collectors.toList());
-	}
-
-	/**
-	 * Returns JSON with count of unread messages
-	 */
-	@GetMapping(path = "unread", produces = "application/json")
-	@ResponseBody
-	public String checkUnread(HttpSession session) {
-		long userId = ((User) session.getAttribute("u")).getId();
-		long unread = entityManager.createNamedQuery("Message.countUnread", Long.class)
-				.setParameter("userId", userId)
-				.getSingleResult();
-		session.setAttribute("unread", unread);
-		return "{\"unread\": " + unread + "}";
-	}
-
-	/**
-	 * Posts a message to a user.
-	 * 
-	 * @param id of target user (source user is from ID)
-	 * @param o  JSON-ized message, similar to {"message": "text goes here"}
-	 * @throws JsonProcessingException
-	 */
-	@PostMapping("/{id}/msg")
-	@ResponseBody
-	@Transactional
-	public String postMsg(@PathVariable long id,
-			@RequestBody JsonNode o, Model model, HttpSession session)
-			throws JsonProcessingException {
-		String text = o.get("message").asText();
-		User u = entityManager.find(User.class, id);
-		User sender = entityManager.find(
-				User.class, ((User) session.getAttribute("u")).getId());
-		model.addAttribute("user", u);
-
-		// construye mensaje, lo guarda en BD
-		Message m = new Message();
-		m.setRecipient(u);
-		m.setSender(sender);
-		m.setDateSent(LocalDateTime.now());
-		m.setText(text);
-		entityManager.persist(m);
-		entityManager.flush(); // to get Id before commit
-
-		ObjectMapper mapper = new ObjectMapper();
-		/*
-		 * // construye json: método manual
-		 * ObjectNode rootNode = mapper.createObjectNode();
-		 * rootNode.put("from", sender.getUsername());
-		 * rootNode.put("to", u.getUsername());
-		 * rootNode.put("text", text);
-		 * rootNode.put("id", m.getId());
-		 * String json = mapper.writeValueAsString(rootNode);
-		 */
-		// persiste objeto a json usando Jackson
-		String json = mapper.writeValueAsString(m.toTransfer());
-
-		log.info("Sending a message to {} with contents '{}'", id, json);
-
-		messagingTemplate.convertAndSend("/user/" + u.getUsername() + "/queue/updates", json);
-		return "{\"result\": \"message sent.\"}";
-	}
-
 	/* CREACION DE EQUIPOS */
 	@PostMapping("{id}/createTeam")
 	@Transactional
@@ -358,6 +284,7 @@ public class UserController {
 		return "user";
 	}
 
+
 	/* ENVIO MENSAJES POR MATCH */
 	/**
 	 * Posts a message to a match.
@@ -366,64 +293,94 @@ public class UserController {
 	 * @param o  JSON-ized message, similar to {"message": "text goes here"}
 	 * @throws JsonProcessingException
 	 */
-	@PostMapping("sendMsg/{id}/{matchId}/{topicId}")
+	@PostMapping("sendMsg/{userId}/{matchId}")
 	@Transactional
 	@ResponseBody
-	public String sendMessage(@PathVariable long id, @PathVariable long matchId, @PathVariable String topicId,
-			@RequestBody JsonNode o, Model model, HttpSession session)
+	public String sendMessage(@PathVariable long userId, @PathVariable long matchId,
+			@RequestBody JsonNode node, Model model, HttpSession session)
 			throws JsonProcessingException {
 
-		log.info("VOY A ENVIAR UN MENSAJE AL CANAL 1" + topicId);
-		String text = o.get("message").asText();
-		User u = entityManager.find(User.class, id);
-		User sender = entityManager.find(
-				User.class, ((User) session.getAttribute("u")).getId());
-		model.addAttribute("user", u);
+		String text = node.get("message").asText();
+		if(text == "")
+			return "{\"result\": \"message not sent, empty string received.\"}";
 
-		// RECOJER MATCH DEL MENSAJE
+
+		User user = entityManager.find(User.class, userId);
 		Match match = entityManager.find(Match.class, matchId);
-		// construye mensaje, lo guarda en BD
+		
+		List<User> recipients = entityManager
+		.createQuery("select t.user from TeamMember t where t.team.id = :team1Id OR t.team.id = :team2Id",
+				User.class)
+		.setParameter("team1Id", match.getTeam1().getId())
+		.setParameter("team2Id", match.getTeam2().getId())
+		.getResultList();
 
-		List<User> recipients = new ArrayList<>();
-
-		try {
-			recipients = entityManager
-					.createQuery("select t.user from TeamMember t where t.team.id = :team1Id OR t.team.id = :team2Id",
-							User.class)
-					.setParameter("team1Id", match.getTeam1().getId())
-					.setParameter("team2Id", match.getTeam2().getId())
-					.getResultList();
-		} catch (Exception e) {
-			log.info("La consulta no ha funcionado ", e);
-		}
 
 		for (User recipient : recipients) {
+
+			Team team = getUserTeamFromMatch(user, match);
 			Message m = new Message();
+			
 			m.setRecipient(recipient);
-			m.setSender(sender);
+			m.setSender(user);
 			m.setDateSent(LocalDateTime.now());
 			m.setText(text);
 			m.setMatch(match);
+			m.setIamSender(true);
+			m.setSenderTeamName(team.getName());
+
 			entityManager.persist(m);
 
 			ObjectMapper mapper = new ObjectMapper();
-			/*
-			 * // construye json: método manual
-			 * ObjectNode rootNode = mapper.createObjectNode();
-			 * rootNode.put("from", sender.getUsername());
-			 * rootNode.put("to", u.getUsername());
-			 * rootNode.put("text", text);
-			 * rootNode.put("id", m.getId());
-			 * String json = mapper.writeValueAsString(rootNode);
-			 */
-			// persiste objeto a json usando Jackson
+
 			String json = mapper.writeValueAsString(m.toTransfer());
 
-			log.info("Sending a message to {} with contents '{}'", id, json);
+			log.info("Sending a message to {} with contents '{}'", userId, json);
 
 			messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
 		}
+		
 		entityManager.flush(); // to get Id before commit
+
 		return "{\"result\": \"message sent.\"}";
 	}
+
+		/**
+	 * Returns JSON with all received messages
+	 */
+	@GetMapping(path = "received", produces = "application/json")
+	@Transactional // para no recibir resultados inconsistentes
+	@ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
+	public List<Message.Transfer> retrieveMessages(HttpSession session) {
+		long userId = ((User) session.getAttribute("u")).getId();
+
+		User user = entityManager.find(User.class, userId);
+
+		log.info("Generating message list for user {} ({} messages)",
+				user.getUsername(), user.getReceived().size());
+
+		List<Message> received = new ArrayList<>();
+		for(Message msg : user.getReceived()) {
+			msg.setIamSender(msg.getSender().getId() == user.getId());
+			received.add(msg);
+		}
+
+		return received.stream().map(Transferable::toTransfer).collect(Collectors.toList());
+	}
+
+	private Team getUserTeamFromMatch(User user, Match match) {
+        try {
+            Team team = entityManager.createQuery(
+                    "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
+                    Team.class)
+                    .setParameter("matchTeam1", match.getTeam1().getId())
+                    .setParameter("matchTeam2", match.getTeam2().getId())
+					.setParameter("userId", user.getId())
+                    .getSingleResult();
+            return team;
+
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }
