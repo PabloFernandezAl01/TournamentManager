@@ -13,7 +13,9 @@ VALUES (3, 0, TRUE,'c','c', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924
 INSERT INTO IWUser (id, earned, enabled, first_name, last_name, password,
 reports, roles, username, team_id)
 VALUES (4, 0, TRUE,'d','d', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W',0,'USER', 'd',null);
-
+INSERT INTO IWUser (id, earned, enabled, first_name, last_name, password,
+reports, roles, username, team_id)
+VALUES (5, 0, TRUE,'e','e', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W',0,'USER', 'e',null);
 
 INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
 name, prize_pool, rounds, status, type, winner_id)
@@ -21,7 +23,7 @@ VALUES (1026, '2023-03-27', 'descripcion del torneo', 3.0, 1, 4, 'Torneo Prueba'
 
 INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
 name, prize_pool, rounds, status, type, winner_id)
-VALUES (1027, '2023-05-27', 'descripcion del torneo 2', 3.0, 1, 1, 'Torneo Prueba 2', 2.0, 3, 1, 1, null);  
+VALUES (1027, '2023-04-27', 'descripcion del torneo 2', 3.0, 1, 4, 'Torneo Prueba 2', 2.0, 3, 1, 0, null);  
 
 INSERT INTO Team (id, name, coach_id)
 VALUES (999, 'Primer Equipo', 1);  
@@ -35,6 +37,9 @@ VALUES (1001, 'Tercer Equipo', 3);
 INSERT INTO Team (id, name, coach_id)
 VALUES (1002, 'Cuarto Equipo', 4);
 
+INSERT INTO Team (id, name, coach_id)
+VALUES (1003, 'Quinto Equipo', 5);
+
 INSERT INTO Team_Member (id, role, team_id, user_id)
 VALUES (13234, 1, 999, 1);  
 
@@ -46,6 +51,9 @@ VALUES (13236, 1, 1001, 3);
 
 INSERT INTO Team_Member (id, role, team_id, user_id)
 VALUES (13237, 1, 1002, 4);  
+
+INSERT INTO Team_Member (id, role, team_id, user_id)
+VALUES (13238, 1, 1003, 5);  
 
 UPDATE IWUSER
 SET TEAM_ID = 999
@@ -63,6 +71,10 @@ UPDATE IWUSER
 SET TEAM_ID = 1002
 WHERE ID = 4;
 
+UPDATE IWUSER
+SET TEAM_ID = 1003
+WHERE ID = 5;
+
 INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
 VALUES (1, 999, 1026);
 
@@ -74,6 +86,18 @@ VALUES (3, 1001, 1026);
 
 INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
 VALUES (4, 1002, 1026); 
+
+INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
+VALUES (5, 999, 1027); 
+
+INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
+VALUES (6, 1000, 1027); 
+
+INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
+VALUES (7, 1001, 1027); 
+
+INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id)
+VALUES (8, 1003, 1027); 
 
 -- INSERT INTO MATCH (id, match_number, result, round_number, team1_id, team2_id, tournament_id, winner_id)
 -- VALUES (1, 1, 'TBD', 1, 999, 1000, 1026, null);

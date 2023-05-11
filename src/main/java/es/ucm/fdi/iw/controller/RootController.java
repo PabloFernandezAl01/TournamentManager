@@ -121,7 +121,7 @@ public class RootController {
 
         model.addAttribute("isUserCoach", isUserCoach(session));
         model.addAttribute("tournaments", tournaments);
-
+    
         return "ongoing";
     }
 
