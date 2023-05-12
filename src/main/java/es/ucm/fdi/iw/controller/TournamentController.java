@@ -59,6 +59,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
+import es.ucm.fdi.iw.model.Tournament.TournamentType;
+
 import org.springframework.web.servlet.view.RedirectView;
 import java.util.HashMap;
 import java.util.Map;
@@ -141,11 +143,28 @@ public class TournamentController {
 
             Team myTeam = getUserTeamFromMatch(user, getUserMatchFromTournament(user, tournament));
             model.addAttribute("myTeam", myTeam);
+            
+            if (tournament.getType() == 0)
+                return "bracket";
+            else if (tournament.getType() == 1)
+                return "bracket";
+            else {
+                try{
+                List<Tournament_Team> teamsList = entityManager.createQuery(
+                        "SELECT t FROM Tournament_Team t WHERE t.tournament.id = :tournamentid ORDER BY t.puntuacion DESC",
+                        Tournament_Team.class)
+                        .setParameter("tournamentid", tournamentId)
+                        .getResultList();
+                model.addAttribute("teams", teamsList);
+                } catch (Exception e){
+                    log.info("TOURNAMENT_TEAM EXCEPTION", e);
+                }
+                return "tableBracket";
+            }
+
         } catch (Exception e) {
             log.info("HA SALTADO UNA EXCEPCION: ", e);
-            log.info("ID del torneo: ", (int) tournamentId);
         }
-
         return "bracket";
     }
 

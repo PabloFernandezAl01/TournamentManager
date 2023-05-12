@@ -44,7 +44,7 @@ public class Tournament {
 
     private Double prizePool;
 
-    private String type;
+    private int type;
 
     private String game;
 
@@ -58,4 +58,6 @@ public class Tournament {
     // Atributo blob para la imagen del team
 
     private String description;
+
+
 }
