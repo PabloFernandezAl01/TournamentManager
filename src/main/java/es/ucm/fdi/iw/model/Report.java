@@ -7,19 +7,27 @@ import lombok.Data;
 @Data
 public class Report {
     
+    /*
+	 *  Id autogenerado que actua como clave primaria de la tabla Report
+	 */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
 	private long id;
 
-    @ManyToOne
-    private User user;
+    /*
+     * Id del "User" que ha recibido el reporte
+     */
+    private Long userId;
 
-    @OneToOne
-    private Message message;
-
-    private String reason;
-
+    /*
+     * Descripcion del reporte
+     */
     private String description;
+
+    /*
+     * Id del mensaje causa del reporte
+     */
+    private Long messageId;
 
 }

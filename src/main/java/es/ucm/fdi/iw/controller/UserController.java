@@ -6,7 +6,6 @@ import es.ucm.fdi.iw.model.Message;
 
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
-import es.ucm.fdi.iw.model.TeamMember.RoleInTeam;
 import es.ucm.fdi.iw.model.User.Role;
 
 import org.apache.logging.log4j.LogManager;
@@ -120,21 +119,21 @@ public class UserController {
 	 */
 	@GetMapping("{id}")
 	public String user(@PathVariable long id, Model model, HttpSession session) {
-		log.warn("ENTRA EN EL USER/ID");
+		log.warn("El usuario entra en su perfil");
 
 		User user = entityManager.find(User.class, id);
 		model.addAttribute("user", user);
 		
-		Team coachingTeam = null;
+		// Team coachingTeam = null;
 
-		try{
-			coachingTeam = (Team) entityManager.createQuery(
-				"select t from Team t join TeamMember tm on t.id = tm.team.id where tm.user.id = :id")
-				.setParameter("id", id).getSingleResult();
-		}
-		catch (Exception e) {}
+		// try{
+		// 	coachingTeam = (Team) entityManager.createQuery(
+		// 		"select t from Team t join TeamMember tm on t.id = tm.team.id where tm.user.id = :id")
+		// 		.setParameter("id", id).getSingleResult();
+		// }
+		// catch (Exception e) {}
 
-		model.addAttribute("coachingTeam", coachingTeam);
+		// model.addAttribute("coachingTeam", coachingTeam);
 
 		return "user";
 	}
@@ -144,12 +143,8 @@ public class UserController {
 	 */
 	@PostMapping("/{id}")
 	@Transactional
-	public String postUser(
-			HttpServletResponse response,
-			@PathVariable long id,
-			@ModelAttribute User edited,
-			@RequestParam(required = false) String pass2,
-			Model model, HttpSession session) throws IOException {
+	public String postUser(HttpServletResponse response, @PathVariable long id, @ModelAttribute User edited, 
+		@RequestParam(required = false) String pass2, Model model, HttpSession session) throws IOException {
 
 		User requester = (User) session.getAttribute("u");
 		User target = null;
@@ -168,8 +163,7 @@ public class UserController {
 		target = entityManager.find(User.class, id);
 		model.addAttribute("user", target);
 
-		if (requester.getId() != target.getId() &&
-				!requester.hasRole(Role.ADMIN)) {
+		if (requester.getId() != target.getId() && !requester.hasRole(Role.ADMIN)) {
 			throw new NoEsTuPerfilException();
 		}
 
@@ -199,9 +193,7 @@ public class UserController {
 	 * @return
 	 */
 	private static InputStream defaultPic() {
-		return new BufferedInputStream(Objects.requireNonNull(
-				UserController.class.getClassLoader().getResourceAsStream(
-						"static/img/default-pic.jpg")));
+		return new BufferedInputStream(Objects.requireNonNull(UserController.class.getClassLoader().getResourceAsStream("static/img/default-pic.jpg")));
 	}
 
 	/**
@@ -227,8 +219,7 @@ public class UserController {
 	 */
 	@PostMapping("{id}/pic")
 	@ResponseBody
-	public String setPic(@RequestParam("photo") MultipartFile photo, @PathVariable long id,
-			HttpServletResponse response, HttpSession session, Model model) throws IOException {
+	public String setPic(@RequestParam("photo") MultipartFile photo, @PathVariable long id, HttpServletResponse response, HttpSession session, Model model) throws IOException {
 
 		User target = entityManager.find(User.class, id);
 		model.addAttribute("user", target);
@@ -257,29 +248,30 @@ public class UserController {
 		return "{\"status\":\"photo uploaded correctly\"}";
 	}
 
-	/* CREACION DE EQUIPOS */
+	/*
+	 * Creacion de equipos
+	 */
 	@PostMapping("{id}/createTeam")
 	@Transactional
-	public String postCreateTeam(@PathVariable long id, HttpServletRequest request,
-			Model model) throws Exception {
-		String name = request.getParameter("name");
-		Team t = new Team();
-		User u = entityManager.find(User.class, id);
-		TeamMember tm = new TeamMember();
+	public String postCreateTeam(@PathVariable long id, HttpServletRequest request, Model model) throws Exception {
+		// String name = request.getParameter("name");
+		// Team t = new Team();
+		// User u = entityManager.find(User.class, id);
+		// TeamMember tm = new TeamMember();
 
-		t.setCoach(u);
-		t.setName(name);
+		// t.setCoach(u);
+		// t.setName(name);
 
-		tm.setRole(RoleInTeam.COACH);
-		tm.setTeam(t);
-		tm.setUser(u);
+		// tm.setRole(RoleInTeam.COACH);
+		// tm.setTeam(t);
+		// tm.setUser(u);
 
-		entityManager.persist(t);
-		entityManager.persist(tm);
-		entityManager.flush();
+		// entityManager.persist(t);
+		// entityManager.persist(tm);
+		// entityManager.flush();
 
-		model.addAttribute("user", u);
-		model.addAttribute("coachingTeam", t);
+		// model.addAttribute("user", u);
+		// model.addAttribute("coachingTeam", t);
 
 		return "user";
 	}
@@ -300,47 +292,47 @@ public class UserController {
 			@RequestBody JsonNode node, Model model, HttpSession session)
 			throws JsonProcessingException {
 
-		String text = node.get("message").asText();
-		if(text == "")
-			return "{\"result\": \"message not sent, empty string received.\"}";
+		// String text = node.get("message").asText();
+		// if(text == "")
+		// 	return "{\"result\": \"message not sent, empty string received.\"}";
 
 
-		User user = entityManager.find(User.class, userId);
-		Match match = entityManager.find(Match.class, matchId);
+		// User user = entityManager.find(User.class, userId);
+		// Match match = entityManager.find(Match.class, matchId);
 		
-		List<User> recipients = entityManager
-		.createQuery("select t.user from TeamMember t where t.team.id = :team1Id OR t.team.id = :team2Id",
-				User.class)
-		.setParameter("team1Id", match.getTeam1().getId())
-		.setParameter("team2Id", match.getTeam2().getId())
-		.getResultList();
+		// List<User> recipients = entityManager
+		// .createQuery("select t.user from TeamMember t where t.team.id = :team1Id OR t.team.id = :team2Id",
+		// 		User.class)
+		// .setParameter("team1Id", match.getTeam1().getId())
+		// .setParameter("team2Id", match.getTeam2().getId())
+		// .getResultList();
 
 
-		for (User recipient : recipients) {
+		// for (User recipient : recipients) {
 
-			Team team = getUserTeamFromMatch(user, match);
-			Message m = new Message();
+		// 	Team team = getUserTeamFromMatch(user, match);
+		// 	Message m = new Message();
 			
-			m.setRecipient(recipient);
-			m.setSender(user);
-			m.setDateSent(LocalDateTime.now());
-			m.setText(text);
-			m.setMatch(match);
-			m.setIamSender(true);
-			m.setSenderTeamName(team.getName());
+		// 	m.setRecipient(recipient);
+		// 	m.setSender(user);
+		// 	m.setDateSent(LocalDateTime.now());
+		// 	m.setText(text);
+		// 	m.setMatch(match);
+		// 	m.setIamSender(true);
+		// 	m.setSenderTeamName(team.getName());
 
-			entityManager.persist(m);
+		// 	entityManager.persist(m);
 
-			ObjectMapper mapper = new ObjectMapper();
+		// 	ObjectMapper mapper = new ObjectMapper();
 
-			String json = mapper.writeValueAsString(m.toTransfer());
+		// 	String json = mapper.writeValueAsString(m.toTransfer());
 
-			log.info("Sending a message to {} with contents '{}'", userId, json);
+		// 	log.info("Sending a message to {} with contents '{}'", userId, json);
 
-			messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
-		}
+		// 	messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
+		// }
 		
-		entityManager.flush(); // to get Id before commit
+		// entityManager.flush(); // to get Id before commit
 
 		return "{\"result\": \"message sent.\"}";
 	}
@@ -348,39 +340,40 @@ public class UserController {
 		/**
 	 * Returns JSON with all received messages
 	 */
-	@GetMapping(path = "received", produces = "application/json")
-	@Transactional // para no recibir resultados inconsistentes
-	@ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
-	public List<Message.Transfer> retrieveMessages(HttpSession session) {
-		long userId = ((User) session.getAttribute("u")).getId();
+	// @GetMapping(path = "received", produces = "application/json")
+	// @Transactional // para no recibir resultados inconsistentes
+	// @ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
+	// public List<Message.Transfer> retrieveMessages(HttpSession session) {
+	// 	long userId = ((User) session.getAttribute("u")).getId();
 
-		User user = entityManager.find(User.class, userId);
+	// 	User user = entityManager.find(User.class, userId);
 
-		log.info("Generating message list for user {} ({} messages)",
-				user.getUsername(), user.getReceived().size());
+	// 	log.info("Generating message list for user {} ({} messages)",
+	// 			user.getUsername(), user.getReceived().size());
 
-		List<Message> received = new ArrayList<>();
-		for(Message msg : user.getReceived()) {
-			msg.setIamSender(msg.getSender().getId() == user.getId());
-			received.add(msg);
-		}
+	// 	List<Message> received = new ArrayList<>();
+	// 	for(Message msg : user.getReceived()) {
+	// 		msg.setIamSender(msg.getSender().getId() == user.getId());
+	// 		received.add(msg);
+	// 	}
 
-		return received.stream().map(Transferable::toTransfer).collect(Collectors.toList());
-	}
+	// 	return received.stream().map(Transferable::toTransfer).collect(Collectors.toList());
+	// }
 
 	private Team getUserTeamFromMatch(User user, Match match) {
-        try {
-            Team team = entityManager.createQuery(
-                    "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
-                    Team.class)
-                    .setParameter("matchTeam1", match.getTeam1().getId())
-                    .setParameter("matchTeam2", match.getTeam2().getId())
-					.setParameter("userId", user.getId())
-                    .getSingleResult();
-            return team;
+		return null;
+        // try {
+        //     Team team = entityManager.createQuery(
+        //             "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
+        //             Team.class)
+        //             .setParameter("matchTeam1", match.getTeam1().getId())
+        //             .setParameter("matchTeam2", match.getTeam2().getId())
+		// 			.setParameter("userId", user.getId())
+        //             .getSingleResult();
+        //     return team;
 
-        } catch (NoResultException e) {
-            return null;
-        }
+        // } catch (NoResultException e) {
+        //     return null;
+        // }
     }
 }

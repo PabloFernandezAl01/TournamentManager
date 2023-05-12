@@ -7,17 +7,23 @@ import lombok.Data;
 @Data
 public class Team  {
 
+    /*
+     * Id autogenerado que actua como clave primaria de la tabla Team
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
 	private long id;
 
+    /*
+     * Nombre del equipo, no NULL y unico
+     */
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToOne
-    private User coach;
+    /*
+     * Id como referencia a la imagen
+     */
+    private Long imageId;
 
-    // Atributo blob para la imagen del team
-    
 }

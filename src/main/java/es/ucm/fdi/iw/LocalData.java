@@ -14,23 +14,33 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author mfreire
  */
-public class LocalData {    	    
+
+public class LocalData {    	 
+
 	private static Log log = LogFactory.getLog(LocalData.class);
 
     private File baseFolder;
     
+    /**
+     * Creates a baseFolder for the user files and folders
+     * @param baseFolder name of the baseFolder
+     */
     public LocalData(File baseFolder) {
-		this.baseFolder = baseFolder;
+
+		  this.baseFolder = baseFolder;
+
     	log.info("base folder is " + baseFolder.getAbsolutePath());
+
     	if (!baseFolder.isDirectory()) {
-    		if (baseFolder.exists()) {
-    			log.error("exists and is not a directory -- cannot create: " + baseFolder);
-    		} else if ( ! baseFolder.mkdirs()){
-    			log.error("could not be created -- check permissions " + baseFolder);        			
-    		}
+          if (baseFolder.exists()) {
+              log.error("exists and is not a directory -- cannot create: " + baseFolder);
+          } else if ( ! baseFolder.mkdirs()){
+              log.error("could not be created -- check permissions " + baseFolder);        			
+          }
     	} else {
-    		log.info("using already-existing base folder :-)");
+    		  log.info("using already-existing base folder :-)");
     	}
+
     	baseFolder.mkdirs();
     }
     

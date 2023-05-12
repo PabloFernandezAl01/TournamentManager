@@ -1,12 +1,9 @@
 package es.ucm.fdi.iw.controller;
 
-import es.ucm.fdi.iw.IwUserDetailsService;
-import es.ucm.fdi.iw.LocalData;
 import es.ucm.fdi.iw.model.Message;
 
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
-import es.ucm.fdi.iw.model.TeamMember.RoleInTeam;
 import es.ucm.fdi.iw.model.User.Role;
 import lombok.extern.java.Log;
 
@@ -65,8 +62,10 @@ import java.util.Map;
 import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.model.TeamMember;
 import es.ucm.fdi.iw.model.Tournament;
+import es.ucm.fdi.iw.IwUserDetailsService;
+import es.ucm.fdi.iw.LocalData;
 import es.ucm.fdi.iw.model.Match;
-import es.ucm.fdi.iw.model.Tournament_Team;
+import es.ucm.fdi.iw.model.TournamentTeam;
 import java.time.LocalDate;
 
 @Controller()
@@ -79,27 +78,27 @@ public class TournamentController {
     @Autowired
     private EntityManager entityManager;
 
-    @Autowired
-    private LocalData localData;
+    // @Autowired
+    // private LocalData localData;
 
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    // @Autowired
+    // private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/joinTournament")
     @Transactional
     public RedirectView joinTournament(@RequestParam("tournamentId") long tournamentId, @RequestParam("userId") long userId) {
-        Tournament targetTournament = entityManager.find(Tournament.class, tournamentId);
+        // Tournament targetTournament = entityManager.find(Tournament.class, tournamentId);
 
-        //Equipo del que somos entrenador
-        Team coachingTeam = (Team) entityManager.createQuery(
-            "select t from Team t where t.coach.id = :id ")                                                   
-            .setParameter("id", userId).getSingleResult();
+        // //Equipo del que somos entrenador
+        // Team coachingTeam = (Team) entityManager.createQuery(
+        //     "select t from Team t where t.coach.id = :id ")                                                   
+        //     .setParameter("id", userId).getSingleResult();
 
 
-        Tournament_Team torunamentTeam = new Tournament_Team();
-        torunamentTeam.setTeam(coachingTeam);
-        torunamentTeam.setTournament(targetTournament);
-        entityManager.persist(torunamentTeam);
+        // TournamentTeam torunamentTeam = new TournamentTeam();
+        // // torunamentTeam.setTeam(coachingTeam);
+        // // torunamentTeam.setTournament(targetTournament);
+        // entityManager.persist(torunamentTeam);
        
         return new RedirectView("/join");
     }
@@ -107,41 +106,42 @@ public class TournamentController {
     @GetMapping("{tournamentId}/bracket")
     @Transactional
     public String bracket(HttpSession session, @PathVariable long tournamentId, Model model) {
-        model.addAttribute("ongoing", Boolean.TRUE);
+        // model.addAttribute("ongoing", Boolean.TRUE);
 
-        User user = (User) session.getAttribute("u");
+        // User user = (User) session.getAttribute("u");
 
-        Tournament tournament = (Tournament) entityManager.createQuery(
-            "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
-            .setParameter("tournamentid", tournamentId)
-            .getSingleResult();
+        // Tournament tournament = (Tournament) entityManager.createQuery(
+        //     "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
+        //     .setParameter("tournamentid", tournamentId)
+        //     .getSingleResult();
 
         
-        //Match al que mandar mensajes en el chat
-        model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
+        // //Match al que mandar mensajes en el chat
+        // model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
         
-        List<Match> matches = entityManager.createQuery(
-            "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
-            .setParameter("tournamentid", tournamentId)
-            .getResultList();
+        // List<Match> matches = entityManager.createQuery(
+        //     "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
+        //     .setParameter("tournamentid", tournamentId)
+        //     .getResultList();
         
             
-        Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
+        // Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
 
-        for (Match match : matches) {
+        // for (Match match : matches) {
             
-            int ronda = match.getRoundNumber();
+        //     //int ronda = match.getRoundNumber();
+        //     int ronda = 0;
 
-            List<Match> partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
+        //     List<Match> partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
 
-            partidosEnRonda.add(match);
-            partidosPorRonda.put(ronda, partidosEnRonda);
-        }
+        //     partidosEnRonda.add(match);
+        //     partidosPorRonda.put(ronda, partidosEnRonda);
+        // }
        
-        model.addAttribute("partidosPorRonda", partidosPorRonda);
+        // model.addAttribute("partidosPorRonda", partidosPorRonda);
 
-        Team myTeam =  getUserTeamFromMatch(user, getUserMatchFromTournament(user, tournament));
-        model.addAttribute("myTeam", myTeam);
+        // Team myTeam =  getUserTeamFromMatch(user, getUserMatchFromTournament(user, tournament));
+        // model.addAttribute("myTeam", myTeam);
 
         return "bracket";
     }
@@ -151,18 +151,18 @@ public class TournamentController {
     public RedirectView createTournament(@ModelAttribute Tournament tournament,
             Model model) throws Exception {
 
-        if(LocalDateTime.now().isAfter(LocalDateTime.parse(tournament.getDate() + "T" + tournament.getStartingHour() + ":00"))) {
-            return new RedirectView("/create?exception=Incorrect starting date. Date cannot be previous to the current one.");
-        }
+        // if(LocalDateTime.now().isAfter(LocalDateTime.parse(tournament.getDate() + "T" + tournament.getStartingHour() + ":00"))) {
+        //     return new RedirectView("/create?exception=Incorrect starting date. Date cannot be previous to the current one.");
+        // }
 
-        tournament.setStatus(TournamentStatus.NOT_STARTED);
+        //tournament.setStatus(TournamentStatus.NOT_STARTED);
 
-        tournament.setCreationDate(LocalDate.now().toString());
+        // tournament.setCreationDate(LocalDate.now().toString());
 
-        tournament.setRounds(((int) Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2))) + 1);
+        // tournament.setRounds(((int) Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2))) + 1);
 
-        entityManager.persist(tournament);
-        entityManager.flush();
+        // entityManager.persist(tournament);
+        // entityManager.flush();
 
         return new RedirectView("/join");
     }
@@ -172,8 +172,8 @@ public class TournamentController {
             Team team = entityManager.createQuery(
                     "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
                     Team.class)
-                    .setParameter("matchTeam1", match.getTeam1().getId())
-                    .setParameter("matchTeam2", match.getTeam2().getId())
+                    // .setParameter("matchTeam1", match.getTeam1().getId())
+                    // .setParameter("matchTeam2", match.getTeam2().getId())
 					.setParameter("userId", user.getId())
                     .getSingleResult();
             return team;
@@ -185,15 +185,15 @@ public class TournamentController {
 
     private Match getUserMatchFromTournament(User user, Tournament tournament) {
 
-        if (user.getTeam() == null) {
-            return null;
-        }
+        // if (user.getTeam() == null) {
+        //     return null;
+        // }
 
         try {
             Match match = entityManager.createQuery(
                     "SELECT m FROM Match m WHERE m.team1.id = :teamId OR m.team2.id = :teamId AND m.tournament.id = :tournamentId AND m.winner IS null",
                     Match.class)
-                    .setParameter("teamId", user.getTeam().getId())
+                    // .setParameter("teamId", user.getTeam().getId())
                     .setParameter("tournamentId", tournament.getId())
                     .getSingleResult();
 

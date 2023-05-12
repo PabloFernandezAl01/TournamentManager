@@ -7,36 +7,41 @@ import lombok.Data;
 @Data
 public class Match {
 
+    /*
+     *  Id autogenerado que actua como clave primaria de la tabla TournamentTeam
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
 	private long id;
 
+    /*
+     * Id del torneo en el que se encuentra este "Match"
+     */
     @Column(nullable = false)
-    private int roundNumber;
+    private long tournamentId;
 
+    /*
+     * Id de los equipos que conforman este "Match"
+     */
     @Column(nullable = false)
-    private int matchNumber;
+    private long teamOne;
+    @Column(nullable = false)
+    private long teamTwo;
 
-    @OneToOne
-    private Team team1;
+    // Atributos para los distintos tipos de torneos
 
-    @OneToOne
-    private Team team2;
-    
-    private String topicId;
+        // Single & Double Elimination
+        /*
+         * Indica la fase del torneo en la que se encuentra este "Match"
+         */
+        @Column(nullable = false)
+        private int round;
 
-    @OneToOne
-    private Tournament tournament;
+        // Round Robin
+        /*
+         * Indica si el partido ha terminado en empate
+         */
+        private Boolean draw;
 
-    private String result;
-
-
-    @OneToOne
-    private Team winner;
-
-    // Atributo blob para la imagen del team 1
-
-    // Atributo blob para la imagen del team 2
-    
 }

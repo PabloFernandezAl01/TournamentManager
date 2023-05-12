@@ -1,12 +1,10 @@
 package es.ucm.fdi.iw;
+import es.ucm.fdi.iw.model.User;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,11 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
-import es.ucm.fdi.iw.model.Match;
-import es.ucm.fdi.iw.model.Tournament;
-import es.ucm.fdi.iw.model.User;
-import es.ucm.fdi.iw.model.User.Role;
 
 /**
  * Called when a user is first authenticated (via login).
@@ -63,14 +56,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		 */
 		addSameSiteCookieAttribute(response);
 
-		String username = ((org.springframework.security.core.userdetails.User) authentication.getPrincipal())
-				.getUsername();
+		String username = ((org.springframework.security.core.userdetails.User) authentication.getPrincipal()).getUsername();
 
 		// add a 'u' session variable, accessible from thymeleaf via ${session.u}
 		log.info("Storing user info for {} in session {}", username, session.getId());
 		User u = entityManager.createNamedQuery("User.byUsername", User.class)
 				.setParameter("username", username)
 				.getSingleResult();
+				
 		session.setAttribute("u", u);
 
 		// add 'url' and 'ws' session variables
@@ -78,7 +71,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		// http://localhost:8080/ //localhost:8080/
 		// http://localhost:8080/abc/ //localhost:8080/abc/
 		// https://vmXY.containers.fdi.ucm.es/ //vmXY.containers.fdi.ucm.es/
-		//
+
 		String url = request.getRequestURL().toString()
 				.replaceFirst("/[^/]*$", "") // ...foo/bar => ...foo/
 				.replaceFirst("[^/]*", ""); // http[s]://...foo/ => //...foo/
@@ -89,14 +82,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		session.setAttribute("url", url);
 		session.setAttribute("ws", ws);
 
-		// INSERTAR TOPICSIDS DE USUARIO
-		List<Tournament> tournaments = getAllUserTournaments(u);
-		List<Match> matches = getAllUserMatches(u);
-
-		List<String> topics = getAllTopicIds(tournaments, matches);
-		session.setAttribute("topics", topics);
-		log.info("Topics for {} are {}", u.getUsername(), topics);
-
 		// redirects to 'admin' or 'user/{id}', depending on the user
 		String nextUrl = u.hasRole(User.Role.ADMIN) ? "admin/" : "user/" + u.getId();
 
@@ -105,51 +90,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 		// note that this is a 302, and will result in a new request
 		response.sendRedirect(nextUrl);
-	}
-
-	private List<Tournament> getAllUserTournaments(User u) {
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Tournament> query = entityManager.createQuery(
-				"SELECT e.tournament FROM Tournament_Team e WHERE e.team.id = :teamId",
-				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Tournament m : query) {
-			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<Match> getAllUserMatches(User u) {
-
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Match> query = entityManager.createQuery(
-				"SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId",
-				Match.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Match m : query) {
-			log.info("My team is {}, and one of my matches is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
-		List<String> topicsId = new ArrayList<>();
-		for (Tournament tournament : tournaments) {
-			if (tournament.getTopicId() != null) {
-				log.info("my topicid tournament", tournament.getTopicId());
-				topicsId.add(tournament.getTopicId());
-			}
-		}
-		for (Match match : matches) {
-			if (match.getTopicId() != null) {
-				topicsId.add(match.getTopicId());
-			}
-		}
-		return topicsId;
 	}
 
 	/**
@@ -172,4 +112,5 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 					String.format("%s; %s", header, "SameSite=Strict"));
 		}
 	}
+
 }

@@ -5,25 +5,31 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name="TEAM_MEMBER")
 public class TeamMember {
 
-    public enum RoleInTeam {
-        PLAYER,
-        COACH
-    }
-    
+    /*
+     * Id autogenerado que actua como clave primaria de la tabla TeamMember
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
 	private long id;
 
-    @OneToOne
-    private Team team;
+    /*
+     * Id del "User"
+     */
+    @Column(nullable = false)
+    private Long userId;
 
-    @OneToOne
-    private User user;
+    /*
+     * Id del "Team" de "User"
+     */
+    @Column(nullable = false)
+    private Long teamId;
 
-    private RoleInTeam role;
+    /*
+     * Booleano que representa el usuario "User" es Coach del equipo "Team"
+     */
+    private Boolean isCoach;
 
 }

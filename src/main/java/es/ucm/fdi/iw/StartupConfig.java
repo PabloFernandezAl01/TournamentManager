@@ -9,7 +9,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletContext;
-import java.text.SimpleDateFormat;
 
 /**
  * This code will execute when the application first starts.
@@ -30,9 +29,8 @@ public class StartupConfig {
 	@EventListener(ContextRefreshedEvent.class)
 	public void contextRefreshedEvent() {
 		String debugProperty = env.getProperty("es.ucm.fdi.debug");
-		context.setAttribute("debug", debugProperty != null 
-				&& Boolean.parseBoolean(debugProperty.toLowerCase()));
-		log.info("Setting global debug property to {}", 
-				context.getAttribute("debug"));
+		context.setAttribute("debug", debugProperty != null && Boolean.parseBoolean(debugProperty.toLowerCase()));
+
+		log.info("Setting global debug property to {}", context.getAttribute("debug"));
 	}
 }
