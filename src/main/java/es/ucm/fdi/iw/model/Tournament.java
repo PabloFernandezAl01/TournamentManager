@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Entity
 @Data
+
+// Consulta para obtener todos los torneos
+@NamedQuery(name = "AllTournaments", query = "SELECT t FROM Tournament t")
 public class Tournament {
 
     /*

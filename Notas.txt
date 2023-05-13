@@ -2,3 +2,4 @@
 - SecurityConfig tiene dependencias deprecated
 - Resolver los TODOs en el código
 - Mirar donde se escriben los LOGS
+- Comprobar que todo sigue funcionando

@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Entity
 @Data
+
+// Consulta para obtener los Ids de equipos inscritos en un torneo
+@NamedQuery(name = "TeamsIdsByTournament", query = "SELECT e.teamId FROM TournamentTeam e WHERE e.tournamentId = :tournamentid")
 public class TournamentTeam {
 
     /*

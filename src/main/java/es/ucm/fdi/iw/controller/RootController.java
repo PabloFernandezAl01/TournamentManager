@@ -17,8 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.ui.Model;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.transaction.Transactional;
 import javax.servlet.http.HttpSession;
 
@@ -42,16 +40,6 @@ import lombok.Data;
  * Non-authenticated requests only.
  */
 @Controller
-@NamedQueries({ // Definicion de consultas utiles para la clase
-    // Todos los torneos
-    @NamedQuery(name = "AllTournaments", query = "select t from Tournament t"),
-
-    // Ids de equipos inscritos en un torneo
-    @NamedQuery(name = "TeamsIdsByTournament", query = "SELECT e.teamId FROM TournamentTeam e WHERE e.tournamentId = :tournamentid"),
-
-    // Members By Team
-    @NamedQuery(name = "MembersIdsByTeam", query = "SELECT e.userId FROM TeamMember e WHERE e.teamId = :teamid"),
-})
 public class RootController {
 
     private static final Logger log = LogManager.getLogger(RootController.class);

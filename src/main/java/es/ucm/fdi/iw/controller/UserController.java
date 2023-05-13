@@ -71,8 +71,8 @@ public class UserController {
 	@Autowired
 	private LocalData localData;
 
-	@Autowired
-	private SimpMessagingTemplate messagingTemplate;
+	// @Autowired
+	// private SimpMessagingTemplate messagingTemplate;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;

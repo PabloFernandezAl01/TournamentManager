@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Entity
 @Data
+
+// Consulta para obtener los Ids de los Users de un equipo
+@NamedQuery(name = "MembersIdsByTeam", query = "SELECT e.userId FROM TeamMember e WHERE e.teamId = :teamid")
 public class TeamMember {
 
     /*

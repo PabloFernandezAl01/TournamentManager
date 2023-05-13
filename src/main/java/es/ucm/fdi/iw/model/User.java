@@ -21,7 +21,7 @@ import java.util.List;
 @Data // Etiqueda de lombok para generar automticamente getters & setters para los atributos de la clase
 @NoArgsConstructor // Etiqueta de lombok que genera un constructor sin argumentos en la clase
 
-@NamedQueries({ // Definicion de consultas utiles para la clase
+@NamedQueries({ // Definicion de consultas (Independientemente del lugar donde se vayan a usar, deben estar definidas en las entidades)
     @NamedQuery(name = "User.byUsername", query = "SELECT u FROM User u " + "WHERE u.username = :username AND u.enabled = TRUE"),
     @NamedQuery(name = "User.hasUsername", query = "SELECT COUNT(u) " + "FROM User u " + "WHERE u.username = :username")
 })
