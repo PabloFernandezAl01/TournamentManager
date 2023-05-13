@@ -56,6 +56,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
+import es.ucm.fdi.iw.model.Tournament.TournamentType;
+
 import org.springframework.web.servlet.view.RedirectView;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,19 +89,19 @@ public class TournamentController {
     @PostMapping("/joinTournament")
     @Transactional
     public RedirectView joinTournament(@RequestParam("tournamentId") long tournamentId, @RequestParam("userId") long userId) {
+
         // Tournament targetTournament = entityManager.find(Tournament.class, tournamentId);
 
-        // //Equipo del que somos entrenador
+        // // Equipo del que somos entrenador
         // Team coachingTeam = (Team) entityManager.createQuery(
-        //     "select t from Team t where t.coach.id = :id ")                                                   
-        //     .setParameter("id", userId).getSingleResult();
-
+        //         "select t from Team t where t.coach.id = :id ")
+        //         .setParameter("id", userId).getSingleResult();
 
         // TournamentTeam torunamentTeam = new TournamentTeam();
-        // // torunamentTeam.setTeam(coachingTeam);
-        // // torunamentTeam.setTournament(targetTournament);
+        // torunamentTeam.setTeam(coachingTeam);
+        // torunamentTeam.setTournament(targetTournament);
         // entityManager.persist(torunamentTeam);
-       
+
         return new RedirectView("/join");
     }
 
@@ -108,51 +110,71 @@ public class TournamentController {
     public String bracket(HttpSession session, @PathVariable long tournamentId, Model model) {
         // model.addAttribute("ongoing", Boolean.TRUE);
 
-        // User user = (User) session.getAttribute("u");
+        // try {
+        //     User user = (User) session.getAttribute("u");
 
-        // Tournament tournament = (Tournament) entityManager.createQuery(
-        //     "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
-        //     .setParameter("tournamentid", tournamentId)
-        //     .getSingleResult();
+        //     Tournament tournament = (Tournament) entityManager.createQuery(
+        //             "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
+        //             .setParameter("tournamentid", tournamentId)
+        //             .getSingleResult();
 
-        
-        // //Match al que mandar mensajes en el chat
-        // model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
-        
-        // List<Match> matches = entityManager.createQuery(
-        //     "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
-        //     .setParameter("tournamentid", tournamentId)
-        //     .getResultList();
-        
+        //     // Match al que mandar mensajes en el chat
+        //     model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
+
+        //     List<Match> matches = entityManager.createQuery(
+        //             "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
+        //             .setParameter("tournamentid", tournamentId)
+        //             .getResultList();
+
+        //     Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
+
+        //     for (Match match : matches) {
+
+        //         int ronda = match.getRoundNumber();
+
+        //         List<Match> partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
+
+        //         partidosEnRonda.add(match);
+        //         partidosPorRonda.put(ronda, partidosEnRonda);
+        //     }
+
+        //     model.addAttribute("partidosPorRonda", partidosPorRonda);
+
+        //     Team myTeam = getUserTeamFromMatch(user, getUserMatchFromTournament(user, tournament));
+        //     model.addAttribute("myTeam", myTeam);
             
-        // Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
+        //     if (tournament.getType() == 0)
+        //         return "bracket";
+        //     else if (tournament.getType() == 1)
+        //         return "bracket";
+        //     else {
+        //         try{
+        //         List<Tournament_Team> teamsList = entityManager.createQuery(
+        //                 "SELECT t FROM Tournament_Team t WHERE t.tournament.id = :tournamentid ORDER BY t.puntuacion DESC",
+        //                 Tournament_Team.class)
+        //                 .setParameter("tournamentid", tournamentId)
+        //                 .getResultList();
+        //         model.addAttribute("teams", teamsList);
+        //         } catch (Exception e){
+        //             log.info("TOURNAMENT_TEAM EXCEPTION", e);
+        //         }
+        //         return "tableBracket";
+        //     }
 
-        // for (Match match : matches) {
-            
-        //     //int ronda = match.getRoundNumber();
-        //     int ronda = 0;
-
-        //     List<Match> partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
-
-        //     partidosEnRonda.add(match);
-        //     partidosPorRonda.put(ronda, partidosEnRonda);
+        // } catch (Exception e) {
+        //     log.info("HA SALTADO UNA EXCEPCION: ", e);
         // }
-       
-        // model.addAttribute("partidosPorRonda", partidosPorRonda);
-
-        // Team myTeam =  getUserTeamFromMatch(user, getUserMatchFromTournament(user, tournament));
-        // model.addAttribute("myTeam", myTeam);
-
         return "bracket";
     }
 
     @PostMapping("/createTournament")
     @Transactional
-    public RedirectView createTournament(@ModelAttribute Tournament tournament,
-            Model model) throws Exception {
+    public RedirectView createTournament(@ModelAttribute Tournament tournament, Model model) throws Exception {
 
-        // if(LocalDateTime.now().isAfter(LocalDateTime.parse(tournament.getDate() + "T" + tournament.getStartingHour() + ":00"))) {
-        //     return new RedirectView("/create?exception=Incorrect starting date. Date cannot be previous to the current one.");
+        // if (LocalDateTime.now()
+        //         .isAfter(LocalDateTime.parse(tournament.getDate() + "T" + tournament.getStartingHour() + ":00"))) {
+        //     return new RedirectView(
+        //             "/create?exception=Incorrect starting date. Date cannot be previous to the current one.");
         // }
 
         //tournament.setStatus(TournamentStatus.NOT_STARTED);
@@ -168,19 +190,21 @@ public class TournamentController {
     }
 
     private Team getUserTeamFromMatch(User user, Match match) {
-        try {
-            Team team = entityManager.createQuery(
-                    "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
-                    Team.class)
-                    // .setParameter("matchTeam1", match.getTeam1().getId())
-                    // .setParameter("matchTeam2", match.getTeam2().getId())
-					.setParameter("userId", user.getId())
-                    .getSingleResult();
-            return team;
+        // try {
+        //     Team team = entityManager.createQuery(
+        //             "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
+        //             Team.class)
+        //             .setParameter("matchTeam1", match.getTeam1().getId())
+        //             .setParameter("matchTeam2", match.getTeam2().getId())
+        //             .setParameter("userId", user.getId())
+        //             .getSingleResult();
+        //     return team;
 
-        } catch (NoResultException e) {
-            return null;
-        }
+        // } catch (NoResultException e) {
+        //     return null;
+        // }
+
+        return null;
     }
 
     private Match getUserMatchFromTournament(User user, Tournament tournament) {
@@ -189,19 +213,20 @@ public class TournamentController {
         //     return null;
         // }
 
-        try {
-            Match match = entityManager.createQuery(
-                    "SELECT m FROM Match m WHERE m.team1.id = :teamId OR m.team2.id = :teamId AND m.tournament.id = :tournamentId AND m.winner IS null",
-                    Match.class)
-                    // .setParameter("teamId", user.getTeam().getId())
-                    .setParameter("tournamentId", tournament.getId())
-                    .getSingleResult();
+        // try {
+        //     Match match = entityManager.createQuery(
+        //             "SELECT m FROM Match m WHERE (m.team1.id = :teamId OR m.team2.id = :teamId) AND m.tournament.id = :tournamentId AND m.winner IS null",
+        //             Match.class)
+        //             // .setParameter("teamId", user.getTeam().getId())
+        //             .setParameter("tournamentId", tournament.getId())
+        //             .getSingleResult();
 
+        //     return match;
 
-            return match;
+        // } catch (NoResultException e) {
+        //     return null;
+        // }
 
-        } catch (NoResultException e) {
-            return null;
-        }
+        return null;
     }
 }

@@ -131,7 +131,7 @@ public class RootController {
         // Añande los torneos y un flag indicando si el usuario es coach
         model.addAttribute("isUserCoach", true);
         model.addAttribute("tournaments", tournaments);
-
+    
         return "ongoing";
     }
 
