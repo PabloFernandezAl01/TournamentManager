@@ -210,7 +210,7 @@ body,
 }
 
 .match .team.winner {
-  background-color: #0f0;
+  background-color: rgb(163, 255, 163);
 }
 
 /* Additional styles */

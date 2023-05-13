@@ -127,6 +127,7 @@ public class RootController {
 
     @GetMapping("/record")
     public String record(Model model, HttpSession session) {
+        
         disableViews(model);
         model.addAttribute("record", Boolean.TRUE);
 

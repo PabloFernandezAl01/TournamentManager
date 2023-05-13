@@ -21,19 +21,20 @@
       <h3 th:text="${partido.key}"></h3>
 
       <div th:each="match : ${partido.value}" class="match">
-          
-          <div th:if="${match.team1}"  th:text="${match.team1.name}" class="team"></div>
-          <div th:if="${match.team1 == null}" class="team">-</div>
-          
-          <span>vs</span>
-          
-          <div th:if="${match.team2}"  th:text="${match.team2.name}" class="team"></div>
-          <div th:if="${match.team2 == null}" class="team">-</div>
+
+        <div th:if="${match.team1}" th:text="${match.team1.name}"
+          th:classappend="${match.winner != null} ? 'winner' : ''" class="team"></div>
+        <div th:if="${match.team1 == null}" class="team">-</div>
+
+        <span>vs</span>
+
+        <div th:if="${match.team2}" th:text="${match.team2.name}" class="team"></div>
+        <div th:if="${match.team2 == null}" class="team">-</div>
       </div>
     </div>
   </div>
 
-  
+
   <div class="d-flex justify-content-center align-items-center h-100">
     <div th:if="${userMatch != null}" id="chat" class="chat col-md-6">
       <!--RECEPCIÓN DE MENSAJES-->
@@ -47,10 +48,9 @@
       </div>
     </div>
   </div>
-  
+
   <th:block th:replace="fragments/footer.html :: footer" />
   <script th:src="@{/js/ajax-message-match.js}"></script>
 </body>
 
 </html>
-
