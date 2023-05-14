@@ -318,6 +318,8 @@ public class UserController {
 
 		for (User recipient : recipients) {
 
+			log.info("Mensaje a " + recipient.getFirstName());
+
 			Team team = getUserTeamFromMatch(user, match);
 			Message m = new Message();
 			

@@ -47,10 +47,27 @@
         </form>
       </div>
     </div>
+
+  </div>
+
+  <div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <form class="formReport" method="post" th:action="@{|/user/reportMsg/${session.u.id}/${userMatch.id}|}">
+        <h3>Reportar mensaje</h3>
+        <textarea  id="messageInputReport" class="form-control" placeholder="¿Que ha ocurrido?"></textarea> 
+        <p></p>
+        <button id="sendButton" class="btn btn-primary" type="submit">Enviar</button>
+      </form>
+    </div>
+
   </div>
 
   <th:block th:replace="fragments/footer.html :: footer" />
   <script th:src="@{/js/ajax-message-match.js}"></script>
 </body>
+
 
 </html>

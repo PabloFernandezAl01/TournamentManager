@@ -19,6 +19,9 @@ VALUES (5, 0, TRUE,'e','e', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924
 INSERT INTO IWUser (id, earned, enabled, first_name, last_name, password,
 reports, roles, username, team_id)
 VALUES (6, 0, TRUE,'f','f', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W',0,'USER', 'f',null);
+INSERT INTO IWUser (id, earned, enabled, first_name, last_name, password,
+reports, roles, username, team_id)
+VALUES (7, 0, TRUE,'JUGADOR','JUGADOR', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W',0,'USER', 'JUGADOR',null);
 
 INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
 name, prize_pool, rounds, status, type, winner_id)
@@ -27,6 +30,10 @@ VALUES (1026, '2023-03-27', 'descripcion del torneo', 3.0, 1, 4, 'Torneo Prueba'
 INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
 name, prize_pool, rounds, status, type, winner_id)
 VALUES (1027, '2023-04-27', 'descripcion del torneo 2', 3.0, 1, 4, 'Torneo Prueba 2', 2.0, 3, 1, 2, null);  
+
+INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
+name, prize_pool, rounds, status, type, winner_id)
+VALUES (1028, '2023-08-27', 'descripcion del torneo 3', 3.0, 1, 4, 'Torneo Prueba 3', 2.0, 3, 1, 0, null);  
 
 INSERT INTO Team (id, name, coach_id)
 VALUES (999, 'Primer Equipo', 1);  
@@ -62,7 +69,10 @@ INSERT INTO Team_Member (id, role, team_id, user_id)
 VALUES (13238, 1, 1003, 5);  
 
 INSERT INTO Team_Member (id, role, team_id, user_id)
-VALUES (13238, 1, 1004, 6);  
+VALUES (13239, 1, 1004, 6);  
+
+INSERT INTO Team_Member (id, role, team_id, user_id)
+VALUES (13240, 0, 999, 7);  
 
 UPDATE IWUSER
 SET TEAM_ID = 999
@@ -87,6 +97,10 @@ WHERE ID = 5;
 UPDATE IWUSER
 SET TEAM_ID = 1004
 WHERE ID = 6;
+
+UPDATE IWUSER
+SET TEAM_ID = 999
+WHERE ID = 7;
 
 
 INSERT INTO TOURNAMENT_TEAM  (id, team_id, tournament_id , puntuacion, victorias, empates, derrotas)

@@ -229,12 +229,17 @@ h3 {
 }
 
 .others_message {
-  color: lightcoral;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  transition: 0.5s ease;
 }
 
+.others_message:hover {
+  color: rgb(218, 107, 107);
+}
 .date {
   margin-right: 10px;
-  color: white;
+  color: rgb(138, 138, 138);
 }
 
 table {
@@ -255,4 +260,11 @@ td {
 }
 .tituloRoundRobin{
   background-color: rgba(69, 76, 82, 0.9);
+}
+
+.teamFromMessage{
+  color: rgb(189, 189, 189);
+}
+.white{
+  color: #ffffff;
 }
