@@ -1,10 +1,32 @@
-.userProfile{
+.profile{
     text-align: center;
     margin-top: 5em;
     background-color:rgb(33,37,41,0.9);
     width: 50%;
     padding: 1em;
     border-radius: 10px;
+}
+
+.body {
+  margin-top: 0px;
+}
+
+.data {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    align-items: center;
+}
+
+.atributes {
+    text-align: left;
+    vertical-align: middle;
+}
+
+.userimage {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
 }
 
 /*ventana modal de creación de equipo*/

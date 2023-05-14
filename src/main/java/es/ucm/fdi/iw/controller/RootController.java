@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.stereotype.Controller;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.ui.Model;
 
 import javax.persistence.EntityManager;
@@ -23,18 +25,13 @@ import java.io.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-/*
- * Por mejorar:
- *  - Aleatoriedad en los emparejamientos de equipos
- *  - Ver si tiene sentido la creacion de equipos cada vez que se hace un GET
- *  - ¿ Porque hay logica de torneos aqui y no en TournamentController?
- */
-
 /**
  * Non-authenticated requests only.
  */
 @Controller
 public class RootController {
+
+    private static final Logger log = LogManager.getLogger(RootController.class);
 
     /*
      * Estructura para manejar la informacion de un torneo
@@ -181,14 +178,14 @@ public class RootController {
         registered.setPassword(encodedPassword); 
 
         // Inicializa el valor de dinero obtenido y los reportes recibidos
-        registered.setEarned(0);
+        registered.setCoins(0);
         registered.setReports(0);
 
         // Añade/modifica la base de datos
         entityManager.persist(registered);
 
         // Sincroniza el contexto de persistencia con la DB
-        entityManager.flush();
+        //entityManager.flush();
 
         // Redirige la vista a LOGIN ya que despues de registrarse tiene sentido iniciar sesion
         return new RedirectView("/login");
@@ -201,9 +198,14 @@ public class RootController {
     private List<Tourney> getTournamentsFilterByStatus(HttpSession session, TournamentStatus status) {
 
         List<Tourney> tourneys = new ArrayList<>();
+        List<Tournament> tournaments = new ArrayList<>();
 
-        // Consulta a la DB para obtener todos los torneos
-        List<Tournament> tournaments = entityManager.createNamedQuery("AllTournaments", Tournament.class).getResultList();
+        try {
+            // Consulta a la DB para obtener todos los torneos
+            tournaments = entityManager.createNamedQuery("AllTournaments", Tournament.class).getResultList();
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
 
         for (Tournament t : tournaments) {
             if (t.getStatus() == status) {
@@ -229,15 +231,26 @@ public class RootController {
 
         User user = (User) session.getAttribute("u");
 
-        // Obtiene todos los Ids de los equipos inscritos en el torneo T
-        List<Long> teamsIds = entityManager.createNamedQuery("TeamsIdsByTournament", Long.class)
-                                                .setParameter("tournamentid", tournamentId).getResultList();
+        List<Long> teamsIds = new ArrayList<>();
+        List<Long> usersIdsInTeam = new ArrayList<>();
+
+        try {
+            // Obtiene todos los Ids de los equipos inscritos en el torneo T
+            teamsIds = entityManager.createNamedQuery("TeamsIdsByTournament", Long.class)
+                                         .setParameter("tournamentid", tournamentId).getResultList();
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
 
         for (Long teamId : teamsIds) {
 
-            // Por cada Id de equipo, obtiene sus integrantes
-            List<Long> usersIdsInTeam = entityManager.createNamedQuery("MembersIdsByTeam", Long.class)
-                                                                  .setParameter("teamid", teamId).getResultList();
+            try {
+                // Por cada Id de equipo, obtiene sus integrantes
+                usersIdsInTeam = entityManager.createNamedQuery("MembersIdsByTeam", Long.class)
+                                                            .setParameter("teamid", teamId).getResultList();
+            } catch (IllegalArgumentException e) {
+                log.error(e.getMessage());
+            }
             
             // Comprueba si algun Id de integrante del equipo concide con el Id del usuario
             for (Long u : usersIdsInTeam) {
@@ -256,20 +269,40 @@ public class RootController {
      */
     private int getNumberOfTeamsInTournament(Tournament t) {
 
-        // Consulta el tamaño de la lista devuelta por la consutla
-        int nTeams = entityManager.createNamedQuery("TeamsIdsByTournament", Long.class)
-        .setParameter("tournamentid", t.getId()).getResultList().size();
+        int nTeams = 0;
+
+        try {
+             // Consulta el tamaño de la lista devuelta por la consutla
+            nTeams = entityManager.createNamedQuery("TeamsIdsByTournament", Long.class)
+                                    .setParameter("tournamentid", t.getId()).getResultList().size();
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
 
         return nTeams;
     }
 
+    /*
+     * Devuelve un bool indicando si el usuario es coach de algun equipo
+     */
     private boolean isCoach(HttpSession session) {
 
-        // Obtiene la informacion del usuario de la sesion actual
-        User user = (User) session.getAttribute("u");
+        User user = null;
+        List<TeamMember> coachs = new ArrayList<>();
 
-        // Obtiene todos los coachs de todos los Teams existentes en la aplicacion
-        List<TeamMember> coachs = entityManager.createNamedQuery("AllCoachs", TeamMember.class).getResultList();
+        try {
+            // Obtiene la informacion del usuario de la sesion actual
+            user = (User) session.getAttribute("u");
+        } catch (IllegalStateException e) {
+            log.error(e.getMessage());
+        }
+
+        try {
+            // Obtiene todos los coachs de todos los Teams existentes en la aplicacion
+            coachs = entityManager.createNamedQuery("AllCoachs", TeamMember.class).getResultList();
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
 
         // Comprueba si el usuario es coach recorriendo todos
         // los coachs que existen y comparando sus Ids

@@ -1,58 +1,55 @@
 package es.ucm.fdi.iw.controller;
-
-import es.ucm.fdi.iw.LocalData;
-import es.ucm.fdi.iw.model.Match;
-import es.ucm.fdi.iw.model.Message;
-
 import es.ucm.fdi.iw.model.Transferable;
-import es.ucm.fdi.iw.model.User;
+import es.ucm.fdi.iw.model.TeamMember;
+import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.User.Role;
+import es.ucm.fdi.iw.model.Message;
+import es.ucm.fdi.iw.model.Match;
+import es.ucm.fdi.iw.model.User;
+import es.ucm.fdi.iw.model.Team;
+import es.ucm.fdi.iw.LocalData;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.springframework.stereotype.Controller;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.http.HttpStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.ui.Model;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.persistence.NoResultException;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import java.io.*;
+import java.util.stream.Collectors;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import org.springframework.web.servlet.view.RedirectView;
-import es.ucm.fdi.iw.model.Team;
-import es.ucm.fdi.iw.model.Tournament;
-import es.ucm.fdi.iw.model.TeamMember;
+import java.io.*;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * User management.
@@ -65,6 +62,9 @@ public class UserController {
 
 	private static final Logger log = LogManager.getLogger(UserController.class);
 
+	/*
+     * Proporciona acceso a la base de BD desde cualquier parte del controlador
+     */
 	@Autowired
 	private EntityManager entityManager;
 
@@ -84,8 +84,7 @@ public class UserController {
 	 * each other's profiles.
 	 */
 	@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "No eres administrador, y éste no es tu perfil") // 403
-	public static class NoEsTuPerfilException extends RuntimeException {
-	}
+	public static class NoEsTuPerfilException extends RuntimeException {}
 
 	/**
 	 * Encodes a password, so that it can be saved for future checking. Notice
@@ -123,17 +122,6 @@ public class UserController {
 
 		User user = entityManager.find(User.class, id);
 		model.addAttribute("user", user);
-		
-		// Team coachingTeam = null;
-
-		// try{
-		// 	coachingTeam = (Team) entityManager.createQuery(
-		// 		"select t from Team t join TeamMember tm on t.id = tm.team.id where tm.user.id = :id")
-		// 		.setParameter("id", id).getSingleResult();
-		// }
-		// catch (Exception e) {}
-
-		// model.addAttribute("coachingTeam", coachingTeam);
 
 		return "user";
 	}
@@ -169,12 +157,13 @@ public class UserController {
 
 		if (edited.getPassword() != null) {
 			if (!edited.getPassword().equals(pass2)) {
-				// FIXME: complain
+				// Avisar de que la constraseña es igual a la anterior (Usuario bobo)
 			} else {
 				// save encoded version of password
 				target.setPassword(encodePassword(edited.getPassword()));
 			}
 		}
+
 		target.setUsername(edited.getUsername());
 		target.setFirstName(edited.getFirstName());
 		target.setLastName(edited.getLastName());
@@ -254,10 +243,13 @@ public class UserController {
 	@PostMapping("{id}/createTeam")
 	@Transactional
 	public String postCreateTeam(@PathVariable long id, HttpServletRequest request, Model model) throws Exception {
-		// String name = request.getParameter("name");
-		// Team t = new Team();
-		// User u = entityManager.find(User.class, id);
-		// TeamMember tm = new TeamMember();
+
+		String name = request.getParameter("name");
+		User u = entityManager.find(User.class, id);
+
+		Team t = new Team();
+
+		TeamMember tm = new TeamMember();
 
 		// t.setCoach(u);
 		// t.setName(name);
@@ -266,18 +258,16 @@ public class UserController {
 		// tm.setTeam(t);
 		// tm.setUser(u);
 
-		// entityManager.persist(t);
-		// entityManager.persist(tm);
-		// entityManager.flush();
+		entityManager.persist(t);
+		entityManager.persist(tm);
+		entityManager.flush();
 
-		// model.addAttribute("user", u);
-		// model.addAttribute("coachingTeam", t);
+		model.addAttribute("user", u);
 
 		return "user";
 	}
 
 
-	/* ENVIO MENSAJES POR MATCH */
 	/**
 	 * Posts a message to a match.
 	 * 
@@ -337,28 +327,28 @@ public class UserController {
 		return "{\"result\": \"message sent.\"}";
 	}
 
-		/**
+	/**
 	 * Returns JSON with all received messages
 	 */
-	// @GetMapping(path = "received", produces = "application/json")
-	// @Transactional // para no recibir resultados inconsistentes
-	// @ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
-	// public List<Message.Transfer> retrieveMessages(HttpSession session) {
-	// 	long userId = ((User) session.getAttribute("u")).getId();
+	@GetMapping(path = "received", produces = "application/json")
+	@Transactional // para no recibir resultados inconsistentes
+	@ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
+	public List<Message.Transfer> retrieveMessages(HttpSession session) {
+		long userId = ((User) session.getAttribute("u")).getId();
 
-	// 	User user = entityManager.find(User.class, userId);
+		User user = entityManager.find(User.class, userId);
 
-	// 	log.info("Generating message list for user {} ({} messages)",
-	// 			user.getUsername(), user.getReceived().size());
+		log.info("Generating message list for user {} ({} messages)",
+				user.getUsername(), user.getReceived().size());
 
-	// 	List<Message> received = new ArrayList<>();
-	// 	for(Message msg : user.getReceived()) {
-	// 		msg.setIamSender(msg.getSender().getId() == user.getId());
-	// 		received.add(msg);
-	// 	}
+		List<Message> received = new ArrayList<>();
+		for(Message msg : user.getReceived()) {
+			msg.setIamSender(msg.getSender().getId() == user.getId());
+			received.add(msg);
+		}
 
-	// 	return received.stream().map(Transferable::toTransfer).collect(Collectors.toList());
-	// }
+		return received.stream().map(Transferable::toTransfer).collect(Collectors.toList());
+	}
 
 	private Team getUserTeamFromMatch(User user, Match match) {
 		return null;

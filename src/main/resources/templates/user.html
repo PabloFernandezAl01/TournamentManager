@@ -3,76 +3,48 @@
 
 <head>
     <th:block th:replace="fragments/head :: header" />
-    <title>IW: Perfil</title>
+
+    <link rel="stylesheet" th:href="@{/css/user.css}" type="text/css" />
+
+    <title>Mi perfil</title>
 </head>
 
 <body class="d-flex flex-column h-100 body">
     <header th:replace="fragments/nav.html :: nav"></header>
 
     <main class="flex-shrink-0">
-        <div class ="userProfile container">
-            <h1 class="mt-5">Profile of <span th:text="${user.username}"></span></h1>
-            <div>
-                <span style="color: white">Current Coaching Team:</span> 
-                <span style="color: grey" th:text="${coachingTeam} != null ? ${coachingTeam.name} : 'You are not coaching any team'"></span>
-            </div>
-            <span style="color: grey" th:text="${excepcion}"></span>
-            <p></p>
-            <button th:if="${user.team} == null" class="btn btn-primary submit" id="myBtn">Create new team</button>
 
-            <div id="myModal" class="modal">
-                
-                <!-- Modal content -->
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <form method="post" th:action="@{/user/__${user.id}__/createTeam}">
-                        <h2>Team Creation</h2>
-                        <p th:if="${#request.getQueryString() == 'error'}" class="error">Error creating team</p>
-                        <p>
-                            <label for="name" class="visually-hidden">name</label>
-                            <input type="text" id="name" name="name" class="inputTextStyle form-control" placeholder="Name of the team" required="required">
-                        </p>
+        <!-- Contenedor de toda la informacion del perfil -->
+        <div class ="profile container">
 
-                        <button type="submit" class="registerButton btn btn-primary submit" style="margin: 0;">Create team</button>
-                        
-                    </form>
+            <div class="data">
+                <div class="atributes">
+                    <div class="mt-1">
+                        <span>Usuario:</span>
+                        <span th:text="${user.username}"></span>
+                    </div>
+                    <div class="mt-4">
+                        <span>Nombre:</span>
+                        <span th:text="${user.firstName}"></span>
+                    </div>
+        
+                    <div class="mt-4">
+                        <span>Apellido:</span>
+                        <span th:text="${user.lastName}"></span>
+                    </div>
+        
+                    <div class="mt-4">
+                        <span>Monedas:</span>
+                        <span th:text="${user.coins}"></span>
+                    </div>
                 </div>
-              
+                <img class="rounded userimage" th:src="@{/user/{id}/pic(id=${session.u.id})}">
             </div>
             
         </div>
     </main>
 
     <th:block th:replace="fragments/footer.html :: footer" />
-
-    <script>
-        // Get the modal
-        var modal = document.getElementById("myModal");
-        
-        // Get the button that opens the modal
-        var btn = document.getElementById("myBtn");
-        
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-        
-        // When the user clicks the button, open the modal 
-        btn.onclick = function() {
-        modal.style.display = "block";
-        }
-        
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function() {
-        modal.style.display = "none";
-        }
-        
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-        }
-    </script>
-    <script th:src="@{/js/ajax-demo.js}"></script>
     
 </body>
 

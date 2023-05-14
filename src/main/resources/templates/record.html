@@ -3,6 +3,9 @@
 
 <head>
     <th:block th:replace="fragments/head :: header" />
+
+    <link rel="stylesheet" th:href="@{/css/record.css}" type="text/css" />
+
     <title>Tournament Manager</title>
 </head>
 
@@ -26,7 +29,7 @@
 
               <!-- Informacion general del torneo-->
               <div class="tournament-info">
-                <span class="tournament-ongoing">🔴 TERMINADO</span>
+                <span class="tournament-record">🔴 TERMINADO</span>
               </div>
 
               <a class="brackets-button" th:href="@{|/tournament/${tourney.t.id}/${session.u.id}/bracket|}">Ver torneo</a>

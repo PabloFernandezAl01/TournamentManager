@@ -73,14 +73,14 @@ public class User implements Transferable<User.Transfer> {
      * - Nombre
      * - Primer apellido
      * - Enabled: Representa si el usuario esta habilitado en la aplicacion
-     * - Earned: Cantidad ganada en los torneos
+     * - Coins: Cantidad de monedas acumuladas
      * - Report: Numero de reportes hacia este usuario
      * - Teams: Equipos a los que pertenece este usuario 
      */
     private String firstName;
     private String lastName;
     private boolean enabled;
-    private int earned;
+    private int coins;
     private int reports;
 
     /*
