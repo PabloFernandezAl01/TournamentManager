@@ -1,7 +1,38 @@
 -- insert admin (username a, password aa)
 
+-- Usuarios
+
 INSERT INTO IWUser (id, earned, enabled, first_name, image_id, last_name, password, reports, roles, username)
-VALUES (1, 0, TRUE, 'Pablo', 0, 'Fernandez', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'ADMIN,USER', 'Peibol');
+VALUES (1, 0, TRUE, 'Admin', 0, 'Mr.Admin', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER,ADMIN', 'Admin');
+
+INSERT INTO IWUser (id, earned, enabled, first_name, image_id, last_name, password, reports, roles, username)
+VALUES (2, 0, TRUE, 'Pablo', 0, 'Fernandez', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Peibol');
+
+-- Torneos
+
+    INSERT INTO Tournament (id, date, description, entry_price, game, image_id, max_teams, name, prize_pool, status, type)
+    VALUES (100, '2023-05-15', 'El Torneo De Pablo', 3.0, 'Valorant', 0, 2, 'Pablo Tourney', 100, 2, 0);
+
+    INSERT INTO Tournament (id, date, description, entry_price, game, image_id, max_teams, name, prize_pool, status, type)
+    VALUES (101, '2023-05-16', 'El Torneo De Ivan', 3.0, 'Apex Legends', 0, 2, 'Ivan Tourney', 100, 1, 0);
+
+    INSERT INTO Tournament (id, date, description, entry_price, game, image_id, max_teams, name, prize_pool, status, type)
+    VALUES (102, '2023-05-17', 'El Torneo De Pepe', 3.0, 'Counter Strike Global Offensive', 0, 2, 'Pepe Tourney', 100, 0, 0);
+
+-- Equipos
+    INSERT INTO Team (id, name, image_id)
+    VALUES (200, 'Equipo de Ivan', 0);
+
+
+-- Relaciones (Team Member & Tournament Team)
+
+    INSERT INTO Team_Member (id, user_id, team_id, is_coach)
+    VALUES (300, 2, 200, 1);
+
+    INSERT INTO Tournament_Team (id, is_winner, team_id, tournament_id)
+    VALUES (400, 0, 200, 100);
+
+
 
 
 -- INSERT INTO IWUSER (id, earned, enabled, first_name, last_name, password,

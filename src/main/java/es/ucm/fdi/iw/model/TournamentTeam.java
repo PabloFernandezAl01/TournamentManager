@@ -35,4 +35,13 @@ public class TournamentTeam {
      */
     private Boolean isWinner;
 
+    // @Column(nullable = true)
+    // private int puntuacion;
+    // @Column(nullable = true)
+    // private int victorias;
+    // @Column(nullable = true)
+    // private int empates;
+    // @Column(nullable = true)
+    // private int derrotas;
+
 }

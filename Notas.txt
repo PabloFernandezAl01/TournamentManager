@@ -3,3 +3,4 @@
 - Resolver los TODOs en el código
 - Mirar donde se escriben los LOGS
 - Comprobar que todo sigue funcionando
+- Evitar que un usuaro pueda tener equipos inscrios en torneos que solapen en el tiempo

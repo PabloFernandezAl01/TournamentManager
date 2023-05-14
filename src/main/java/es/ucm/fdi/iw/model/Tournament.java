@@ -8,6 +8,9 @@ import lombok.Data;
 
 // Consulta para obtener todos los torneos
 @NamedQuery(name = "AllTournaments", query = "SELECT t FROM Tournament t")
+
+
+
 public class Tournament {
 
     /*
@@ -25,7 +28,7 @@ public class Tournament {
      *  - ON_GOIND: El torneo fue creado y ha empezado
      *  - FINISHED: El torneo fue creado y ha terminado
      */
-    public enum TournamentStatus { CANCELED, NOT_STARTED, ON_GOING, FINISHED }
+    public enum TournamentStatus { NOT_STARTED, ON_GOING, FINISHED }
 
      /*
      * Id autogenerado que actua como clave primaria de la tabla Tournament

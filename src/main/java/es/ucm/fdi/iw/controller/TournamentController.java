@@ -229,4 +229,40 @@ public class TournamentController {
 
         return null;
     }
+
+
+    // ----------------------------- Metodos privados -------------------------------------
+
+    // Si ha llegado la fecha de comienzo del torneo y esta marcado como "No empezado"
+    //             if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate())) && (tournament.getStatus() == TournamentStatus.NOT_STARTED)) {
+
+    //                 // Si no se ha completado el numero de equipos se cancela
+    //                 if(nTeams < tournament.getMaxTeams()) {
+    //                     tournament.setStatus(TournamentStatus.CANCELED);
+    //                 }
+    //                 else { // En caso contrario, se marca como "On_Going" y se crean los encuentros
+    //                     tournament.setStatus(TournamentStatus.ON_GOING);
+
+    //                     //TODO: Hacer esto asíncrono con WebSockets
+    //                     createMatches(tournament.getId(), session);
+    //                 }
+    //             }
+
+    // private void createMatches(Long tournamentId, HttpSession session) {
+    //     List<Long> teamsId = entityManager.createNamedQuery("TeamsIdsByTournament", Long.class).setParameter("tournamentid", tournamentId).getResultList();
+
+    //     for (int i = 0; i < teamsId.size(); i += 2) {
+
+    //         Match match = new Match();
+
+    //         match.setRound(1);
+    //         match.setTeamOne(i);
+    //         match.setTeamTwo(i);
+    //         match.setTournamentId(tournamentId);
+
+    //         entityManager.persist(match);
+    //     }
+    
+    //     entityManager.flush();
+    // } 
 }
