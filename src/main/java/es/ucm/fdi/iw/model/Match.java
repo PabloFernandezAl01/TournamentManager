@@ -31,7 +31,6 @@ public class Match {
 
     private String result;
 
-
     @OneToOne
     private Team winner;
 

@@ -15,7 +15,7 @@
     <header th:replace="fragments/nav.html :: nav"></header>
 
     <div id="brackets" class="bracket">
-        <h2>Tournament</h2>
+        <h2 th:text="${tournament.name}">Tournament</h2>
 
         <table>
             <thead class="tituloRoundRobin">
@@ -39,24 +39,28 @@
                 </tr>
             </tbody>
         </table>
-    </div>
-
+   
 
     <div th:each="partido : ${partidosPorRonda.entrySet()}" class="round">
-        <h3 th:text="'Jornada ' +${partido.key}"></h3>
-
+        <h3 th:text="'Jornada '+ ${partido.key}">Ronda</h3>
+  
         <div th:each="match : ${partido.value}" class="match">
-
-            <div th:if="${match.team1}" th:text="${match.team1.name}" class="team"></div>
-            <div th:if="${match.team1 == null}" class="team">-</div>
-
-            <span>vs</span>
-
-            <div th:if="${match.team2}" th:text="${match.team2.name}" class="team"></div>
-            <div th:if="${match.team2 == null}" class="team">-</div>
+  
+          <div th:if="${match.team1}" th:text="${match.team1.name}"
+            th:classappend="${match.winner != null && match.winner == match.team1}  ? 'winner' : ''" class="team"></div>
+          <div th:if="${match.team1 == null}" class="team">-</div>
+  
+          <span>vs</span>
+  
+          <div th:if="${match.team2}" th:text="${match.team2.name}"
+            th:classappend="${match.winner != null && match.winner == match.team2}  ? 'winner' : ''" class="team"></div>
+          <div th:if="${match.team2 == null}" class="team">-</div>
+  
         </div>
-    </div>
+  
+      </div>
 
+    </div>
     <div class="d-flex justify-content-center align-items-center h-100">
         <div th:if="${userMatch != null}" id="chat" class="chat col-md-6">
             <!--RECEPCIÓN DE MENSAJES-->

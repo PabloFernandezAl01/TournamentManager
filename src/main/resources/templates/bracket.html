@@ -15,28 +15,43 @@
   <header th:replace="fragments/nav.html :: nav"></header>
 
   <div id="brackets" class="bracket">
-    <h2>Tournament</h2>
+    <h2 th:text="${tournament.name}">Tournament</h2>
 
     <div th:each="partido : ${partidosPorRonda.entrySet()}" class="round">
-      <h3 th:text="${partido.key}"></h3>
+      <h3 th:if="${isLastRound != partido.key}" th:text="'Ronda '+ ${partido.key}">Ronda</h3>
+      <h3 th:if="${isLastRound == partido.key}" th:text="Final">Ronda</h3>
 
       <div th:each="match : ${partido.value}" class="match">
 
         <div th:if="${match.team1}" th:text="${match.team1.name}"
-          th:classappend="${match.winner != null} ? 'winner' : ''" class="team"></div>
+          th:classappend="${match.winner != null && match.winner == match.team1}  ? 'winner' : ''" class="team"></div>
         <div th:if="${match.team1 == null}" class="team">-</div>
 
         <span>vs</span>
 
-        <div th:if="${match.team2}" th:text="${match.team2.name}" class="team"></div>
+        <div th:if="${match.team2}" th:text="${match.team2.name}"
+          th:classappend="${match.winner != null && match.winner == match.team2}  ? 'winner' : ''" class="team"></div>
         <div th:if="${match.team2 == null}" class="team">-</div>
+
+      </div>
+
+    </div>
+
+    <div th:if="${isLastRound != -1}"  class = "winnerDiv">
+      <h3> GANADOR </h3>
+
+      <divclass="match">
+        <div th:if="${lastMatch.winner}" th:text="${lastMatch.winner.name}" class="team tournamentWinner"></div>
       </div>
     </div>
+
+
   </div>
 
 
   <div class="d-flex justify-content-center align-items-center h-100">
     <div th:if="${userMatch != null}" id="chat" class="chat col-md-6">
+
       <!--RECEPCIÓN DE MENSAJES-->
       <div id="mensajes" class="messages"></div>
       <!--ENVÍO DE MENSAJES-->
@@ -51,13 +66,12 @@
   </div>
 
   <div id="myModal" class="modal">
-
     <!-- Modal content -->
     <div class="modal-content">
       <span class="close">&times;</span>
-      <form class="formReport" method="post" th:action="@{|/user/reportMsg/${session.u.id}/${userMatch.id}|}">
+      <form class="formReport" method="post" th:action="@{|/user/reportMsg}">
         <h3>Reportar mensaje</h3>
-        <textarea  id="messageInputReport" class="form-control" placeholder="¿Que ha ocurrido?"></textarea> 
+        <textarea id="messageInputReport" class="form-control" placeholder="¿Que ha ocurrido?"></textarea>
         <p></p>
         <button id="sendButton" class="btn btn-primary" type="submit">Enviar</button>
       </form>

@@ -121,7 +121,7 @@ public class RootController {
 
         model.addAttribute("isUserCoach", isUserCoach(session));
         model.addAttribute("tournaments", tournaments);
-    
+
         return "ongoing";
     }
 
@@ -174,6 +174,7 @@ public class RootController {
                 .getResultList();
 
         for (Tournament tournament : tournaments) {
+
             long tournamentId = tournament.getId();
             try {
                 TypedQuery<Long> query = entityManager.createQuery(
@@ -237,6 +238,7 @@ public class RootController {
         Map<Tournament, TourneyData> notStarted = new HashMap<>();
 
         for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
+
             TourneyData tourneyData = entry.getValue();
             if (tourneyData.getStatus() == TournamentStatus.NOT_STARTED) {
                 notStarted.put(entry.getKey(), tourneyData);
@@ -250,6 +252,7 @@ public class RootController {
 
         for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
             TourneyData tourneyData = entry.getValue();
+
             if (tourneyData.getStatus() == TournamentStatus.ON_GOING) {
                 ongoing.put(entry.getKey(), tourneyData);
             }
