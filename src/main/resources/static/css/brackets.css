@@ -297,3 +297,6 @@ td {
   border: 2px solid rgb(98, 236, 98);
   box-shadow: 0 0 10px rgb(98, 236, 98);
 }
+.EnvioResultados{
+  margin-bottom: 10px;
+}

@@ -166,7 +166,7 @@ public class TournamentController {
             if (maxRound == tournament.getRounds() - 1) {
                 if (lastMatch.getWinner() != null) {
                     isLastRound = maxRound;
-                    //tournament.setWinner(lastMatch.getWinner());
+                    // tournament.setWinner(lastMatch.getWinner());
                     tournament.setStatus(TournamentStatus.FINISHED);
                 }
             } else {
@@ -183,8 +183,11 @@ public class TournamentController {
                     createMatches(tournament, maxRound + 1, winners);
                 }
             }
+            boolean isCoach = false;
+            if (isUserCoach(session, tournament))
+                isCoach = true;
 
-            log.info("LastRound: "+ isLastRound);
+            model.addAttribute("isCoach", isCoach);
             model.addAttribute("partidosPorRonda", partidosPorRonda);
             model.addAttribute("isLastRound", isLastRound);
 
@@ -301,5 +304,22 @@ public class TournamentController {
         }
 
         entityManager.flush();
+    }
+
+    private boolean isUserCoach(HttpSession session, Tournament tournament) {
+        User user = (User) session.getAttribute("u");
+        Match match = getUserMatchFromTournament(user, tournament);
+        try {
+            Team team = (Team) entityManager.createQuery(
+                    "select t from Team t where t.coach.id = :id ")
+                    .setParameter("id", user.getId()).getSingleResult();
+
+            if (team.getId() == match.getTeam1().getId() || team.getId() == match.getTeam2().getId())
+                return true;
+            else
+                return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
