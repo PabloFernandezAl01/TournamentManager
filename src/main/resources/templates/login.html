@@ -16,19 +16,29 @@
     <main class="flex-shrink-0">
         <div class="login container">
             <form method="post" th:action="@{/login}">
-                <h2>Please sign in</h2>
+                <h2>Iniciar sesión</h2>
+
+                <!-- Comprueba si la contraseña o nombre de usuario son incorrectos -->
                 <p th:if="${#request.getQueryString() == 'error'}" class="error">Error en nombre de usuario o contraseña</p>
+
+                <!-- Campo para rellenar el nombre de usuario -->
                 <p>
-                    <label for="username" class="visually-hidden">Username</label>
-                    <input type="text" id="username" name="username" class="inputTextStyle form-control" placeholder="Username" required="required">
+                    <label for="username" class="visually-hidden">Nombre de usuario</label>
+                    <input type="text" id="username" name="username" class="inputTextStyle form-control" 
+                                                    placeholder="Nombre de usuario" required="required">
                 </p>
+
+                <!-- Campo para escribir la constraseña -->
                 <p>
-                    <label for="password" class="visually-hidden">Password</label>
-                    <input type="password" id="password" name="password" class="inputTextStyle form-control" placeholder="Password" required="required">
+                    <label for="password" class="visually-hidden">Contraseña</label>
+                    <input type="password" id="password" name="password" class="inputTextStyle form-control" 
+                                                                placeholder="Contraseña" required="required">
                 </p>
-                <button type="submit" class="loginButton btn btn-primary submit" style="margin: 0;">Sign in</button>
-                <span class = "or">or</span>
-                <a class="registerButton btn btn-secondary submit" th:href="@{/register}" href="/register" style="margin: 0;">Create an account</a>
+
+                <!-- Botones para iniciar sesion o registrarse -->
+                <button type="submit" class="loginButton btn btn-primary submit" style="margin: 0;">Entrar</button>
+                <span class = "or">o</span>
+                <a class="btn btn-secondary submit" th:href="@{/register}" style="margin: 0;">Crear cuenta</a>
             </form>
         </div>
     </main>
