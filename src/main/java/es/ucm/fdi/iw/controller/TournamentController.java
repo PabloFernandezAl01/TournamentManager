@@ -128,9 +128,6 @@ public class TournamentController {
 
             model.addAttribute("tournament", tournament);
 
-            // Match al que mandar mensajes en el chat
-            model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
-
             List<Match> matches = entityManager.createQuery(
                     "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
                     .setParameter("tournamentid", tournamentId)
@@ -163,24 +160,140 @@ public class TournamentController {
 
             log.info("MaxRound: " + maxRound);
 
-            if (maxRound == tournament.getRounds() - 1) {
-                if (lastMatch.getWinner() != null) {
-                    isLastRound = maxRound;
-                    // tournament.setWinner(lastMatch.getWinner());
-                    tournament.setStatus(TournamentStatus.FINISHED);
+            if (tournament.getType() == 0) {
+                if (maxRound == tournament.getRounds() - 1) {
+                    if (lastMatch.getWinner() != null) {
+                        isLastRound = maxRound;
+                        // tournament.setWinner(lastMatch.getWinner());
+                        tournament.setStatus(TournamentStatus.FINISHED);
+                    }
+                } else {
+                    boolean allWinners = true;
+                    List<Team> winners = new ArrayList<>();
+                    for (Match partido : partidosEnRonda) {
+                        if (partido.getWinner() == null)
+                            allWinners = false;
+                        else
+                            winners.add(partido.getWinner());
+                    }
+                    if (allWinners) {
+                        log.info("crear partidos de " + maxRound + 1);
+                        createMatches(tournament, maxRound + 1, winners);
+
+                        matches = entityManager.createQuery(
+                                "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
+                                .setParameter("tournamentid", tournamentId)
+                                .getResultList();
+
+                        partidosPorRonda = new HashMap<>();
+
+                        partidosEnRonda = new ArrayList<>();
+
+                        for (Match match : matches) {
+
+                            int ronda = match.getRoundNumber();
+                            partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
+                            partidosEnRonda.add(match);
+
+                            partidosPorRonda.put(ronda, partidosEnRonda);
+                        }
+                    }
                 }
             } else {
-                boolean allWinners = true;
-                List<Team> winners = new ArrayList<>();
-                for (Match partido : partidosEnRonda) {
-                    if (partido.getWinner() == null)
-                        allWinners = false;
-                    else
-                        winners.add(partido.getWinner());
-                }
-                if (allWinners) {
-                    log.info("crear partidos de " + maxRound + 1);
-                    createMatches(tournament, maxRound + 1, winners);
+
+                if (maxRound == tournament.getRounds() - 1) {
+
+                    // tournament.setWinner(lastMatch.getWinner());
+                    tournament.setStatus(TournamentStatus.FINISHED);
+
+                } else {
+                    boolean allResults = true;
+                    List<Team> winners = new ArrayList<>();
+                    for (Match partido : partidosEnRonda) {
+
+                        Tournament_Team tournament_Team1 = entityManager.createQuery(
+                                "SELECT t FROM Tournament_Team t where t.team.id = :teamid and t.tournament.id = :tournamentid ",
+                                Tournament_Team.class)
+                                .setParameter("tournamentid", tournamentId)
+                                .setParameter("teamid", partido.getTeam1().getId())
+                                .getSingleResult();
+
+                        Tournament_Team tournament_Team2 = entityManager.createQuery(
+                                "SELECT t FROM Tournament_Team t where t.team.id = :teamid and t.tournament.id = :tournamentid ",
+                                Tournament_Team.class)
+                                .setParameter("tournamentid", tournamentId)
+                                .setParameter("teamid", partido.getTeam2().getId())
+                                .getSingleResult();
+
+                        if (partido.getResult() == null) {
+                            // 2 - 1 / 1 - 3 , int - int
+                            if (partido.getResult().contains("/")) {
+                                String[] results = partido.getResult().split("/");
+                                String team1 = results[0].trim();
+                                String team2 = results[1].trim();
+                                if (team1.equals(team2)) {
+
+                                    partido.setResult(team2);
+                                    String[] finalResult = team1.split("-");
+                                    int number1 = Integer.parseInt(finalResult[0].trim());
+                                    int number2 = Integer.parseInt(finalResult[1].trim());
+
+                                    if (number1 > number2) {
+
+                                        partido.setWinner(partido.getTeam1());
+
+                                        tournament_Team1.setVictorias(tournament_Team1.getVictorias()+1);
+                                        tournament_Team1.setPuntuacion(tournament_Team1.getPuntuacion()+3);
+
+                                        tournament_Team2.setDerrotas(tournament_Team2.getDerrotas()+1);
+
+                                    } else if (number1 < number2) {
+
+                                        partido.setWinner(partido.getTeam2());
+
+                                        tournament_Team2.setVictorias(tournament_Team2.getVictorias()+1);
+                                        tournament_Team2.setPuntuacion(tournament_Team2.getPuntuacion()+3);
+
+                                        tournament_Team1.setDerrotas(tournament_Team1.getDerrotas()+1);
+
+                                    } else {
+
+                                        tournament_Team1.setEmpates(tournament_Team1.getEmpates()+1);
+                                        tournament_Team1.setPuntuacion(tournament_Team1.getPuntuacion()+1);
+
+                                        
+                                        tournament_Team2.setEmpates(tournament_Team2.getEmpates()+1);
+                                        tournament_Team2.setPuntuacion(tournament_Team2.getPuntuacion()+1);
+                                    }
+                                } else {
+                                    allResults = false;
+                                }
+                            }
+                        } else
+                            winners.add(partido.getWinner());
+
+                    }
+                    if (allWinners) {
+                        createMatches(tournament, maxRound + 1, winners);
+
+                        matches = entityManager.createQuery(
+                                "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
+                                .setParameter("tournamentid", tournamentId)
+                                .getResultList();
+
+                        partidosPorRonda = new HashMap<>();
+
+                        partidosEnRonda = new ArrayList<>();
+
+                        for (Match match : matches) {
+
+                            int ronda = match.getRoundNumber();
+                            partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
+                            partidosEnRonda.add(match);
+
+                            partidosPorRonda.put(ronda, partidosEnRonda);
+                        }
+                    }
                 }
             }
             boolean isCoach = false;
@@ -190,8 +303,9 @@ public class TournamentController {
             model.addAttribute("isCoach", isCoach);
             model.addAttribute("partidosPorRonda", partidosPorRonda);
             model.addAttribute("isLastRound", isLastRound);
-
             model.addAttribute("lastMatch", lastMatch);
+            // Match al que mandar mensajes en el chat
+            model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
 
             if (tournament.getType() == 0)
                 return "bracket";

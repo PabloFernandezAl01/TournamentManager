@@ -314,7 +314,7 @@ public class UserController {
 		.setParameter("team1Id", match.getTeam1().getId())
 		.setParameter("team2Id", match.getTeam2().getId())
 		.getResultList();
-
+				
 
 		for (User recipient : recipients) {
 
