@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.query.criteria.internal.expression.function.AggregationFunction.MAX;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -118,7 +119,7 @@ public class TournamentController {
         try {
             User user = (User) session.getAttribute("u");
             boolean isCoach = false;
-            boolean isFinalResult = false;
+            boolean isFinalResult = true;
             Tournament tournament = (Tournament) entityManager.createQuery(
                     "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
                     .setParameter("tournamentid", tournamentId)
@@ -237,7 +238,6 @@ public class TournamentController {
                                     allResults = false;
                                 }
                             } else {
-                                isFinalResult = true;
                                 allResults = true;
                             }
 
@@ -267,8 +267,11 @@ public class TournamentController {
                         partidosEnRonda = new ArrayList<>();
 
                         for (Match match : matches) {
-
                             int ronda = match.getRoundNumber();
+
+                            if (maxRound < ronda)
+                                maxRound = ronda;
+
                             partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
                             partidosEnRonda.add(match);
 
@@ -279,11 +282,7 @@ public class TournamentController {
             }
             // EL TORNEO ES TIPO LIGA
             else {
-                // Match al que mandar mensajes en el chat
-                model.addAttribute("userMatch", getUserMatchFromTournamentLeague(user, tournament, maxRound));
-                // team del usuario
-                model.addAttribute("userTeam",
-                        getUserTeamFromMatch(user, getUserMatchFromTournamentLeague(user, tournament, maxRound)));
+
                 if (isUserCoachLeague(session, tournament, maxRound))
                     isCoach = true;
 
@@ -362,7 +361,6 @@ public class TournamentController {
                                 allResults = false;
                             }
                         } else {
-                            isFinalResult = true;
                         }
                     } else {
                         isFinalResult = false;
@@ -386,6 +384,8 @@ public class TournamentController {
                     for (Match match : matches) {
 
                         int ronda = match.getRoundNumber();
+                        if (maxRound < ronda)
+                            maxRound = ronda;
                         partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
                         partidosEnRonda.add(match);
 
@@ -416,6 +416,11 @@ public class TournamentController {
 
             } else {
                 try {
+                    // Match al que mandar mensajes en el chat
+                    model.addAttribute("userMatch", getUserMatchFromTournamentLeague(user, tournament, maxRound));
+                    // team del usuario
+                    model.addAttribute("userTeam",
+                            getUserTeamFromMatch(user, getUserMatchFromTournamentLeague(user, tournament, maxRound)));
                     List<Tournament_Team> teamsList = entityManager.createQuery(
                             "SELECT t FROM Tournament_Team t WHERE t.tournament.id = :tournamentid ORDER BY t.puntuacion DESC",
                             Tournament_Team.class)
@@ -684,7 +689,7 @@ public class TournamentController {
 
     @PostMapping("sendResults/{tournamentId}/{matchId}/{userTeamId}")
     @Transactional
-    public RedirectView sendResults(@RequestParam("resultadoTeam1") int resultadoTeam1,
+    public ResponseEntity<?> sendResults(@RequestParam("resultadoTeam1") int resultadoTeam1,
             @RequestParam("resultadoTeam2") int resultadoTeam2, HttpSession session, @PathVariable long tournamentId,
             @PathVariable long matchId, @PathVariable long userTeamId, Model model) {
         try {
@@ -696,32 +701,54 @@ public class TournamentController {
                     .getSingleResult();
 
             String resultadoNuevo = resultadoTeam1 + " - " + resultadoTeam2;
+            // si hay resultado
             if (match.getResult() != null) {
-                int posBarra = match.getResult().indexOf("/");
+                if (match.getResult().contains("/")) {
+                    int posBarra = match.getResult().indexOf("/");
 
-                // El carácter "/" está al principio, el result del team2 ya esta
-                if (posBarra == 0) {
-                    // si el team del usuario es el team1
-                    if (userTeamId == match.getTeam1().getId()) {
-                        match.setResult(resultadoNuevo + match.getResult());
+                    // El carácter "/" está al principio, el result del team2 ya esta
+                    if (posBarra == 0) {
+                        // si el team del usuario es el team1
+                        if (userTeamId == match.getTeam1().getId()) {
+                            match.setResult(resultadoNuevo + match.getResult());
+                        }
+                        // si el team del usuario es el team2
+                        else {
+                            // sobreescribir antiguo resultado enviado
+                            match.setResult(" / " + resultadoNuevo);
+                        }
                     }
-                    // si el team del usuario es el team2
+                    // El caracter "/" esta al final, el result del team 1 ya está
+                    else if (posBarra == match.getResult().length() - 1) {
+                        // si el team del usuario es el team1
+                        if (userTeamId == match.getTeam1().getId()) {
+                            // sobreescribir antiguo resultado
+                            match.setResult(resultadoNuevo + " / ");
+                        }
+                        // si el team del usuario es el team2
+                        else {
+                            match.setResult(match.getResult() + resultadoNuevo);
+                        }
+                    }
+                    // Ya hay dos resultados
                     else {
-                        // sobreescribir antiguo resultado enviado
-                        match.setResult(" / " + resultadoNuevo);
+                        String[] results = match.getResult().split("/");
+                        String team1 = results[0].trim();
+                        String team2 = results[1].trim();
+
+                        // si el team del usuario es el team1
+                        if (userTeamId == match.getTeam1().getId()) {
+                            // sobreescribir antiguo resultado
+                            match.setResult(resultadoNuevo + " / " + team2);
+                        }
+                        // si el team del usuario es el team2
+                        else {
+                            match.setResult(team1 + " / " + resultadoNuevo);
+                        }
                     }
-                }
-                // El caracter "/" esta al final, el result del team 1 ya está
-                else {
-                    // si el team del usuario es el team1
-                    if (userTeamId == match.getTeam1().getId()) {
-                        // sobreescribir antiguo resultado
-                        match.setResult(resultadoNuevo + " / ");
-                    }
-                    // si el team del usuario es el team2
-                    else {
-                        match.setResult(match.getResult() + resultadoNuevo);
-                    }
+                } else {
+                    boolean isFinalResult = true;
+                    model.addAttribute("isFinalResult", isFinalResult);
                 }
             }
             // si no hay resultado aún
@@ -733,11 +760,12 @@ public class TournamentController {
                     match.setResult(" / " + resultadoNuevo);
             }
             entityManager.persist(match);
+
         } catch (Exception e) {
             log.info("EXCEPTION ENVIANDO RESULTADOS: ", e);
         }
-        //PROBLEMAS CUANDO SE ACTUALIZA PERO NO CAMBIA EL MATCHID
+        // PROBLEMAS CUANDO SE ACTUALIZA PERO NO CAMBIA EL MATCHID
         entityManager.flush();
-        return new RedirectView("/tournament/" + tournamentId + "/bracket");
+        return ResponseEntity.ok(model);
     }
 }
