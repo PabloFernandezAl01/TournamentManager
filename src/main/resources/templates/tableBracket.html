@@ -63,17 +63,32 @@
     </div>
     <div class="d-flex justify-content-center align-items-center h-100">
         <div th:if="${userMatch != null}" id="chat" class="chat col-md-6">
-            <!--RECEPCIÓN DE MENSAJES-->
-            <div id="mensajes" class="messages"></div>
-            <!--ENVÍO DE MENSAJES-->
-            <div class="input-group">
-                <form th:action="@{|/user/sendMsg/${session.u.id}/${userMatch.id}|}" method="POST">
-                    <input type="text" id="messageInput" class="form-control" placeholder="Escribe tu mensaje..." />
-                    <button id="sendButton" class="btn btn-primary" type="submit">Enviar</button>
-                </form>
+          <div id="resultados" class="d-flex justify-content-between align-items-center">
+            <h5 th:text="${userMatch.team1.name +' - '+ userMatch.team2.name}">Partido y equipos</h5>
+            <div th:if="${isCoach}" class="EnvioResultados inputs-container">Resultados del partido:
+              <form th:action="@{|/user/sendResults|}" class="resultsForm" method="POST">
+    
+                <input type="number" class="matchResult" name="resultadoTeam1" placeholder="Nº" min="0" required />
+                <span>-</span>
+                <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" placeholder="Nº" min="0" required />
+                <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
+    
+              </form>
             </div>
+          </div>
+          <!--RECEPCIÓN DE MENSAJES-->
+          <div id="mensajes" class="messages"></div>
+          
+          <!--ENVÍO DE MENSAJES-->
+          <div class="input-group">
+            <form th:action="@{|/user/sendMsg/${session.u.id}/${userMatch.id}|}" class="formMessage" method="POST">
+              <input type="text" id="messageInput" class="inputMessage" placeholder="Escribe tu mensaje..." />
+              <button id="sendButton" class="buttonMensaje" type="submit"></button>
+            </form>
+          </div>
         </div>
-    </div>
+    
+      </div>
     
     <th:block th:replace="fragments/footer.html :: footer" />
     <script th:src="@{/js/ajax-message-match.js}"></script>

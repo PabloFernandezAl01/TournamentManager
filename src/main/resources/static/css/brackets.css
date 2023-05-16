@@ -150,6 +150,7 @@ body,
 }
 
 .chat {
+  margin-top: 20px;
   margin-bottom: 2em;
   background-color: rgb(33, 37, 41, 1);
   border-radius: 5px;
@@ -157,16 +158,37 @@ body,
 }
 
 .messages {
-  height: 200px;
+  height: 350px;
   overflow-y: auto;
   margin-bottom: 10px;
   border-radius: 5px;
   padding: 10px;
   background-color: rgba(69, 76, 82, 0.9)
 }
-
+.formMessage {
+  width: 100%;
+}
 .input-group {
   display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.formMessage {
+  flex: 1;
+  display: flex;
+}
+
+.inputMessage {
+  flex: 1;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+#sendButton {
+  border-radius: 5px;
+  width: 100px;
 }
 
 #messageInput {
@@ -299,4 +321,37 @@ td {
 }
 .EnvioResultados{
   margin-bottom: 10px;
+}
+.inputs-container input[type="number"] {
+  width: 60px; 
+}
+.resultsForm{
+  margin-top: 5px;
+}
+.matchResult{
+  border-radius: 5px;
+  border: 0px solid transparent;
+}
+.buttonResultados{
+  margin: 5 px;
+  background-color: rgb(13,110,253);
+  color: white;
+  border: 0px solid transparent;
+  padding: 5px;
+}
+.buttonMensaje{
+  
+  background-color: rgb(13,110,253);
+  background-image: url('../img/enviar.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 20px;
+  height: 20px;
+  border: none;
+}
+.buttonMensaje:hover{
+  background-color: rgb(9, 79, 185);
+}
+#resultados2{
+  margin-right: 10px;
 }
