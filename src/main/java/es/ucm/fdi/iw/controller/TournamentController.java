@@ -374,6 +374,7 @@ public class TournamentController {
                     }
                 }
                 // SI LA JORNADA ANTERIOR HA ACABADO
+                int lastRound = maxRound;
                 if (allResults) {
 
                     createMatchesLeague(tournament, maxRound);
@@ -394,11 +395,11 @@ public class TournamentController {
                             maxRound = ronda;
                         partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
                         partidosEnRonda.add(match);
-
+                        
                         partidosPorRonda.put(ronda, partidosEnRonda);
                     }
                 }
-                if (maxRound == tournament.getRounds() && allResults) {
+                if (lastRound == tournament.getRounds() && allResults) {
                     // tournament.setWinner(lastMatch.getWinner());
                     tournament.setStatus(TournamentStatus.FINISHED);
                 }
@@ -425,8 +426,7 @@ public class TournamentController {
                     // Match al que mandar mensajes en el chat
                     model.addAttribute("userMatch", getUserMatchFromTournamentLeague(user, tournament, maxRound));
                     // team del usuario
-                    model.addAttribute("userTeam",
-                            getUserTeamFromMatch(user, getUserMatchFromTournamentLeague(user, tournament, maxRound)));
+                    model.addAttribute("userTeam",getUserTeamFromMatch(user, getUserMatchFromTournamentLeague(user, tournament, maxRound)));
                     List<Tournament_Team> teamsList = entityManager.createQuery(
                             "SELECT t FROM Tournament_Team t WHERE t.tournament.id = :tournamentid ORDER BY t.puntuacion DESC",
                             Tournament_Team.class)
@@ -476,6 +476,8 @@ public class TournamentController {
     }
 
     private Team getUserTeamFromMatch(User user, Match match) {
+        if(match == null)
+            return null;
         try {
             Team team = entityManager.createQuery(
                     "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
