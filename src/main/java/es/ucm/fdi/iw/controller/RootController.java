@@ -30,6 +30,8 @@ import es.ucm.fdi.iw.model.Match;
 import java.util.List;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
+import java.util.Collections;
+
 import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpSession;
 
@@ -71,7 +73,6 @@ public class RootController {
         model.addAttribute("record", Boolean.FALSE);
     }
 
-
     @GetMapping("/")
     public String homepage(Model model) {
         disableViews(model);
@@ -87,7 +88,7 @@ public class RootController {
 
     @GetMapping("/create")
     public String create(Model model, String exception) {
-        
+
         disableViews(model);
         model.addAttribute("create", Boolean.TRUE);
         return "create";
@@ -127,7 +128,7 @@ public class RootController {
 
     @GetMapping("/record")
     public String record(Model model, HttpSession session) {
-        
+
         disableViews(model);
         model.addAttribute("record", Boolean.TRUE);
 
@@ -142,13 +143,11 @@ public class RootController {
         return "record";
     }
 
-
     @GetMapping("/register")
     public String register(Model model) {
         disableViews(model);
         return "register";
     }
-
 
     @PostMapping("/register")
     @Transactional
@@ -178,21 +177,22 @@ public class RootController {
             long tournamentId = tournament.getId();
             try {
                 TypedQuery<Long> query = entityManager.createQuery(
-                    "SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
-                    Long.class);
+                        "SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+                        Long.class);
 
                 nTeams = query.setParameter("tournamentid", tournamentId).getSingleResult();
 
                 if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate()))
-                 && (tournament.getStatus() == TournamentStatus.NOT_STARTED)) {
-                    if(nTeams < tournament.getMaxTeams()){
+                        && (tournament.getStatus() == TournamentStatus.NOT_STARTED)) {
+                    if (nTeams < tournament.getMaxTeams()) {
                         tournament.setStatus(TournamentStatus.CANCELED);
-                    }
-                    else {
+                    } else {
                         tournament.setStatus(TournamentStatus.ON_GOING);
 
-                        //TODO: HACER ESTO DE MANERA ASINCRONA CON WEBSOCKETS
+                            // TODO: HACER ESTO DE MANERA ASINCRONA CON WEBSOCKETS
                         createMatches(tournament, session);
+                        //else
+                        //    createLeagueMatches(tournament, session);
                     }
                 }
 
@@ -201,35 +201,34 @@ public class RootController {
                 nTeams = 0L;
             }
 
-            TourneyData tourneyData = new TourneyData(nTeams.intValue(), tournament.getMaxTeams(), tournament.getTopicId(), tournament.getStatus(), isMyTeamInTournament(session, tournament));
+            TourneyData tourneyData = new TourneyData(nTeams.intValue(), tournament.getMaxTeams(),
+                    tournament.getTopicId(), tournament.getStatus(), isMyTeamInTournament(session, tournament));
             mapa.put(tournament, tourneyData);
 
             log.info("VALOR MAPA" + tourneyData.getNTeams() + tourneyData.getMaxTeams());
         }
-        
+
         return mapa;
     }
 
-    private boolean isMyTeamInTournament(HttpSession session, Tournament tournament)
-    {
+    private boolean isMyTeamInTournament(HttpSession session, Tournament tournament) {
         User user = (User) session.getAttribute("u");
         List<Team> teams = new ArrayList<>();
         try {
             teams = entityManager.createQuery(
-                "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Team.class)
-                .setParameter("tournamentid", tournament.getId())
-                .getResultList();
+                    "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Team.class)
+                    .setParameter("tournamentid", tournament.getId())
+                    .getResultList();
 
-            for(Team team : teams) {
-                if(team.getCoach().getId() == user.getId()){
+            for (Team team : teams) {
+                if (team.getCoach().getId() == user.getId()) {
                     return true;
                 }
             }
 
             return false;
-        }
-        catch(Exception e){
-            //Si el torneo aun no tiene equipos es obvio que el tuyo no está inscrito
+        } catch (Exception e) {
+            // Si el torneo aun no tiene equipos es obvio que el tuyo no está inscrito
             return false;
         }
     }
@@ -305,28 +304,71 @@ public class RootController {
             match.setTeam2(teams.get(i + 1));
 
             match.setTopicId(UserController.generateRandomBase64Token(6));
-            
+
             match.setTournament(tournament);
 
             matchNumber++;
 
             entityManager.persist(match);
         }
-    
+
         entityManager.flush();
     }
+
+    // private void createLeagueMatches(Tournament tournament, HttpSession session) {
+    //     // Crear partidos
+    //     List<Team> teams = new ArrayList<>();
+    //     TypedQuery<Team> query = entityManager.createQuery(
+    //             "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+    //             Team.class);
+    //     teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
+
+    //     int matchNumber = 1;
+    //     int numRounds = teams.size() - 1;
+
+    //     // Generar  jornadas
+    //     for (int round = 1; round <= numRounds; round++) {
+    //         List<Match> roundMatches = new ArrayList<>();
+
+    //         for (int i = 0; i < teams.size() / 2; i++) {
+    //             int j = teams.size() - 1 - i;
+
+    //             Match match = new Match();
+    //             match.setRoundNumber(round);
+    //             match.setMatchNumber(matchNumber);
+    //             match.setTeam1(teams.get(i));
+    //             match.setTeam2(teams.get(j));
+    //             match.setTopicId(UserController.generateRandomBase64Token(6));
+    //             match.setTournament(tournament);
+
+    //             roundMatches.add(match);
+    //             matchNumber++;
+    //         }
+
+    //         // Rotar  equipos
+    //         Team lastTeam = teams.get(teams.size() - 1);
+    //         teams.remove(teams.size() - 1);
+    //         teams.add(1, lastTeam);
+
+    //         // Guardar los matches de jornada 
+    //         for (Match match : roundMatches) {
+    //             entityManager.persist(match);
+    //         }
+    //     }
+
+    //     entityManager.flush();
+    // }
 
     private boolean isUserCoach(HttpSession session) {
         User user = (User) session.getAttribute("u");
         try {
             entityManager.createQuery(
-            "select t from Team t where t.coach.id = :id ") // and not exists (Select tt.team.id from
-                                                            // Tournament_Team tt where tt.team.id = t.id)
-            .setParameter("id", user.getId()).getSingleResult();
+                    "select t from Team t where t.coach.id = :id ") // and not exists (Select tt.team.id from
+                                                                    // Tournament_Team tt where tt.team.id = t.id)
+                    .setParameter("id", user.getId()).getSingleResult();
 
             return true;
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
