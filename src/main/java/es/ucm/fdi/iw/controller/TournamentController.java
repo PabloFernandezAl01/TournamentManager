@@ -192,8 +192,14 @@ public class TournamentController {
                                     lastMatch.setWinner(lastMatch.getTeam2());
 
                                 }
+                            } 
+                            // LOS EQUIPOS NO ESTAN DE ACUERDO EN EL RESULTADO
+                            else {
+                                // ENVIAR A ADMIN
                             }
                         }
+                    } else{
+                        isFinalResult = false;
                     }
                     if (lastMatch.getWinner() != null) {
                         isLastRound = maxRound;
