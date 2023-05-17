@@ -308,6 +308,7 @@ public class RootController {
 
                 MessageTopic mt = new MessageTopic();
                 mt.setTopicId(UserController.generateRandomBase64Token(6));
+                match.setMessageTopic(mt);
 
                 match.setTournament(tournament);
 

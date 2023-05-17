@@ -547,8 +547,10 @@ public class TournamentController {
         int matchNumber = 1;
         for (int i = 0; i < winners.size(); i += 2) {
             Match match = new Match();
+
             MessageTopic mt = new MessageTopic();
             mt.setTopicId(UserController.generateRandomBase64Token(6));
+            
             match.setMessageTopic(mt);
 
             match.setRoundNumber(round);

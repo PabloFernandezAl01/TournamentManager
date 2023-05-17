@@ -304,7 +304,8 @@ public class UserController {
 		if(text == "")
 			return "{\"result\": \"message not sent, empty string received.\"}";
 
-
+		log.info("MENSAJE: " + text);
+		
 		Match match = entityManager.find(Match.class, matchId);
 		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
 				
@@ -341,7 +342,7 @@ public class UserController {
 	@GetMapping(path = "rcvMsg/match/{matchId}", produces = "application/json")
 	@Transactional // para no recibir resultados inconsistentes
 	@ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
-	public List<Message.Transfer> retrieveMessages(@PathVariable long matchId, HttpSession session) {
+	public List<Message.Transfer> recieveMessages(@PathVariable long matchId, HttpSession session) {
 		Match match = entityManager.find(Match.class, matchId);
 		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
 
