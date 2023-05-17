@@ -30,18 +30,36 @@ function renderMsg(msg) {
         `;
 }
 
+config.currentChat = "";
+
+function messagesForMatch(matchId) {
+  config.currentChat = matchId;
+  let messageDiv = document.getElementById("mensajes");
+  messageDiv.innerHTML = "";
+  go(config.rootUrl + "rcvMsg/match/" + matchId, "GET")
+    .then(messages =>
+      messages.forEach(message => messageDiv.insertAdjacentHTML("beforeend", renderMsg(message)))
+    );
+}
+
+document.querySelectorAll(".match").forEach(o => {
+  console.log("buscando mensjes para ", o);
+  const matchId = o.id.substring("m".length);
+  console.log("... con id", matchId);
+  o.addEventListener("click", (e) => messagesForMatch(matchId));
+});
+
+
 // pinta mensajes viejos al cargarse, via AJAX
-let messageDiv = document.getElementById("mensajes");
-go(config.rootUrl + "/user/received", "GET")
-  .then(messages =>
-    messages.forEach(message => messageDiv.insertAdjacentHTML("beforeend", renderMsg(message)))
-  );
+
 
 // y aquí pinta mensajes según van llegando
 if (ws.receive) {
   const oldFn = ws.receive; // guarda referencia a manejador anterior
   ws.receive = (message) => {
     oldFn(message); // llama al manejador anterior
+
+    // solo deberias mostrar cosas que correspondan al chat abierto !!
     messageDiv.insertAdjacentHTML("beforeend", renderMsg(message));
   }
 }

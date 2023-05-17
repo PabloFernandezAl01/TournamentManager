@@ -38,10 +38,11 @@ public class Message implements Transferable<Message.Transfer> {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
 	private long id;
+
 	@ManyToOne
 	private User sender;
 	@ManyToOne
-	private User recipient;
+	private MessageTopic recipient;
 	private String text;
 
 	@ManyToOne
@@ -71,7 +72,7 @@ public class Message implements Transferable<Message.Transfer> {
 
 		public Transfer(Message m) {
 			this.from = m.getSender().getUsername();
-			this.to = m.getRecipient().getUsername();
+			this.to = m.getRecipient().getTopicId();
 			this.sent = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(m.getDateSent());
 			this.received = m.getDateRead() == null ?
 					null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(m.getDateRead());
@@ -84,7 +85,7 @@ public class Message implements Transferable<Message.Transfer> {
 
 	@Override
 	public Transfer toTransfer() {
-		return new Transfer(sender.getUsername(), recipient.getUsername(), 
+		return new Transfer(sender.getUsername(), recipient.getTopicId(), 
 			DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(dateSent),
 			dateRead == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateRead),
 			text, senderTeamName, iamSender ,id

@@ -93,12 +93,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		List<Tournament> tournaments = getAllUserTournaments(u);
 		List<Match> matches = getAllUserMatches(u);
 
-		List<String> topics = getAllTopicIds(tournaments, matches);
+		String topics = String.join(",", getAllTopicIds(tournaments, matches));
 		session.setAttribute("topics", topics);
 		log.info("Topics for {} are {}", u.getUsername(), topics);
 
 		// redirects to 'admin' or 'user/{id}', depending on the user
 		String nextUrl = u.hasRole(User.Role.ADMIN) ? "admin/" : "user/" + u.getId();
+
+		// config.topics
 
 		log.info("LOG IN: {} (id {}) -- session is {}, websocket is {} -- redirected to {}",
 				u.getUsername(), u.getId(), session.getId(), ws, nextUrl);
@@ -139,14 +141,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
 		List<String> topicsId = new ArrayList<>();
 		for (Tournament tournament : tournaments) {
-			if (tournament.getTopicId() != null) {
-				log.info("my topicid tournament", tournament.getTopicId());
-				topicsId.add(tournament.getTopicId());
+			if (tournament.getMessageTopic() != null) {
+				log.info("my topicid tournament", tournament.getMessageTopic().getTopicId());
+				topicsId.add(tournament.getMessageTopic().getTopicId());
 			}
 		}
 		for (Match match : matches) {
-			if (match.getTopicId() != null) {
-				topicsId.add(match.getTopicId());
+			if (match.getMessageTopic().getTopicId() != null) {
+				topicsId.add(match.getMessageTopic().getTopicId());
 			}
 		}
 		return topicsId;

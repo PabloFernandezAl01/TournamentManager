@@ -24,7 +24,8 @@ public class Match {
     @OneToOne
     private Team team2;
     
-    private String topicId;
+    @OneToOne
+    private MessageTopic messageTopic;
 
     @OneToOne
     private Tournament tournament;

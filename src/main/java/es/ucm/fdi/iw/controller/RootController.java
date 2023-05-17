@@ -27,6 +27,8 @@ import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.Match;
+import es.ucm.fdi.iw.model.MessageTopic;
+
 import java.util.List;
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
@@ -189,10 +191,10 @@ public class RootController {
                     } else {
                         tournament.setStatus(TournamentStatus.ON_GOING);
 
-                            // TODO: HACER ESTO DE MANERA ASINCRONA CON WEBSOCKETS
+                        // TODO: HACER ESTO DE MANERA ASINCRONA CON WEBSOCKETS
                         createMatches(tournament, session);
-                        //else
-                        //    createLeagueMatches(tournament, session);
+                        // else
+                        // createLeagueMatches(tournament, session);
                     }
                 }
 
@@ -202,7 +204,8 @@ public class RootController {
             }
 
             TourneyData tourneyData = new TourneyData(nTeams.intValue(), tournament.getMaxTeams(),
-                    tournament.getTopicId(), tournament.getStatus(), isMyTeamInTournament(session, tournament));
+                    tournament.getMessageTopic().getTopicId(), tournament.getStatus(),
+                    isMyTeamInTournament(session, tournament));
             mapa.put(tournament, tourneyData);
 
             log.info("VALOR MAPA" + tourneyData.getNTeams() + tourneyData.getMaxTeams());
@@ -291,72 +294,79 @@ public class RootController {
                 Team.class);
 
         teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
+        try {
+            // Hacerlo random en el futuro, en lugar de por orden de union
+            int matchNumber = 1;
+            for (int i = 0; i < teams.size(); i += 2) {
+                Match match = new Match();
 
-        // Hacerlo random en el futuro, en lugar de por orden de union
-        int matchNumber = 1;
-        for (int i = 0; i < teams.size(); i += 2) {
-            Match match = new Match();
+                match.setRoundNumber(1);
+                match.setMatchNumber(matchNumber);
 
-            match.setRoundNumber(1);
-            match.setMatchNumber(matchNumber);
+                match.setTeam1(teams.get(i));
+                match.setTeam2(teams.get(i + 1));
 
-            match.setTeam1(teams.get(i));
-            match.setTeam2(teams.get(i + 1));
+                MessageTopic mt = new MessageTopic();
+                mt.setTopicId(UserController.generateRandomBase64Token(6));
 
-            match.setTopicId(UserController.generateRandomBase64Token(6));
+                match.setTournament(tournament);
 
-            match.setTournament(tournament);
+                matchNumber++;
 
-            matchNumber++;
-
-            entityManager.persist(match);
+                entityManager.persist(mt);
+                entityManager.persist(match);
+            }
+        } catch (Exception e) {
+            log.info("EXXCEPCION: ", e);
         }
 
         entityManager.flush();
     }
 
-    // private void createLeagueMatches(Tournament tournament, HttpSession session) {
-    //     // Crear partidos
-    //     List<Team> teams = new ArrayList<>();
-    //     TypedQuery<Team> query = entityManager.createQuery(
-    //             "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
-    //             Team.class);
-    //     teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
+    // private void createLeagueMatches(Tournament tournament, HttpSession session)
+    // {
+    // // Crear partidos
+    // List<Team> teams = new ArrayList<>();
+    // TypedQuery<Team> query = entityManager.createQuery(
+    // "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+    // Team.class);
+    // teams = query.setParameter("tournamentid",
+    // tournament.getId()).getResultList();
 
-    //     int matchNumber = 1;
-    //     int numRounds = teams.size() - 1;
+    // int matchNumber = 1;
+    // int numRounds = teams.size() - 1;
 
-    //     // Generar  jornadas
-    //     for (int round = 1; round <= numRounds; round++) {
-    //         List<Match> roundMatches = new ArrayList<>();
+    // // Generar jornadas
+    // for (int round = 1; round <= numRounds; round++) {
+    // List<Match> roundMatches = new ArrayList<>();
 
-    //         for (int i = 0; i < teams.size() / 2; i++) {
-    //             int j = teams.size() - 1 - i;
+    // for (int i = 0; i < teams.size() / 2; i++) {
+    // int j = teams.size() - 1 - i;
 
-    //             Match match = new Match();
-    //             match.setRoundNumber(round);
-    //             match.setMatchNumber(matchNumber);
-    //             match.setTeam1(teams.get(i));
-    //             match.setTeam2(teams.get(j));
-    //             match.setTopicId(UserController.generateRandomBase64Token(6));
-    //             match.setTournament(tournament);
+    // Match match = new Match();
+    // match.setRoundNumber(round);
+    // match.setMatchNumber(matchNumber);
+    // match.setTeam1(teams.get(i));
+    // match.setTeam2(teams.get(j));
+    // match.setTopicId(UserController.generateRandomBase64Token(6));
+    // match.setTournament(tournament);
 
-    //             roundMatches.add(match);
-    //             matchNumber++;
-    //         }
+    // roundMatches.add(match);
+    // matchNumber++;
+    // }
 
-    //         // Rotar  equipos
-    //         Team lastTeam = teams.get(teams.size() - 1);
-    //         teams.remove(teams.size() - 1);
-    //         teams.add(1, lastTeam);
+    // // Rotar equipos
+    // Team lastTeam = teams.get(teams.size() - 1);
+    // teams.remove(teams.size() - 1);
+    // teams.add(1, lastTeam);
 
-    //         // Guardar los matches de jornada 
-    //         for (Match match : roundMatches) {
-    //             entityManager.persist(match);
-    //         }
-    //     }
+    // // Guardar los matches de jornada
+    // for (Match match : roundMatches) {
+    // entityManager.persist(match);
+    // }
+    // }
 
-    //     entityManager.flush();
+    // entityManager.flush();
     // }
 
     private boolean isUserCoach(HttpSession session) {

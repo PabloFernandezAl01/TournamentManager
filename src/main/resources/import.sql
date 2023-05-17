@@ -23,17 +23,24 @@ INSERT INTO IWUser (id, earned, enabled, first_name, last_name, password,
 reports, roles, username, team_id)
 VALUES (7, 0, TRUE,'q','q', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W',0,'USER', 'q',null);
 
-INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
-name, prize_pool, rounds, status, type, winner_id)
-VALUES (1026, '2023-03-27', 'descripcion del torneo', 3.0, 1, 4, 'Torneo Prueba', 2.0, 3, 1, 0, null);  
+INSERT INTO "PUBLIC"."MESSAGE_TOPIC" VALUES
+(1975, 'PixE9Gxf');  
+INSERT INTO "PUBLIC"."MESSAGE_TOPIC" VALUES
+(1976, 'PixE9Gxa');  
+INSERT INTO "PUBLIC"."MESSAGE_TOPIC" VALUES
+(1977, 'PixE9Gxd');  
 
 INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
-name, prize_pool, rounds, status, type, winner_id)
-VALUES (1027, '2023-04-27', 'descripcion del torneo 2', 3.0, 1, 4, 'Torneo Prueba 2', 2.0, 3, 1, 2, null);  
+name, prize_pool, rounds, status, type, message_topic_id,  winner_id)
+VALUES (1026, '2023-03-27', 'descripcion del torneo', 3.0, 1, 4, 'Torneo Prueba', 2.0, 3, 1, 0, 1975, null);   
 
 INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
-name, prize_pool, rounds, status, type, winner_id)
-VALUES (1028, '2023-08-27', 'descripcion del torneo 3', 3.0, 1, 4, 'Torneo Prueba 3', 2.0, 3, 1, 0, null);   
+name, prize_pool, rounds, status, type, message_topic_id, winner_id)
+VALUES (1027, '2023-04-27', 'descripcion del torneo 2', 3.0, 1, 4, 'Torneo Prueba 2', 2.0, 3, 1, 2, 1976, null);  
+
+INSERT INTO Tournament (id, date, description, entry_price, game, max_teams,
+name, prize_pool, rounds, status, type, message_topic_id, winner_id)
+VALUES (1028, '2023-08-27', 'descripcion del torneo 3', 3.0, 1, 4, 'Torneo Prueba 3', 2.0, 3, 1, 0, 1977, null);   
 
 INSERT INTO Team (id, name, coach_id)
 VALUES (999, 'Primer Equipo', 1);  

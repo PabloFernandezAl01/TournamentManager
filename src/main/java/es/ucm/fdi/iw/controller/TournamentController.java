@@ -3,7 +3,7 @@ package es.ucm.fdi.iw.controller;
 import es.ucm.fdi.iw.IwUserDetailsService;
 import es.ucm.fdi.iw.LocalData;
 import es.ucm.fdi.iw.model.Message;
-
+import es.ucm.fdi.iw.model.MessageTopic;
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.TeamMember.RoleInTeam;
@@ -460,6 +460,11 @@ public class TournamentController {
 
         tournament.setStatus(TournamentStatus.NOT_STARTED);
 
+        MessageTopic mt = new MessageTopic();
+        mt.setTopicId(UserController.generateRandomBase64Token(6));
+
+        tournament.setMessageTopic(mt);
+
         tournament.setCreationDate(LocalDate.now().toString());
 
         if (tournament.getType() == 1) {
@@ -469,6 +474,7 @@ public class TournamentController {
             tournament.setRounds(((int) Math.ceil(Math.log(tournament.getMaxTeams()) / Math.log(2))) + 1);
         }
 
+        entityManager.persist(mt);
         entityManager.persist(tournament);
         entityManager.flush();
 
@@ -541,6 +547,9 @@ public class TournamentController {
         int matchNumber = 1;
         for (int i = 0; i < winners.size(); i += 2) {
             Match match = new Match();
+            MessageTopic mt = new MessageTopic();
+            mt.setTopicId(UserController.generateRandomBase64Token(6));
+            match.setMessageTopic(mt);
 
             match.setRoundNumber(round);
             match.setMatchNumber(matchNumber);
@@ -548,12 +557,12 @@ public class TournamentController {
             match.setTeam1(winners.get(i));
             match.setTeam2(winners.get(i + 1));
 
-            match.setTopicId(UserController.generateRandomBase64Token(6));
 
             match.setTournament(tournament);
 
             matchNumber++;
 
+            entityManager.persist(mt);
             entityManager.persist(match);
         }
 
@@ -593,7 +602,6 @@ public class TournamentController {
                 match.setMatchNumber(matchNumber);
                 match.setTeam1(teams.get(i));
                 match.setTeam2(teams.get(j));
-                match.setTopicId(UserController.generateRandomBase64Token(6));
                 match.setTournament(tournament);
 
                 entityManager.persist(match);

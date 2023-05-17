@@ -37,7 +37,8 @@ public class Tournament {
 
     private String startingHour;
 
-    private String topicId;
+    @OneToOne
+    private MessageTopic messageTopic;
 
     private Double entryPrice;
 
@@ -49,7 +50,7 @@ public class Tournament {
 
     private TournamentStatus status;
 
-    @OneToOne
+    @ManyToOne
     private Team winner;
 
     private int rounds;

@@ -293,10 +293,10 @@ public class UserController {
 	 * @param o  JSON-ized message, similar to {"message": "text goes here"}
 	 * @throws JsonProcessingException
 	 */
-	@PostMapping("sendMsg/{userId}/{matchId}")
+	@PostMapping("sendMsg/match/{matchId}")
 	@Transactional
 	@ResponseBody
-	public String sendMessage(@PathVariable long userId, @PathVariable long matchId,
+	public String sendMessage(@PathVariable long matchId, 
 			@RequestBody JsonNode node, Model model, HttpSession session)
 			throws JsonProcessingException {
 
@@ -305,64 +305,48 @@ public class UserController {
 			return "{\"result\": \"message not sent, empty string received.\"}";
 
 
-		User user = entityManager.find(User.class, userId);
 		Match match = entityManager.find(Match.class, matchId);
-		
-		List<User> recipients = entityManager
-		.createQuery("select t.user from TeamMember t where t.team.id = :team1Id OR t.team.id = :team2Id",
-				User.class)
-		.setParameter("team1Id", match.getTeam1().getId())
-		.setParameter("team2Id", match.getTeam2().getId())
-		.getResultList();
+		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
 				
 
-		for (User recipient : recipients) {
-
-			log.info("Mensaje a " + recipient.getFirstName());
-
-			Team team = getUserTeamFromMatch(user, match);
-			Message m = new Message();
-			
-			m.setRecipient(recipient);
-			m.setSender(user);
-			m.setDateSent(LocalDateTime.now());
-			m.setText(text);
-			m.setMatch(match);
-			m.setIamSender(true);
-			m.setSenderTeamName(team.getName());
-
-			entityManager.persist(m);
-
-			ObjectMapper mapper = new ObjectMapper();
-
-			String json = mapper.writeValueAsString(m.toTransfer());
-
-			log.info("Sending a message to {} with contents '{}'", userId, json);
-
-			messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
-		}
+		Team team = getUserTeamFromMatch(user, match);
+		Message m = new Message();
 		
+		m.setRecipient(match.getMessageTopic());
+		m.setSender(user);
+		m.setDateSent(LocalDateTime.now());
+		m.setText(text);
+		m.setMatch(match);
+		m.setIamSender(true);
+		m.setSenderTeamName(team.getName());
+
+		entityManager.persist(m);
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String json = mapper.writeValueAsString(m.toTransfer());
+
+		log.info("Sending a message to {} with contents '{}'", match.getMessageTopic().getTopicId(), json);
+																					
+			// messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
+		messagingTemplate.convertAndSend("/topic/" + match.getMessageTopic().getTopicId(), json);
 		entityManager.flush(); // to get Id before commit
 
 		return "{\"result\": \"message sent.\"}";
 	}
 
-		/**
+	/**
 	 * Returns JSON with all received messages
 	 */
-	@GetMapping(path = "received", produces = "application/json")
+	@GetMapping(path = "rcvMsg/match/{matchId}", produces = "application/json")
 	@Transactional // para no recibir resultados inconsistentes
 	@ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
-	public List<Message.Transfer> retrieveMessages(HttpSession session) {
-		long userId = ((User) session.getAttribute("u")).getId();
-
-		User user = entityManager.find(User.class, userId);
-
-		log.info("Generating message list for user {} ({} messages)",
-				user.getUsername(), user.getReceived().size());
+	public List<Message.Transfer> retrieveMessages(@PathVariable long matchId, HttpSession session) {
+		Match match = entityManager.find(Match.class, matchId);
+		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
 
 		List<Message> received = new ArrayList<>();
-		for(Message msg : user.getReceived()) {
+		for(Message msg : match.getMessageTopic().getMessages()) {
 			msg.setIamSender(msg.getSender().getId() == user.getId());
 			received.add(msg);
 		}
