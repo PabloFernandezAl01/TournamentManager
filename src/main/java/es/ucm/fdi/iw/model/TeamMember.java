@@ -9,6 +9,12 @@ import lombok.Data;
 // Obtiene los usuarios pertencientes a un Team
 @NamedQuery(name = "MembersByTeam", query = "SELECT e.user FROM TeamMember e WHERE e.team.id = :teamId")
 
+// Obtiene todos los jugadores de un equipo
+@NamedQuery(name = "PlayersInTeam", query = "SELECT e.user FROM TeamMember e WHERE e.team.id = :teamId AND e.isCoach = false")
+
+// Obtiene todos los coachs de un equipo
+@NamedQuery(name = "CoachsInTeam", query = "SELECT e.user FROM TeamMember e WHERE e.team.id = :teamId AND e.isCoach = true")
+
 // Obtiene todos los usuarios que sean coach de algun equipo
 @NamedQuery(name = "AllCoachs", query = "SELECT e.user FROM TeamMember e WHERE e.isCoach = true")
 

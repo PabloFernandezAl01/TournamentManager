@@ -12,7 +12,6 @@
 en un torneo en el POST "joinTournament"
 
 - Mejorar codigo de TournamentController:
-    + Cambiar result de Match por bool draw
     + Mirar que onda con el atributo creationDate de Tournament
     + Mirar que onda con el atributo startingHour de Tournament
 
