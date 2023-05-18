@@ -2,77 +2,155 @@
 <html class="h-100" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <th:block th:replace="fragments/head :: header" />
-    <title>Tournament Bracket Generator</title>
+  <th:block th:replace="fragments/head :: header" />
+  <title>Tournament Bracket Generator</title>
 
-    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-    <script src="http://underscorejs.org/underscore-min.js"></script>
+  <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+  <script src="http://underscorejs.org/underscore-min.js"></script>
 
 </head>
 
 <body class="d-flex flex-column h-100 body">
-    <!-- Reemplazo del header desde el archivo nav.html -->
-    <header th:replace="fragments/nav.html :: nav"></header>
+  <!-- Reemplazo del header desde el archivo nav.html -->
+  <header th:replace="fragments/nav.html :: nav"></header>
 
-    <div id="brackets" class="bracket">
-        <h2>Tournament</h2>
+  <!-- Imagen de fondo -->
+  <div class="background"></div>
 
-        <table>
-            <thead class="tituloRoundRobin">
-                <tr>
-                    <th>Posición</th>
-                    <th>Equipo</th>
-                    <th>Puntuación</th>
-                    <th>Victorias</th>
-                    <th>Empates</th>
-                    <th>Derrotas</th>
-                </tr>
-            </thead>
-            <tbody th:each="team, contador: ${teams}">
-                <tr>
-                    <td th:text="${contador.count}">Posicion</td>
-                    <td th:text="${team.getTeam().name}">Equipo</td>
-                    <td th:text="${team.puntuacion}">Puntuacion</td>
-                    <td th:text="${team.victorias}">Victorias</td>
-                    <td th:text="${team.empates}">Empates</td>
-                    <td th:text="${team.derrotas}">Derrotas</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div id="brackets" class="bracket">
+    <h2 th:text="${tournament.name}">Tournament</h2>
+
+    <table>
+      <thead class="tituloRoundRobin">
+        <tr>
+          <th>Posición</th>
+          <th>Equipo</th>
+          <th>Puntuación</th>
+          <th>Victorias</th>
+          <th>Empates</th>
+          <th>Derrotas</th>
+        </tr>
+      </thead>
+      <tbody th:each="team, contador: ${teams}">
+        <tr>
+          <td th:text="${contador.count}">Posicion</td>
+          <td th:text="${team.getTeam().name}">Equipo</td>
+          <td th:text="${team.puntuacion}">Puntuacion</td>
+          <td th:text="${team.victorias}">Victorias</td>
+          <td th:text="${team.empates}">Empates</td>
+          <td th:text="${team.derrotas}">Derrotas</td>
+        </tr>
+      </tbody>
+    </table>
 
 
     <div th:each="partido : ${partidosPorRonda.entrySet()}" class="round">
-        <h3 th:text="'Jornada ' +${partido.key}"></h3>
+      <h3 th:text="'Jornada '+ ${partido.key}">Ronda</h3>
 
-        <div th:each="match : ${partido.value}" class="match">
+      <div th:each="match : ${partido.value}" class="match">
 
-            <div th:if="${match.team1}" th:text="${match.team1.name}" class="team"></div>
-            <div th:if="${match.team1 == null}" class="team">-</div>
+        <div th:if="${match.team1}" th:text="${match.team1.name}"
+          th:classappend="${match.winner != null && match.winner == match.team1}  ? 'winner' : ''" class="team"></div>
+        <div th:if="${match.team1 == null}" class="team">-</div>
 
-            <span>vs</span>
+        <span th:if="${match.result != null && !match.result.contains('/')}" th:text="${match.result}"></span>
+        <span th:if="${match.result == null || match.result.contains('/')}">vs</span>
 
-            <div th:if="${match.team2}" th:text="${match.team2.name}" class="team"></div>
-            <div th:if="${match.team2 == null}" class="team">-</div>
-        </div>
+        <div th:if="${match.team2}" th:text="${match.team2.name}"
+          th:classappend="${match.winner != null && match.winner == match.team2}  ? 'winner' : ''" class="team"></div>
+        <div th:if="${match.team2 == null}" class="team">-</div>
+
+      </div>
+
     </div>
 
-    <div class="d-flex justify-content-center align-items-center h-100">
-        <div th:if="${userMatch != null}" id="chat" class="chat col-md-6">
-            <!--RECEPCIÓN DE MENSAJES-->
-            <div id="mensajes" class="messages"></div>
-            <!--ENVÍO DE MENSAJES-->
-            <div class="input-group">
-                <form th:action="@{|/user/sendMsg/${session.u.id}/${userMatch.id}|}" method="POST">
-                    <input type="text" id="messageInput" class="form-control" placeholder="Escribe tu mensaje..." />
-                    <button id="sendButton" class="btn btn-primary" type="submit">Enviar</button>
-                </form>
-            </div>
+  </div>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast bg-primary align-items-center text-bg-primary border-0" role="alert"
+      aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          Resultados Enviados con éxito
         </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+          aria-label="Close"></button>
+      </div>
     </div>
-    
-    <th:block th:replace="fragments/footer.html :: footer" />
-    <script th:src="@{/js/ajax-message-match.js}"></script>
+  </div>
+
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <div th:if="${userMatch != null}" id="chat" class="chat col-md-6">
+      <div id="resultados" class="d-flex justify-content-between align-items-center">
+        <h5 th:text="${userMatch.team1.name +' - '+ userMatch.team2.name}">Partido y equipos</h5>
+        <div th:if="${userMatch.winner != null}" class="EnvioResultados inputs-container">Partido Finalizado</div>
+        <div id="formDiv" th:if="${isCoach && userMatch.winner == null}" class="EnvioResultados inputs-container">Resultados del partido:
+          <form id="resultsForm"
+            th:action="@{|/tournament/sendResults/${tournament.id}/${userMatch.id}/${userTeam.id}|}" class="resultsForm"
+            method="POST">
+
+            <input type="number" class="matchResult" name="resultadoTeam1" placeholder="Nº" min="0" required />
+            <span>-</span>
+            <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" placeholder="Nº" min="0"
+              required />
+            <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
+
+          </form>
+        </div>
+      </div>
+      <!--RECEPCIÓN DE MENSAJES-->
+      <div id="mensajes" class="messages"></div>
+
+      <!--ENVÍO DE MENSAJES-->
+      <div class="input-group">
+        <form th:action="@{|/user/sendMsg/${session.u.id}/${userMatch.id}|}" class="formMessage" method="POST">
+          <input type="text" id="messageInput" class="inputMessage" placeholder="Escribe tu mensaje..." />
+          <button id="sendButton" class="buttonMensaje" type="submit"></button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <th:block th:replace="fragments/footer.html :: footer" />
+  <script th:src="@{/js/ajax-message-match.js}"></script>
 </body>
+<script>
+  $(document).ready(function () {
+    // Obtener el formulario y el botón de envío
+    const resultsForm = document.querySelector('.resultsForm');
+
+    // Agregar un listener al evento submit del formulario
+    resultsForm.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevenir el envío del formulario por defecto
+
+      // Envíar el formulario por AJAX
+      $.ajax({
+        type: 'POST',
+        url: resultsForm.action,
+        data: $(resultsForm).serialize(),
+        success: function (response) {
+          // Manejar la respuesta del servidor
+          // Por ejemplo, mostrar un mensaje de éxito en la página
+          console.log(response); // Puedes imprimir la respuesta en la consola para verla
+
+          // Aquí puedes actualizar la página o realizar alguna acción adicional
+          // Mostrar el toast
+          const liveToast = document.querySelector('#liveToast');
+          const toast = new bootstrap.Toast(liveToast);
+          toast.show();
+          resultsForm.reset(); // Limpiar los valores de los inputs
+        },
+        error: function (xhr, status, error) {
+          // Manejar el error en caso de que ocurra
+          console.log(xhr.responseText); // Puedes imprimir el mensaje de error en la consola para verlo
+
+          // Aquí puedes mostrar un mensaje de error en la página o realizar alguna acción adicional
+          console.error(error);
+        }
+      });
+    });
+  });
+</script>
 
 </html>

@@ -5,6 +5,9 @@ import lombok.Data;
 
 @Entity
 @Data
+
+// Obtiene los partidos en los que se encuentran el Team1 o el Team2
+@NamedQuery(name = "MatchesWithTeamOneOrTeamTwo", query = "SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId")
 public class Match {
 
     /*
@@ -16,27 +19,51 @@ public class Match {
 	private long id;
 
     /*
-     * Id del torneo en el que se encuentra este "Match"
+     * Referencia a message topic
      */
-    @Column(nullable = false)
-    private long tournamentId;
+    @OneToOne
+    private MessageTopic messageTopic;
 
     /*
-     * Id de los equipos que conforman este "Match"
+     * Referencia al torneo en el que se encuentra este "Match"
+     */
+    @OneToOne
+    private Tournament tournament;
+
+    /*
+     * Referencia a los equipos que conforman este "Match"
+     */
+    @OneToOne
+    private Team team1;
+    @OneToOne
+    private Team team2;
+
+    /*
+     * Referencia al ganador del "Match"
+     */
+    @OneToOne
+    private Team winner;
+
+    /*
+     * Resultado del partido
+     */
+    String result;
+
+    /*
+     * - Round Number: representa la fase actual del torneo.
+     * En el caso de RR representa la jornada actual de la liga y en 
+     * el caso de Simple Elimination, la fase (octavos, cuartos, semis..etc)
+     * 
+     * - Match Number: representa el numero de partido de la ronda actual.
+     * En el caso de RR representaria el numero de partido de la jornada y 
+     * en el caso de Simple Elimination, el numero de partido de la fase.
      */
     @Column(nullable = false)
-    private long teamOne;
+    private int roundNumber;
     @Column(nullable = false)
-    private long teamTwo;
+    private int matchNumber;
 
     // Atributos para los distintos tipos de torneos
-
-        // Single & Double Elimination
-        /*
-         * Indica la fase del torneo en la que se encuentra este "Match"
-         */
-        @Column(nullable = false)
-        private int round;
 
         // Round Robin
         /*

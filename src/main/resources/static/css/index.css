@@ -13,3 +13,30 @@
 .body {
     margin-top: 50px;
 }
+
+.menu-container {
+    justify-content: center;
+    margin-top: 5em;
+    display: flex;
+    position: relative;
+    width: 100%; /* Ancho del contenedor al 100% del ancho de la pantalla */
+    overflow-x: auto; /* Permite desplazamiento horizontal si el contenido excede el ancho */
+}
+
+.list-image {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+  
+.menu li {
+    display: inline-block;
+    margin-right: 10px; /* Espacio entre los elementos del menú */
+}
+
+.menu li a img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+}
+
+  

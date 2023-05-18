@@ -16,18 +16,20 @@ public class Report {
 	private long id;
 
     /*
-     * Id del "User" que ha recibido el reporte
+     * Referencia al usuario que recibio el reporte
      */
-    private Long userId;
+    @ManyToOne
+    private User user;
+
+    /*
+     * Mensaje que representa al reporte
+     */
+    @OneToOne
+    private Message message;
 
     /*
      * Descripcion del reporte
      */
     private String description;
-
-    /*
-     * Id del mensaje causa del reporte
-     */
-    private Long messageId;
 
 }

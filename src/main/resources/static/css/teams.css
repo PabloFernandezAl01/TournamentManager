@@ -1,0 +1,52 @@
+
+.body {
+  margin-top: 50px;
+}
+
+.team-button {
+  display: flex;
+  justify-content: center;
+}
+
+/*ventana modal de creación de equipo*/
+.modal {
+  margin-top: 4em;
+  display: none;
+  justify-content: center;
+  position: relative; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 50%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.3); /* Fallback color */
+  }
+  
+  /* Modal Content/Box */
+.modal-content {
+  text-align: center;
+  margin-top: 3em;
+  margin-bottom: 3em;
+  background-color:rgb(33,37,41);
+  width: 50%;
+  height: 50%;
+  padding: 1em;
+  border-radius: 20px;
+  border-color: transparent;
+}
+  
+  /* The Close Button */
+.close {
+  color: #fdfdfd;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+  
+.close:hover,
+.close:focus {
+  color: rgb(218, 206, 206);
+  text-decoration: none;
+  cursor: pointer;
+}

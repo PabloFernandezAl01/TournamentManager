@@ -13,6 +13,9 @@
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
     <main class="flex-shrink-0">
         <div class="login container">
             <form method="post" th:action="@{/login}">

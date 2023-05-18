@@ -1,8 +1,10 @@
 package es.ucm.fdi.iw.controller;
 import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
-import es.ucm.fdi.iw.model.TeamMember;
+import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.User;
+import es.ucm.fdi.iw.model.Match;
+import es.ucm.fdi.iw.model.MessageTopic;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,17 +12,20 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.view.RedirectView;
+
 import org.springframework.stereotype.Controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ui.Model;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.*;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -114,11 +119,14 @@ public class RootController {
     public String join(Model model, HttpSession session) {
         model.addAttribute("join", "active");
 
-        // Obtiene los torneos que no han empezado (filterBy NOT STARTED)
-        List<Tourney> tournaments = getTournamentsFilterByStatus(session, TournamentStatus.NOT_STARTED);
+        // Obtiene la informacion clave de los torneos
+        List<Tourney> tournaments = getTournamentsData(session);
 
-        // Añande los torneos al modelo
+        // Añade los torneos al modelo
         model.addAttribute("Tournaments", tournaments);
+
+        // Añande el estado de los torneos a filtrar
+        model.addAttribute("Status", TournamentStatus.NOT_STARTED);
 
         // Marca un flag indicando si el usuario es coach o no
         // (Solo los coach puede inscribir a sus equipos en torneos)
@@ -132,15 +140,15 @@ public class RootController {
     public String ongoing(Model model, HttpSession session) {
         model.addAttribute("ongoing", "active");
 
-        // Obtiene los torneos que han empezado (filterBy ON GOING)
-        List<Tourney> tournaments = getTournamentsFilterByStatus(session, TournamentStatus.ON_GOING);
+        // Obtiene la informacion clave de los torneos
+        List<Tourney> tournaments = getTournamentsData(session);
 
         // Añande los torneos al modelo
         model.addAttribute("Tournaments", tournaments);
 
-        // Añande un flag indicando si el usuario es coach
-        model.addAttribute("IsCoach", isCoach(session));
-    
+         // Añande el estado de los torneos a filtrar
+         model.addAttribute("Status", TournamentStatus.ON_GOING);
+
         return "ongoing";
     }
 
@@ -148,11 +156,14 @@ public class RootController {
     public String record(Model model, HttpSession session) {
         model.addAttribute("record", "active");
 
-        // Obtiene los torneos que han terminado (filterBy FINISHED)
-        List<Tourney> tournaments = getTournamentsFilterByStatus(session, TournamentStatus.FINISHED);
+        // Obtiene la informacion clave de los torneos
+        List<Tourney> tournaments = getTournamentsData(session);
 
         // Añande los torneos al modelo
         model.addAttribute("Tournaments", tournaments);
+
+         // Añande el estado de los torneos a filtrar
+         model.addAttribute("Status", TournamentStatus.FINISHED);
 
         return "record";
     }
@@ -184,18 +195,14 @@ public class RootController {
         // Añade/modifica la base de datos
         entityManager.persist(registered);
 
-        // Sincroniza el contexto de persistencia con la DB
-        //entityManager.flush();
-
         // Redirige la vista a LOGIN ya que despues de registrarse tiene sentido iniciar sesion
         return new RedirectView("/login");
-    }   
+    }
 
     /*
-     * Filtra la lista de torneos para crear una nueva lista solo con los torneos
-     * que coincidan con el estado "estatus" y su informacion clave para el HTML
+     * Devuelve la informacion de todos los torneos
      */
-    private List<Tourney> getTournamentsFilterByStatus(HttpSession session, TournamentStatus status) {
+    private List<Tourney> getTournamentsData(HttpSession session) {
 
         List<Tourney> tourneys = new ArrayList<>();
         List<Tournament> tournaments = new ArrayList<>();
@@ -203,51 +210,64 @@ public class RootController {
         try {
             // Consulta a la DB para obtener todos los torneos
             tournaments = entityManager.createNamedQuery("AllTournaments", Tournament.class).getResultList();
+
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
         }
 
         for (Tournament t : tournaments) {
-            if (t.getStatus() == status) {
 
-                int nTeams = getNumberOfTeamsInTournament(t);
+            // Obtiene el numero de equipos inscritos en el torneo
+            int nTeams = getNumberOfTeamsInTournament(t);
 
-                // Se crea el objeto con la informacion del torneo para añadirlo a la lista
-                TData data = new TData(nTeams, t.getMaxTeams(), t.getStatus(), isMyTeamInTournament(session, t.getId()));
+            if (LocalDate.now().isAfter(LocalDate.parse(t.getDate()))
+                        && (t.getStatus() == TournamentStatus.NOT_STARTED)) {
+                    if (nTeams < t.getMaxTeams()) {
+                        t.setStatus(TournamentStatus.CANCELED);
+                    } else {
+                        t.setStatus(TournamentStatus.ON_GOING);
 
-                tourneys.add(new Tourney(t, data));
+                        // TODO: Hacer esto de manera asíncrona con WS
+                        createMatches(t, session);
+                        // else
+                        // createLeagueMatches(tournament, session);
+                    }
+                }
 
-            }
+            // Se crea el objeto con la informacion del torneo para añadirlo a la lista
+            TData data = new TData(nTeams, t.getMaxTeams(), t.getStatus(), isMyTeamInTournament(session, t));
+
+            tourneys.add(new Tourney(t, data));
+
         }
 
         return tourneys;
-
     }
 
     /*
      * Comprueba si el usuario tiene alguno de sus equipos inscritos en el torneo T
      */
-    private boolean isMyTeamInTournament(HttpSession session, long tournamentId) {
+    private boolean isMyTeamInTournament(HttpSession session, Tournament t) {
 
         User user = (User) session.getAttribute("u");
 
-        List<Long> teamsIds = new ArrayList<>();
+        List<Team> teams = new ArrayList<>();
         List<Long> usersIdsInTeam = new ArrayList<>();
 
         try {
-            // Obtiene todos los Ids de los equipos inscritos en el torneo T
-            teamsIds = entityManager.createNamedQuery("TeamsIdsByTournament", Long.class)
-                                         .setParameter("tournamentid", tournamentId).getResultList();
+            // Obtiene todos los equipos inscritos en el torneo T
+            teams = entityManager.createNamedQuery("TeamsByTournamentId", Team.class)
+                                         .setParameter("tournamentId", t.getId()).getResultList();
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
         }
 
-        for (Long teamId : teamsIds) {
+        for (Team team : teams) {
 
             try {
                 // Por cada Id de equipo, obtiene sus integrantes
-                usersIdsInTeam = entityManager.createNamedQuery("MembersIdsByTeam", Long.class)
-                                                            .setParameter("teamid", teamId).getResultList();
+                usersIdsInTeam = entityManager.createNamedQuery("MembersByTeam", Long.class)
+                                                            .setParameter("teamId", team.getId()).getResultList();
             } catch (IllegalArgumentException e) {
                 log.error(e.getMessage());
             }
@@ -261,7 +281,6 @@ public class RootController {
         }
 
         return false;                                
-
     }
     
     /*
@@ -272,9 +291,10 @@ public class RootController {
         int nTeams = 0;
 
         try {
-             // Consulta el tamaño de la lista devuelta por la consutla
-            nTeams = entityManager.createNamedQuery("TeamsIdsByTournament", Long.class)
-                                    .setParameter("tournamentid", t.getId()).getResultList().size();
+            // Consulta el tamaño de la lista devuelta por la consulta
+            nTeams = entityManager.createNamedQuery("TeamsByTournamentId", Team.class)
+                                    .setParameter("tournamentId", t.getId()).getResultList().size();
+
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
         }
@@ -288,7 +308,7 @@ public class RootController {
     private boolean isCoach(HttpSession session) {
 
         User user = null;
-        List<TeamMember> coachs = new ArrayList<>();
+        List<User> coachs = new ArrayList<>();
 
         try {
             // Obtiene la informacion del usuario de la sesion actual
@@ -298,21 +318,106 @@ public class RootController {
         }
 
         try {
-            // Obtiene todos los coachs de todos los Teams existentes en la aplicacion
-            coachs = entityManager.createNamedQuery("AllCoachs", TeamMember.class).getResultList();
+            // Devuelve una lista con los usuarios que sean coach de algun equipo
+            coachs = entityManager.createNamedQuery("AllCoachs", User.class).getResultList();
+
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
         }
 
-        // Comprueba si el usuario es coach recorriendo todos
-        // los coachs que existen y comparando sus Ids
-        for (TeamMember t : coachs) {
-            if (t.getUserId() == user.getId()) {
+         // Comprueba si alguno de esos coachs tienen el mismo id de usuario que el usuario de la sesion
+        for (User u : coachs) {
+            if (u.getId() == user.getId()) {
                 return true;
             }
         }
 
         return false;
-
     }
+
+    
+
+    // ------------------- Logica de creacion de partidos ----------------------
+
+    private void createMatches(Tournament tournament, HttpSession session) {
+        // crear partidos
+        List<Team> teams = new ArrayList<>();
+        TypedQuery<Team> query = entityManager.createQuery(
+                "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+                Team.class);
+
+        teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
+        try {
+            // Hacerlo random en el futuro, en lugar de por orden de union
+            int matchNumber = 1;
+            for (int i = 0; i < teams.size(); i += 2) {
+                Match match = new Match();
+
+                match.setRoundNumber(1);
+                match.setMatchNumber(matchNumber);
+
+                match.setTeam1(teams.get(i));
+                match.setTeam2(teams.get(i + 1));
+
+                MessageTopic mt = new MessageTopic();
+                mt.setTopicId(UserController.generateRandomBase64Token(6));
+                match.setMessageTopic(mt);
+
+                match.setTournament(tournament);
+
+                matchNumber++;
+
+                entityManager.persist(mt);
+                entityManager.persist(match);
+            }
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    // private void createLeagueMatches(Tournament tournament, HttpSession session)
+    // {
+    // // Crear partidos
+    // List<Team> teams = new ArrayList<>();
+    // TypedQuery<Team> query = entityManager.createQuery(
+    // "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+    // Team.class);
+    // teams = query.setParameter("tournamentid",
+    // tournament.getId()).getResultList();
+
+    // int matchNumber = 1;
+    // int numRounds = teams.size() - 1;
+
+    // // Generar jornadas
+    // for (int round = 1; round <= numRounds; round++) {
+    // List<Match> roundMatches = new ArrayList<>();
+
+    // for (int i = 0; i < teams.size() / 2; i++) {
+    // int j = teams.size() - 1 - i;
+
+    // Match match = new Match();
+    // match.setRoundNumber(round);
+    // match.setMatchNumber(matchNumber);
+    // match.setTeam1(teams.get(i));
+    // match.setTeam2(teams.get(j));
+    // match.setTopicId(UserController.generateRandomBase64Token(6));
+    // match.setTournament(tournament);
+
+    // roundMatches.add(match);
+    // matchNumber++;
+    // }
+
+    // // Rotar equipos
+    // Team lastTeam = teams.get(teams.size() - 1);
+    // teams.remove(teams.size() - 1);
+    // teams.add(1, lastTeam);
+
+    // // Guardar los matches de jornada
+    // for (Match match : roundMatches) {
+    // entityManager.persist(match);
+    // }
+    // }
+
+    // entityManager.flush();
+    // }
 }

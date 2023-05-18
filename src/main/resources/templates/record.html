@@ -13,6 +13,9 @@
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
     <main class="flex-shrink-0">
 
         <!-- Informacion principal de FINISHED (historial de torneos) -->
@@ -25,7 +28,7 @@
           <!-- Se genera una lista para representar los torneos que terminados -->
           <ul class="tournament-list">
             <!-- Se recorre la lista con la informacion de los torneos FINISHED -->
-            <li th:each="tourney : ${Tournaments}">
+            <li th:each="tourney : ${Tournaments}" th:if="${tourney.data.status} == ${Status}">
 
               <!-- Informacion general del torneo-->
               <div class="tournament-info">

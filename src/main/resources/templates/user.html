@@ -12,6 +12,9 @@
 <body class="d-flex flex-column h-100 body">
     <header th:replace="fragments/nav.html :: nav"></header>
 
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
     <main class="flex-shrink-0">
 
         <!-- Contenedor de toda la informacion del perfil -->
@@ -21,26 +24,20 @@
 
             <div class="data">
                 <div class="atributes">
-                    <div class="mt-1">
-                        <span>Usuario:</span>
-                        <span th:text="${user.username}"></span>
-                    </div>
-                    <div class="mt-4">
-                        <span>Nombre:</span>
-                        <span th:text="${user.firstName}"></span>
-                    </div>
-        
-                    <div class="mt-4">
-                        <span>Apellido:</span>
-                        <span th:text="${user.lastName}"></span>
-                    </div>
-        
-                    <div class="mt-4">
-                        <span>Monedas:</span>
-                        <span th:text="${user.coins}"></span>
-                    </div>
+                    <span class="mt-1">Usuario</span>
+                    <span class="mt-4">Nombre</span>
+                    <span class="mt-4">Apellido</span>
+                    <span class="mt-4">Monedas</span>
                 </div>
+                <div class="content">
+                    <span class="mt-1" th:text="${user.username}"></span>
+                    <span class="mt-4" th:text="${user.firstName}"></span>
+                    <span class="mt-4" th:text="${user.lastName}"></span>
+                    <span class="mt-4" th:text="${user.coins}"></span>
+                </div>
+
                 <img class="rounded userimage" th:src="@{/user/{id}/pic(id=${session.u.id})}">
+
             </div>
             
         </div>
@@ -66,7 +63,7 @@
     </main>
 
     <th:block th:replace="fragments/footer.html :: footer" />
-    
+
 </body>
 
 </html>

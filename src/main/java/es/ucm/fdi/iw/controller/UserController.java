@@ -1,7 +1,6 @@
 package es.ucm.fdi.iw.controller;
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.TeamMember;
-import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.User.Role;
 import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.Match;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
@@ -47,7 +45,6 @@ import java.util.List;
 import java.io.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -71,8 +68,8 @@ public class UserController {
 	@Autowired
 	private LocalData localData;
 
-	// @Autowired
-	// private SimpMessagingTemplate messagingTemplate;
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -120,7 +117,7 @@ public class UserController {
 	public String user(@PathVariable long id, Model model, HttpSession session) {
 		log.warn("El usuario entra en su perfil");
 
-		User user = entityManager.find(User.class, id);
+		User user = (User) session.getAttribute("u");
 		model.addAttribute("user", user);
 
 		return "user";
@@ -157,7 +154,7 @@ public class UserController {
 
 		if (edited.getPassword() != null) {
 			if (!edited.getPassword().equals(pass2)) {
-				// Avisar de que la constraseña es igual a la anterior (Usuario bobo)
+				// TODO: Avisar de que la constraseña es igual a la anterior
 			} else {
 				// save encoded version of password
 				target.setPassword(encodePassword(edited.getPassword()));
@@ -175,6 +172,10 @@ public class UserController {
 
 		return "user";
 	}
+
+
+
+	// ------------------------- Apartado de imagenes --------------------------
 
 	/**
 	 * Returns the default profile pic
@@ -215,8 +216,7 @@ public class UserController {
 
 		// check permissions
 		User requester = (User) session.getAttribute("u");
-		if (requester.getId() != target.getId() &&
-				!requester.hasRole(Role.ADMIN)) {
+		if (requester.getId() != target.getId() && !requester.hasRole(Role.ADMIN)) {
 			throw new NoEsTuPerfilException();
 		}
 
@@ -237,6 +237,9 @@ public class UserController {
 		return "{\"status\":\"photo uploaded correctly\"}";
 	}
 
+
+	// ------------------------- Apartado de equipos ----------------------------
+
 	/*
 	 * Creacion de equipos
 	 */
@@ -244,30 +247,39 @@ public class UserController {
 	@Transactional
 	public String postCreateTeam(@PathVariable long id, HttpServletRequest request, Model model) throws Exception {
 
-		String name = request.getParameter("name");
+		// Usuario de la sesion
 		User u = entityManager.find(User.class, id);
 
+		// Nombre del equipo recogido del formulario
+		String name = request.getParameter("name");
+
+		// Se crea el nuevo equipo
 		Team t = new Team();
+		t.setName(name);
 
-		TeamMember tm = new TeamMember();
+		// Se crea un nuevo miembro de equipo
+		TeamMember member = new TeamMember();
 
-		// t.setCoach(u);
-		// t.setName(name);
+		/*
+		 * Se dan valor a los atributos del member
+		 * - IsCoach: siempre es coach el usuario que crea el equipo
+		 * - Team: El team creado
+		 * - User: El user de la sesion
+		 */
+		member.setIsCoach(true);
+		member.setTeam(t);
+		member.setUser(u);
 
-		// tm.setRole(RoleInTeam.COACH);
-		// tm.setTeam(t);
-		// tm.setUser(u);
-
-		entityManager.persist(t);
-		entityManager.persist(tm);
-		entityManager.flush();
+		// Se persisten ambos objetos
+		entityManager.persist(t); entityManager.persist(member);
 
 		model.addAttribute("user", u);
 
 		return "user";
+
 	}
 
-
+	/* Envio de mensajes por match */
 	/**
 	 * Posts a message to a match.
 	 * 
@@ -275,54 +287,46 @@ public class UserController {
 	 * @param o  JSON-ized message, similar to {"message": "text goes here"}
 	 * @throws JsonProcessingException
 	 */
-	@PostMapping("sendMsg/{userId}/{matchId}")
+	@PostMapping("sendMsg/match/{matchId}")
 	@Transactional
 	@ResponseBody
-	public String sendMessage(@PathVariable long userId, @PathVariable long matchId,
-			@RequestBody JsonNode node, Model model, HttpSession session)
-			throws JsonProcessingException {
+	public String sendMessage(@PathVariable long matchId, @RequestBody JsonNode node, Model model, HttpSession session) throws JsonProcessingException {
 
-		// String text = node.get("message").asText();
-		// if(text == "")
-		// 	return "{\"result\": \"message not sent, empty string received.\"}";
+		// Obtiene el contenido del mensaje
+		String text = node.get("message").asText();
+		if (text == "") return "{\"result\": \"message not sent, empty string received.\"}";
 
-
-		// User user = entityManager.find(User.class, userId);
-		// Match match = entityManager.find(Match.class, matchId);
+		// Lo envia al log
+		log.info("Mensaje: " + text);
 		
-		// List<User> recipients = entityManager
-		// .createQuery("select t.user from TeamMember t where t.team.id = :team1Id OR t.team.id = :team2Id",
-		// 		User.class)
-		// .setParameter("team1Id", match.getTeam1().getId())
-		// .setParameter("team2Id", match.getTeam2().getId())
-		// .getResultList();
-
-
-		// for (User recipient : recipients) {
-
-		// 	Team team = getUserTeamFromMatch(user, match);
-		// 	Message m = new Message();
-			
-		// 	m.setRecipient(recipient);
-		// 	m.setSender(user);
-		// 	m.setDateSent(LocalDateTime.now());
-		// 	m.setText(text);
-		// 	m.setMatch(match);
-		// 	m.setIamSender(true);
-		// 	m.setSenderTeamName(team.getName());
-
-		// 	entityManager.persist(m);
-
-		// 	ObjectMapper mapper = new ObjectMapper();
-
-		// 	String json = mapper.writeValueAsString(m.toTransfer());
-
-		// 	log.info("Sending a message to {} with contents '{}'", userId, json);
-
-		// 	messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
-		// }
+		// Obtiene el match y el usuario de a sesion
+		Match match = entityManager.find(Match.class, matchId);
+		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
 		
-		// entityManager.flush(); // to get Id before commit
+		// Obtiene el equipo del usuario a partir del Match
+		Team team = getUserTeamFromMatch(user, match);
+
+		// Crea el mensaje
+		Message m = new Message();
+		m.setRecipient(match.getMessageTopic());
+		m.setSender(user);
+		m.setDateSent(LocalDateTime.now());
+		m.setText(text);
+		m.setMatch(match);
+		m.setIamSender(true);
+		m.setSenderTeamName(team.getName());
+
+		entityManager.persist(m);
+
+		// Convierte el mensaje en JSON
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(m.toTransfer());
+
+		log.info("Sending a message to {} with contents '{}'", match.getMessageTopic().getTopicId(), json);
+																					
+		// messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
+		messagingTemplate.convertAndSend("/topic/" + match.getMessageTopic().getTopicId(), json);
+		entityManager.flush(); // To get Id before commit
 
 		return "{\"result\": \"message sent.\"}";
 	}
@@ -330,19 +334,19 @@ public class UserController {
 	/**
 	 * Returns JSON with all received messages
 	 */
-	@GetMapping(path = "received", produces = "application/json")
-	@Transactional // para no recibir resultados inconsistentes
-	@ResponseBody // para indicar que no devuelve vista, sino un objeto (jsonizado)
-	public List<Message.Transfer> retrieveMessages(HttpSession session) {
-		long userId = ((User) session.getAttribute("u")).getId();
+	@GetMapping(path = "rcvMsg/match/{matchId}", produces = "application/json")
+	@Transactional // Para no recibir resultados inconsistentes
+	@ResponseBody // Para indicar que no devuelve vista, sino un objeto (jsonizado)
+	public List<Message.Transfer> recieveMessages(@PathVariable long matchId, HttpSession session) {
 
-		User user = entityManager.find(User.class, userId);
-
-		log.info("Generating message list for user {} ({} messages)",
-				user.getUsername(), user.getReceived().size());
+		// Obtiene el match y el usuario de a sesion
+		Match match = entityManager.find(Match.class, matchId);
+		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
 
 		List<Message> received = new ArrayList<>();
-		for(Message msg : user.getReceived()) {
+		List<Message> messages = match.getMessageTopic().getMessages();
+		
+		for(Message msg : messages) {
 			msg.setIamSender(msg.getSender().getId() == user.getId());
 			received.add(msg);
 		}
@@ -351,19 +355,87 @@ public class UserController {
 	}
 
 	private Team getUserTeamFromMatch(User user, Match match) {
-		return null;
-        // try {
-        //     Team team = entityManager.createQuery(
-        //             "SELECT m.team FROM TeamMember m WHERE (m.team.id = :matchTeam1 OR m.team.id = :matchTeam2) AND m.user.id = :userId",
-        //             Team.class)
-        //             .setParameter("matchTeam1", match.getTeam1().getId())
-        //             .setParameter("matchTeam2", match.getTeam2().getId())
-		// 			.setParameter("userId", user.getId())
-        //             .getSingleResult();
-        //     return team;
+        try {
+			// Obtiene el equipo de un partido en el que este el usuario
+            Team team = entityManager.createNamedQuery("MyTeamFromMatch",Team.class)
+                    .setParameter("team1", match.getTeam1().getId())
+                    .setParameter("team2", match.getTeam2().getId())
+					.setParameter("userId", user.getId()).getSingleResult();
 
-        // } catch (NoResultException e) {
-        //     return null;
-        // }
+            return team;
+
+        } catch (NoResultException e) {
+			log.error(e.getMessage());
+            return null;
+        }
     }
+
+
+	// ----------------- Vista Teams.html (Adaptarlo al modelo de siempre) ----------------
+
+	 /*
+     * Clase para manejar la informacion de un team (par {Team, List<User> jugadores})
+     */
+    // @Data
+    // @AllArgsConstructor
+    // public static class TeamData {
+    //     Team t; // Team
+	// 	List<User> members;
+    // }
+
+	// @GetMapping("{id}/teams")
+    // public String team(Model model, HttpSession session) {
+    //     model.addAttribute("teams", "active");
+
+	// 	User user = (User) session.getAttribute("u");
+	// 	model.addAttribute("user", user);
+
+	// 	List<TeamData> teams = getUserTeams(session);
+	// 	model.addAttribute("Teams", teams);
+
+    //     return "teams";
+    // }
+
+	/*
+     * Devuelve una lista con los equipos a los que pertence el usuario
+     */
+    // private List<TeamData> getUserTeams(HttpSession session) {
+
+	// 	User user = (User) session.getAttribute("u");
+
+	// 	List<Long> teamsIds = new ArrayList<>();
+	// 	List<TeamData> teams = new ArrayList<>();
+
+	// 	try {
+    //         // Consulta a la DB para obtener todos los ids de equipos en los que esta el usuario
+    //         teamsIds = entityManager.createNamedQuery("AllTeamsIdsByUser", Long.class).
+	// 										  setParameter("userid", user.getId()).getResultList();
+    //     } catch (IllegalArgumentException e) {
+    //         log.error(e.getMessage());
+    //     }
+
+	// 	for (Long id : teamsIds) {
+	// 		// Obtiene el Team buscando por id
+	// 		Team t = entityManager.createNamedQuery("TeamByTeamId", Team.class).
+	// 										   setParameter("teamid", id).getSingleResult();
+
+	// 		List<Long> membersIds = entityManager.createNamedQuery("AllUsersWithSameTeamId", Long.class).
+	// 																   setParameter("teamid", id).getResultList();
+
+	// 		List<User> members = new ArrayList<>();
+
+	// 		for (Long mId : membersIds) {
+	// 			User u = entityManager.createNamedQuery("UserById", User.class).
+	// 										  setParameter("userid", mId).getSingleResult();
+
+	// 			members.add(u);
+	// 		}
+			
+	// 		teams.add(new TeamData(t, members));							   
+	// 	}
+
+    //     return teams;
+
+    // }
+	
 }

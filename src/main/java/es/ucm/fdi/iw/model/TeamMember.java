@@ -6,9 +6,14 @@ import lombok.Data;
 @Entity
 @Data
 
-// Consulta para obtener los Ids de los Users de un equipo
-@NamedQuery(name = "MembersIdsByTeam", query = "SELECT e.userId FROM TeamMember e WHERE e.teamId = :teamid")
-@NamedQuery(name = "AllCoachs", query = "SELECT e FROM TeamMember e WHERE e.isCoach = true")
+// Obtiene los usuarios pertencientes a un Team
+@NamedQuery(name = "MembersByTeam", query = "SELECT e.user FROM TeamMember e WHERE e.team.id = :teamId")
+
+// Obtiene todos los usuarios que sean coach de algun equipo
+@NamedQuery(name = "AllCoachs", query = "SELECT e.user FROM TeamMember e WHERE e.isCoach = true")
+
+// Obtiene el equipo de un partido en el que este el usuario
+@NamedQuery(name = "MyTeamFromMatch", query = "SELECT m.team FROM TeamMember m WHERE (m.team.id = :team1 OR m.team.id = :team2) AND m.user.id = :userId")
 public class TeamMember {
 
     /*
@@ -20,16 +25,16 @@ public class TeamMember {
 	private long id;
 
     /*
-     * Id del "User"
+     * Referencia al equipo "E" del miembro "M"
      */
-    @Column(nullable = false)
-    private Long userId;
+    @OneToOne
+    private Team team;
 
     /*
-     * Id del "Team" de "User"
+     * Referencia al miembro "M" del equipo "E"
      */
-    @Column(nullable = false)
-    private Long teamId;
+    @OneToOne
+    private User user;
 
     /*
      * Booleano que representa el usuario "User" es Coach del equipo "Team"

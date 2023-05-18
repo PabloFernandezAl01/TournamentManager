@@ -12,15 +12,16 @@
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
     <main class="flex-shrink-0">
       <div class="register container">
         <form method="post" th:action="@{/register}">
           <h2>Registrarse</h2>
           
           <!-- Comprueba si ha sucedido algún error al crear la cuenta -->
-          <p th:if="${#request.getQueryString() == 'error'}" class="error">
-            Error al registrar
-          </p>
+          <p th:if="${#request.getQueryString() == 'error'}" class="error">Error al registrar</p>
 
           <p>
             <label for="username" class="visually-hidden">Nombre de usuario</label>
@@ -34,6 +35,7 @@
             />
           </p>
           
+          <!-- Campo para el nombre -->
           <p>
             <label for="firstName" class="visually-hidden">Nombre</label>
             <input
@@ -45,6 +47,8 @@
               required
             />
           </p>
+
+           <!-- Campo para el primer apellido -->
           <p>
             <label for="lastName" class="visually-hidden">Apellido</label>
             <input
@@ -56,6 +60,8 @@
               required
             />
           </p>
+
+           <!-- Campo para la contraseña -->
           <p>
             <label for="password" class="visually-hidden">Contraseña</label>
             <input
@@ -67,13 +73,15 @@
               required
             />
           </p>
+
+           <!-- Boton submit para registrarse -->
           <button
             type="submit"
             class="registerButton btn btn-primary submit"
-            style="margin: 0"
-          >
+            style="margin: 0">
             Crear cuenta
           </button>
+
         </form>
       </div>
     </main>

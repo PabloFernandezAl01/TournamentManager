@@ -37,12 +37,13 @@ public class Message implements Transferable<Message.Transfer> {
 	@ManyToOne
 	private User sender;
 	@ManyToOne
-	private User recipient;
+	private MessageTopic recipient;
 
 	/*
-	 * Id del match donde se encuentra ese mensaje
+	 * Referencia al partido donde se encuentra ese mensaje
 	 */
-	private long matchId;
+	@ManyToOne
+	private Match match;
 
 	/*
 	 * Contenido del mensaje
@@ -56,9 +57,13 @@ public class Message implements Transferable<Message.Transfer> {
 	private LocalDateTime dateRead;
 
 	/*
-	 * No entiendo estos atributos //TODO
+	 * Nombre el equipo del usuario que envia el mensaje
 	 */
 	private String senderTeamName;
+
+	/*
+	 * Bool para indicar si el que envia el mensaje es el usuario
+	 */
 	private boolean iamSender;
 
 	/**
@@ -79,7 +84,7 @@ public class Message implements Transferable<Message.Transfer> {
 
 		public Transfer(Message m) {
 			this.from = m.getSender().getUsername();
-			this.to = m.getRecipient().getUsername();
+			this.to = m.getRecipient().getTopicId();
 			this.sent = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(m.getDateSent());
 			this.received = m.getDateRead() == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(m.getDateRead());
 			this.text = m.getText();
@@ -91,9 +96,9 @@ public class Message implements Transferable<Message.Transfer> {
 
 	@Override
 	public Transfer toTransfer() {
-		return new Transfer(sender.getUsername(), recipient.getUsername(), 
+		return new Transfer(sender.getUsername(), recipient.getTopicId(), 
 			DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm").format(dateSent),
 			dateRead == null ? null : DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateRead),
-			text, senderTeamName, iamSender , id);
+			text, senderTeamName, iamSender, id);
     }
 }

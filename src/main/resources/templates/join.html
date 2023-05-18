@@ -12,6 +12,8 @@
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
 
     <main class="flex-shrink-0">
       <!-- Informacion principal de JOIN -->
@@ -26,7 +28,7 @@
         <!-- Se genera una lista para representar los torneos en los que los coach pueden inscribir a sus equipos -->
         <ul class="tournament-list">
           <!-- Se recorre la lista con la informacion de los torneos NOT STARTED -->
-          <li th:each="tourney : ${Tournaments}">
+          <li th:each="tourney : ${Tournaments}" th:if="${tourney.data.status} == ${Status}">
             <div class="tournament-info">
 
               <!-- En caso de que el torneo no este lleno -->

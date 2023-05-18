@@ -6,8 +6,11 @@ import lombok.Data;
 @Entity
 @Data
 
-// Consulta para obtener los Ids de equipos inscritos en un torneo
-@NamedQuery(name = "TeamsIdsByTournament", query = "SELECT e.teamId FROM TournamentTeam e WHERE e.tournamentId = :tournamentid")
+// Obtiene los equipos inscritos en un torneo
+@NamedQuery(name = "TeamsByTournamentId", query = "SELECT e.team FROM TournamentTeam e WHERE e.tournament.id = :tournamentId")
+
+// Obtiene los torneos donde se encuentre inscrito un equipo con id "teamId"
+@NamedQuery(name = "TournamentsByTeamId", query = "SELECT e.tournament FROM TournamentTeam e WHERE e.team.id = :teamId")
 public class TournamentTeam {
 
     /*
@@ -19,29 +22,24 @@ public class TournamentTeam {
     private long id;
 
     /*
-     * Id del "Team"
+     * Torneo "T" en el que se encuentra inscrito el equipo "E"
      */
-    @Column(nullable = false)
-    private Long teamId;
+    @OneToOne
+    private Tournament tournament;
 
     /*
-     * Id del "Tournament" en el que se encuentra el equipo "Team"
+     * Referncia al team "E" inscrito en el torneo "T"
      */
-    @Column(nullable = false)
-    private Long tournamentId;
+    @OneToOne
+    private Team team;
 
-    /*
-     * Booleano para indicar si el equipo "Team" es el ganador del torneo "Tournament"
-     */
-    private Boolean isWinner;
-
-    // @Column(nullable = true)
-    // private int puntuacion;
-    // @Column(nullable = true)
-    // private int victorias;
-    // @Column(nullable = true)
-    // private int empates;
-    // @Column(nullable = true)
-    // private int derrotas;
+    @Column(nullable = true)
+    private int puntuacion;
+    @Column(nullable = true)
+    private int victorias;
+    @Column(nullable = true)
+    private int empates;
+    @Column(nullable = true)
+    private int derrotas;
 
 }

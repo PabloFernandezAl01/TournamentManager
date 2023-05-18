@@ -13,18 +13,34 @@
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
     <main class="flex-shrink-0">
         <div class="container">
             <h1 class="text-center page-title">TOURNAMENT MANAGER</h1>
             <h2 class="mt-3 text-center">¡Crea tus torneos personalizados, inscríbete o consulta resultados de torneos anteriores!</h2>
             
             <div class="mt-5 index-buttons">
-                <a class="btn btn-danger btn-lg index-button" th:href="@{/create}" href="/create">Crear torneo</a>
-                <a class="btn btn-danger btn-lg index-button" th:href="@{/join}" href="/join">Unirse a torneos</a>
-                <a class="btn btn-danger btn-lg index-button" th:href="@{/ongoing}" href="/ongoing">Torneos en marcha</a>
-                <a class="btn btn-danger btn-lg index-button" th:href="@{/record}" href="/record">Historial de torneos</a>
+                <a class="btn btn-danger btn-lg index-button" th:href="@{/create}">Crear torneo</a>
+                <a class="btn btn-danger btn-lg index-button" th:href="@{/join}">Unirse a torneos</a>
+                <a class="btn btn-danger btn-lg index-button" th:href="@{/ongoing}">Torneos en marcha</a>
+                <a class="btn btn-danger btn-lg index-button" th:href="@{/record}">Historial de torneos</a>
             </div>
         </div>
+
+        <h2 class="mt-5 text-center">¡Visita webs con todo el competitivo!</h2>
+
+        <div class="menu-container">
+            <ul class="menu">
+              <li><a href="https://www.hltv.org" target="_blank"><img class="rounded list-image" th:src="@{/img/hltv.png}" alt="Logo"></a></li>
+              <li><a href="https://www.vlr.gg" target="_blank"><img class="rounded list-image" th:src="@{/img/vlrgg.jpg}" alt="Logo"></a></li>
+              <li><a href="https://www.lolesports.com" target="_blank"><img class="rounded list-image" th:src="@{/img/lolesports.jpg}" alt="Logo"></a></li>
+              <li><a href="https://www.overwatchleague.com" target="_blank"><img class="rounded list-image" th:src="@{/img/overwatchleague.jpg}" alt="Logo"></a></li>
+              <li><a href="https://www.dota2.com" target="_blank"><img class="rounded list-image" th:src="@{/img/dota2.jpg}" alt="Logo"></a></li>
+            </ul>
+          </div>
+          
     </main>
     
     <!-- Reemplazo del footer desde el archivo footer.html -->

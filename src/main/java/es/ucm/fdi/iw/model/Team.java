@@ -1,6 +1,10 @@
 package es.ucm.fdi.iw.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
+
 import lombok.Data;
 
 @Entity
@@ -22,8 +26,11 @@ public class Team  {
     private String name;
 
     /*
-     * Id como referencia a la imagen
+     * Lista de torneos ganados por el equipo
      */
-    private Long imageId;
+    @OneToMany
+    @JoinColumn(name = "winner_id")
+    List<Tournament> wins = new ArrayList<>();
+
 
 }

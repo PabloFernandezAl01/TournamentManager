@@ -1,15 +1,15 @@
 package es.ucm.fdi.iw.model;
 
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * An authorized user of the system.
@@ -21,8 +21,9 @@ import java.util.List;
 @Data // Etiqueda de lombok para generar automticamente getters & setters para los atributos de la clase
 @NoArgsConstructor // Etiqueta de lombok que genera un constructor sin argumentos en la clase
 
-@NamedQueries({ // Definicion de consultas (Independientemente del lugar donde se vayan a usar, deben estar definidas en las entidades)
-    @NamedQuery(name = "User.byUsername", query = "SELECT u FROM User u " + "WHERE u.username = :username AND u.enabled = TRUE"),
+// Definicion de consultas (Independientemente del lugar donde se vayan a usar, deben estar definidas en las entidades)
+@NamedQueries({
+    @NamedQuery(name = "User.byUsername", query = "SELECT u FROM User u "+ "WHERE u.username = :username AND u.enabled = TRUE"),
     @NamedQuery(name = "User.hasUsername", query = "SELECT COUNT(u) " + "FROM User u " + "WHERE u.username = :username")
 })
 
@@ -83,18 +84,14 @@ public class User implements Transferable<User.Transfer> {
     private int coins;
     private int reports;
 
-    /*
-     * Id como referencia a la imagen
-     */
-    private Long imageId;
+    @ManyToOne
+    private Team team;
 
     // Messages
     @OneToMany
     @JoinColumn(name = "sender_id")
     private List<Message> sent = new ArrayList<>();
-    @OneToMany
-    @JoinColumn(name = "recipient_id")
-    private List<Message> received = new ArrayList<>();
+
 
     @Getter
     @Setter
@@ -102,13 +99,12 @@ public class User implements Transferable<User.Transfer> {
     public static class Transfer {
         private long id;
         private String username;
-        private int totalReceived;
         private int totalSent;
     }
 
     @Override
     public Transfer toTransfer() {
-        return new Transfer(id, username, received.size(), sent.size());
+        return new Transfer(id, username, sent.size());
     }
 
     @Override
