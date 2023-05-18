@@ -55,11 +55,12 @@ public class TournamentController {
         try {
             // Consulta para obtener el equipo del cual es coach el usuario
             coachingTeam = (Team) entityManager.createQuery(
-                "select t from Team t where t.coach.id = :id ")
-                .setParameter("id", userId).getSingleResult();
+                "SELECT t.team FROM TeamMember t WHERE t.user.id = :userId AND t.isCoach = true")
+                .setParameter("userId", userId).getSingleResult();
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
         }
+
 
         // Se crea el TournamentTeam (relacion entre equipo y torneo)
         /*
