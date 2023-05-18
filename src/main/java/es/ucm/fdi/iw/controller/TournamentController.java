@@ -77,60 +77,67 @@ public class TournamentController {
         return new RedirectView("/join");
     }
 
-    @GetMapping("{tournamentId}/bracket")
-    @Transactional
-    public String bracket(HttpSession session, @PathVariable long tournamentId, Model model) {
-
-        model.addAttribute("ongoing", "active");
-
-        int isLastRound = -1;
-
-        try {
-            User user = (User) session.getAttribute("u");
-            boolean isCoach = false;
-            boolean isFinalResult = true;
-            Tournament tournament = (Tournament) entityManager.createQuery(
-                    "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
-                    .setParameter("tournamentid", tournamentId)
-                    .getSingleResult();
-
-            int maxRound = 0;
-            Match lastMatch = null;
-
-            model.addAttribute("tournament", tournament);
-
-            List<Match> matches = entityManager.createQuery(
-                    "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
-                    .setParameter("tournamentid", tournamentId)
-                    .getResultList();
-
-            Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
-
-            List<Match> partidosEnRonda = new ArrayList<>();
+    private Map<Integer, List<Match>> getPartidosPorRonda(List<Match> matches, Integer maxRound, Match lastMatch) {
+        Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
 
             for (Match match : matches) {
 
                 int ronda = match.getRoundNumber();
 
                 log.info("ronda: " + ronda);
-                if (maxRound < ronda)
+                if (ronda >= maxRound)
                     maxRound = ronda;
 
                 lastMatch = match;
 
-                partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
+                //Variable auxiliar para guardar los partidos que hay actualmente en el map
+                List<Match> partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
                 partidosEnRonda.add(match);
-
-                log.info("Ronda : " + ronda + " Partido entre: " + match.getTeam1().getId() + " - "
-                        + match.getTeam2().getId());
 
                 partidosPorRonda.put(ronda, partidosEnRonda);
 
+                log.info("Ronda : " + ronda + " Partido entre: " + match.getTeam1().getId() + " - "
+                        + match.getTeam2().getId());
                 log.info("partidosPorRonda: " + partidosPorRonda);
             }
 
+            return partidosPorRonda;
+    }
+
+    @GetMapping("{tournamentId}/bracket")
+    @Transactional
+    public String bracket(HttpSession session, @PathVariable long tournamentId, Model model) {
+
+        model.addAttribute("ongoing", Boolean.TRUE);
+
+        try {
+            User user = (User) session.getAttribute("u");
+            Tournament tournament = (Tournament) entityManager.createQuery(
+                    "SELECT t FROM Tournament t WHERE t.id = :tournamentid", Tournament.class)
+                    .setParameter("tournamentid", tournamentId)
+                    .getSingleResult();
+
+            model.addAttribute("tournament", tournament);
+        
+        
+            boolean isCoach = false;
+            boolean isFinalResult = true;
+            int maxRound = 0;
+            int isLastRound = -1;
+            Match lastMatch = null;
+
+            //Lista de los partidos
+            List<Match> matches = entityManager.createQuery(
+                    "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
+                    .setParameter("tournamentid", tournamentId)
+                    .getResultList();
+
+
+            Map<Integer, List<Match>> partidosPorRonda = getPartidosPorRonda(matches, maxRound, lastMatch);
             log.info("MaxRound: " + maxRound);
+            
             boolean allResults = true;
+
             // EL TORNEO ES ELIMINACION SIMPLE
             if (tournament.getType() == 0) {
                 // SI ES EL ULTIMO PARTIDO
@@ -178,7 +185,7 @@ public class TournamentController {
                 }
                 // SI NO ES EL ULTIMO PARTIDO
                 else {
-                    for (Match partido : partidosEnRonda) {
+                    for (Match partido : matches) {
                         if (partido.getResult() != null) {
                             // 2 - 1 / 1 - 3 , int - int
 
@@ -223,7 +230,7 @@ public class TournamentController {
                     }
                     List<Team> winners = new ArrayList<>();
                     boolean allWinners = true;
-                    for (Match partido : partidosEnRonda) {
+                    for (Match partido : matches) {
                         if (partido.getWinner() == null)
                             allWinners = false;
                         else
@@ -239,7 +246,7 @@ public class TournamentController {
 
                         partidosPorRonda = new HashMap<>();
 
-                        partidosEnRonda = new ArrayList<>();
+                        List<Match> partidosEnRonda = new ArrayList<>();
 
                         for (Match match : matches) {
                             int ronda = match.getRoundNumber();
@@ -263,7 +270,7 @@ public class TournamentController {
 
                 model.addAttribute("isCoach", isCoach);
                 // PARA CADA PARTIDO EN LA JORnADA
-                for (Match partido : partidosEnRonda) {
+                for (Match partido : matches) {
 
                     TournamentTeam tournament_Team1 = entityManager.createQuery(
                             "SELECT t FROM TournamentTeam t WHERE t.team.id = :teamid and t.tournament.id = :tournamentid ",
@@ -355,7 +362,7 @@ public class TournamentController {
 
                     partidosPorRonda = new HashMap<>();
 
-                    partidosEnRonda = new ArrayList<>();
+                    List<Match> partidosEnRonda = new ArrayList<>();
 
                     for (Match match : matches) {
 
