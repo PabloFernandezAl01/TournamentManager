@@ -32,12 +32,14 @@
           th:classappend="${match.winner != null && match.winner == match.team1}  ? 'winner' : ''" class="team"></div>
         <div th:if="${match.team1 == null}" class="team">-</div>
 
-        <span th:if="${match.result != null && !match.result.contains('/')}" th:text="${match.result}"></span>
-        <span th:if="${match.result == null || match.result.contains('/')}">vs</span>
+        <!-- <span th:if="${match.result != null && !match.result.contains('/')}" th:text="${match.result}"></span>
+        <span th:if="${match.result == null || match.result.contains('/')}">vs</span> -->
 
         <div th:if="${match.team2}" th:text="${match.team2.name}"
           th:classappend="${match.winner != null && match.winner == match.team2}  ? 'winner' : ''" class="team"></div>
         <div th:if="${match.team2 == null}" class="team">-</div>
+
+        <a class="match-button" th:href="@{|/tournament/${tournament.id}/match/${match.id}}">Ver partido</a>
 
       </div>
 
@@ -47,7 +49,7 @@
       <h3> GANADOR </h3>
 
       <divclass="match">
-        <div th:if="${lastMatch.winner}" th:text="${lastMatch.winner.name}" class="team tournamentWinner"></div>
+        <div th:if="${lastMatch.winner}" th:text="${lastMatch.winner.name}" class="team winner"></div>
     </div>
   </div>
 
@@ -117,44 +119,5 @@
   <th:block th:replace="fragments/footer.html :: footer" />
   <script th:src="@{/js/ajax-message-match.js}"></script>
 </body>
-
-<script>
-  $(document).ready(function () {
-    // Obtener el formulario y el botón de envío
-    const resultsForm = document.querySelector('.resultsForm');
-
-    // Agregar un listener al evento submit del formulario
-    resultsForm.addEventListener('submit', (event) => {
-      event.preventDefault(); // Prevenir el envío del formulario por defecto
-
-      // Envíar el formulario por AJAX
-      $.ajax({
-        type: 'POST',
-        url: resultsForm.action,
-        data: $(resultsForm).serialize(),
-        success: function (response) {
-          // Manejar la respuesta del servidor
-          // Por ejemplo, mostrar un mensaje de éxito en la página
-          console.log(response); // Puedes imprimir la respuesta en la consola para verla
-
-          // Aquí puedes actualizar la página o realizar alguna acción adicional
-
-          // Mostrar el toast
-          const liveToast = document.querySelector('#liveToast');
-          const toast = new bootstrap.Toast(liveToast);
-          toast.show();
-          resultsForm.reset(); // Limpiar los valores de los inputs
-        },
-        error: function (xhr, status, error) {
-          // Manejar el error en caso de que ocurra
-          console.log(xhr.responseText); // Puedes imprimir el mensaje de error en la consola para verlo
-
-          // Aquí puedes mostrar un mensaje de error en la página o realizar alguna acción adicional
-          console.error(error);
-        }
-      });
-    });
-  });
-</script>
 
 </html>
