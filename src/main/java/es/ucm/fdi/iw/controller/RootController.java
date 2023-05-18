@@ -220,8 +220,7 @@ public class RootController {
             // Obtiene el numero de equipos inscritos en el torneo
             int nTeams = getNumberOfTeamsInTournament(t);
 
-            if (LocalDate.now().isAfter(LocalDate.parse(t.getDate()))
-                        && (t.getStatus() == TournamentStatus.NOT_STARTED)) {
+            if (LocalDate.now().isAfter(LocalDate.parse(t.getDate())) && (t.getStatus() == TournamentStatus.NOT_STARTED)) {
                     if (nTeams < t.getMaxTeams()) {
                         t.setStatus(TournamentStatus.CANCELED);
                     } else {

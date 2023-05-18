@@ -81,7 +81,7 @@ public class TournamentController {
     @Transactional
     public String bracket(HttpSession session, @PathVariable long tournamentId, Model model) {
 
-        model.addAttribute("ongoing", Boolean.TRUE);
+        model.addAttribute("ongoing", "active");
 
         int isLastRound = -1;
 
@@ -645,7 +645,7 @@ public class TournamentController {
         Match match = getUserMatchFromTournament(user, tournament);
         try {
             Team team = (Team) entityManager.createQuery(
-                    "select t from Team t where t.coach.id = :id ")
+                    "SELECT t.team FROM TeamMember t WHERE t.user.id = :userId AND t.isCoach = true")
                     .setParameter("id", user.getId()).getSingleResult();
 
             if (team.getId() == match.getTeam1().getId() || team.getId() == match.getTeam2().getId())
@@ -662,7 +662,7 @@ public class TournamentController {
         Match match = getUserMatchFromTournamentLeague(user, tournament, maxRound);
         try {
             Team team = (Team) entityManager.createQuery(
-                    "select t from Team t where t.coach.id = :id ")
+                    "SELECT t.team FROM TeamMember t WHERE t.user.id = :userId AND t.isCoach = true")
                     .setParameter("id", user.getId()).getSingleResult();
 
             if (team.getId() == match.getTeam1().getId() || team.getId() == match.getTeam2().getId())
