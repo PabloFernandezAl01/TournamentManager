@@ -201,123 +201,36 @@ public class TournamentController {
             if (tournament.getType() == 0) {
                 // SI ES EL ULTIMO PARTIDO
                 if (maxRound == tournament.getRounds() - 1) {
-                    if (lastMatch.getResultTeam1() != null) {
-                        if (lastMatch.getResultTeam1().contains("/")) {
-                            isFinalResult = false;
-                            String[] results = lastMatch.getResultTeam1().split("/");
-                            String team1 = results[0].trim();
-                            String team2 = results[1].trim();
-                            // SI EL RESULTADO ENVIADO POR AMBOS EQUIPOS ES EL MISMO
-                            if (team1.equals(team2)) {
-                                lastMatch.setResultTeam1(team2);
-                                String[] finalResult = team1.split("-");
-                                int number1 = Integer.parseInt(finalResult[0].trim());
-                                int number2 = Integer.parseInt(finalResult[1].trim());
-
-                                // GANA EQUIPO 1
-                                if (number1 > number2) {
-
-                                    lastMatch.setWinner(lastMatch.getTeam1());
-
-                                }
-                                // GANA EQUIPO 2
-                                else {
-
-                                    lastMatch.setWinner(lastMatch.getTeam2());
-
-                                }
-                            } 
-                            // LOS EQUIPOS NO ESTAN DE ACUERDO EN EL RESULTADO
-                            else {
-                                // ENVIAR A ADMIN
-                                allResults = false;
-                            }
-                        }
-                    } else{
-                        isFinalResult = false;
-                    }
                     if (lastMatch.getWinner() != null) {
                         isLastRound = maxRound;
-                        // tournament.setWinner(lastMatch.getWinner());
                         tournament.setStatus(TournamentStatus.FINISHED);
                     }
                 }
+
                 // SI NO ES EL ULTIMO PARTIDO
                 else {
-                    for (Match partido : matches) {
-                        if (partido.getResultTeam1() != null) {
-                            // 2 - 1 / 1 - 3 , int - int
-
-                            if (partido.getResultTeam1().contains("/")) {
-                                isFinalResult = false;
-                                String[] results = partido.getResultTeam1().split("/");
-                                String team1 = results[0].trim();
-                                String team2 = results[1].trim();
-                                // SI EL RESULTADO ENVIADO POR AMBOS EQUIPOS ES EL MISMO
-                                if (team1.equals(team2)) {
-                                    partido.setResultTeam1(team1);
-                                    String[] finalResult = team1.split("-");
-                                    int number1 = Integer.parseInt(finalResult[0].trim());
-                                    int number2 = Integer.parseInt(finalResult[1].trim());
-
-                                    // GANA EQUIPO 1
-                                    if (number1 > number2) {
-
-                                        partido.setWinner(partido.getTeam1());
-
-                                    }
-                                    // GANA EQUIPO 2
-                                    else {
-
-                                        partido.setWinner(partido.getTeam2());
-
-                                    }
-                                }
-                                // LOS EQUIPOS NO ESTAN DE ACUERDO EN EL RESULTADO
-                                else {
-                                    // ENVIAR A ADMIN
-                                    allResults = false;
-                                }
-                            } else {
-                                allResults = true;
-                            }
-
-                        } else {
-                            isFinalResult = false;
-                            allResults = false;
-                        }
-                    }
+                
                     List<Team> winners = new ArrayList<>();
-                    boolean allWinners = true;
+                    boolean allMatchesFinished = true;
                     for (Match partido : matches) {
                         if (partido.getWinner() == null)
-                            allWinners = false;
+                        allMatchesFinished = false;
                         else
                             winners.add(partido.getWinner());
                     }
-                    // SI LA JORNADA ANTERIOR HA ACABADO
-                    if (allWinners) {
+
+                    // SI LA JORNADA ANTERIOR HA ACABADO CREAMOS NUEVOS PARTIDOS
+                    if (allMatchesFinished) {
                         createMatches(tournament, maxRound + 1, winners);
+
                         matches = entityManager.createQuery(
                                 "SELECT m FROM Match m WHERE m.tournament.id = :tournamentid", Match.class)
                                 .setParameter("tournamentid", tournamentId)
                                 .getResultList();
 
-                        partidosPorRonda = new HashMap<>();
-
-                        List<Match> partidosEnRonda = new ArrayList<>();
-
-                        for (Match match : matches) {
-                            int ronda = match.getRoundNumber();
-
-                            if (maxRound < ronda)
-                                maxRound = ronda;
-
-                            partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
-                            partidosEnRonda.add(match);
-
-                            partidosPorRonda.put(ronda, partidosEnRonda);
-                        }
+                        partidosPorRonda = getPartidosPorRonda(matches, maxRoundWrapper, lastMatchWrapper);
+                        maxRound = maxRoundWrapper.value;
+                        lastMatch = lastMatchWrapper.value;
                     }
                 }
             }
@@ -328,17 +241,18 @@ public class TournamentController {
                     isCoach = true;
 
                 model.addAttribute("isCoach", isCoach);
-                // PARA CADA PARTIDO EN LA JORnADA
+
+                // PARA CADA PARTIDO EN LA JORNADA
                 for (Match partido : matches) {
 
-                    TournamentTeam tournament_Team1 = entityManager.createQuery(
+                    TournamentTeam tournamentTeam1 = entityManager.createQuery(
                             "SELECT t FROM TournamentTeam t WHERE t.team.id = :teamid and t.tournament.id = :tournamentid ",
                             TournamentTeam.class)
                             .setParameter("tournamentid", tournament.getId())
                             .setParameter("teamid", partido.getTeam1().getId())
                             .getSingleResult();
 
-                    TournamentTeam tournament_Team2 = entityManager.createQuery(
+                    TournamentTeam tournamentTeam2 = entityManager.createQuery(
                             "SELECT t FROM TournamentTeam t WHERE t.team.id = :teamid and t.tournament.id = :tournamentid ",
                             TournamentTeam.class)
                             .setParameter("tournamentid", tournament.getId())
@@ -369,10 +283,10 @@ public class TournamentController {
 
                                     partido.setWinner(partido.getTeam1());
 
-                                    tournament_Team1.setVictorias(tournament_Team1.getVictorias() + 1);
-                                    tournament_Team1.setPuntuacion(tournament_Team1.getPuntuacion() + 3);
+                                    tournamentTeam1.setVictorias(tournamentTeam1.getVictorias() + 1);
+                                    tournamentTeam1.setPuntuacion(tournamentTeam1.getPuntuacion() + 3);
 
-                                    tournament_Team2.setDerrotas(tournament_Team2.getDerrotas() + 1);
+                                    tournamentTeam2.setDerrotas(tournamentTeam2.getDerrotas() + 1);
 
                                 }
                                 // GANA EQUIPO 2
@@ -380,20 +294,20 @@ public class TournamentController {
 
                                     partido.setWinner(partido.getTeam2());
 
-                                    tournament_Team2.setVictorias(tournament_Team2.getVictorias() + 1);
-                                    tournament_Team2.setPuntuacion(tournament_Team2.getPuntuacion() + 3);
+                                    tournamentTeam2.setVictorias(tournamentTeam2.getVictorias() + 1);
+                                    tournamentTeam2.setPuntuacion(tournamentTeam2.getPuntuacion() + 3);
 
-                                    tournament_Team1.setDerrotas(tournament_Team1.getDerrotas() + 1);
+                                    tournamentTeam1.setDerrotas(tournamentTeam1.getDerrotas() + 1);
 
                                 }
                                 // EMPATE
                                 else {
 
-                                    tournament_Team1.setEmpates(tournament_Team1.getEmpates() + 1);
-                                    tournament_Team1.setPuntuacion(tournament_Team1.getPuntuacion() + 1);
+                                    tournamentTeam1.setEmpates(tournamentTeam1.getEmpates() + 1);
+                                    tournamentTeam1.setPuntuacion(tournamentTeam1.getPuntuacion() + 1);
 
-                                    tournament_Team2.setEmpates(tournament_Team2.getEmpates() + 1);
-                                    tournament_Team2.setPuntuacion(tournament_Team2.getPuntuacion() + 1);
+                                    tournamentTeam2.setEmpates(tournamentTeam2.getEmpates() + 1);
+                                    tournamentTeam2.setPuntuacion(tournamentTeam2.getPuntuacion() + 1);
                                 }
                             }
                             // LOS EQUIPOS NO ESTAN DE ACUERDO EN EL RESULTADO

@@ -34,7 +34,7 @@
         <tr>
           <td th:text="${match.team1.name}"></td>
           <td class="result">
-              <form th:if="${match.resultTeam1 == null && coachingTeam != null && coachingTeam == match.team1}"
+              <form th:if="${match.winner == null && coachingTeam != null && coachingTeam == match.team1}"
               th:action="@{|/tournament/sendResults/${tournament.id}/${match.id}/${match.team1.id}|}" class="resultsForm"
               method="POST">          
                   <label for="resultados1" class="input-label" th:text="${match.team1.name}"></label>  
@@ -70,7 +70,7 @@
         <tr>
           <td th:text="${match.team2.name}"></td>
           <td class="result">
-            <form th:if="${match.resultTeam2 == null && coachingTeam != null && coachingTeam == match.team2}"
+            <form th:if="${match.winner == null && coachingTeam != null && coachingTeam == match.team2}"
             th:action="@{|/tournament/sendResults/${tournament.id}/${match.id}/${match.team2.id}|}" class="resultsForm"
             method="POST">            
                 <label for="resultados1" class="input-label" th:text="${match.team1.name}"></label>  
