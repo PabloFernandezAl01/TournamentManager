@@ -103,7 +103,7 @@
     VALUES (42, null, null, null, null, 22, 10);
 
     INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (43, null, null, null, null, 23, 11);
+    VALUES (43, null, null, null, null, 23, 10);
 
     INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
     VALUES (44, null, null, null, null, 24, 11);
