@@ -32,8 +32,8 @@
           th:classappend="${match.winner != null && match.winner == match.team1}  ? 'winner' : ''" class="team"></div>
         <div th:if="${match.team1 == null}" class="team">-</div>
 
-        <!-- <span th:if="${match.result != null && !match.result.contains('/')}" th:text="${match.result}"></span>
-        <span th:if="${match.result == null || match.result.contains('/')}">vs</span> -->
+        <span th:if="${match.winner != null}" th:text="${match.resultTeam1}"></span>
+        <span th:if="${match.winner == null}">vs</span>
 
         <div th:if="${match.team2}" th:text="${match.team2.name}"
           th:classappend="${match.winner != null && match.winner == match.team2}  ? 'winner' : ''" class="team"></div>
