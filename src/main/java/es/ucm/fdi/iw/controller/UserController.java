@@ -11,6 +11,7 @@ import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.LocalData;
 
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import java.util.Objects;
 import java.util.Base64;
 import java.util.List;
 import java.io.*;
+import java.lang.ProcessBuilder.Redirect;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -247,7 +249,7 @@ public class UserController {
 	 */
 	@PostMapping("{id}/createTeam")
 	@Transactional
-	public String postCreateTeam(@PathVariable long id, HttpServletRequest request, Model model) throws Exception {
+	public RedirectView postCreateTeam(@PathVariable long id, HttpServletRequest request, Model model) throws Exception {
 
 		// Usuario de la sesion
 		User u = entityManager.find(User.class, id);
@@ -277,7 +279,7 @@ public class UserController {
 
 		model.addAttribute("user", u);
 
-		return "user";
+		return new RedirectView("teams");
 
 	}
 
@@ -382,7 +384,8 @@ public class UserController {
     @AllArgsConstructor
     public static class TeamData {
         Team t; // Team
-		List<User> members;
+		List<User> players;
+		List<User> coachs;
     }
 
 	@GetMapping("{id}/teams")
@@ -417,12 +420,17 @@ public class UserController {
 			log.error(e.getMessage());
 		}
 
-		// Por cada equipo del usuario, obtiene la lista de miembros en él
+		// Por cada equipo del usuario, obtiene la lista de jugadores y coachs en él
 		for (Team t : teams) {
-			List<User> members = entityManager.createNamedQuery("MembersByTeam", User.class).
+			// Jugadores
+			List<User> players = entityManager.createNamedQuery("PlayersInTeam", User.class).
 			setParameter("teamId", t.getId()).getResultList();
 
-			teamsData.add(new TeamData(t, members));
+			// Coachs
+			List<User> coachs = entityManager.createNamedQuery("CoachsInTeam", User.class).
+			setParameter("teamId", t.getId()).getResultList();
+
+			teamsData.add(new TeamData(t, players, coachs));
 		}
 
         return teamsData;

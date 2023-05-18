@@ -2,25 +2,25 @@
 -- Usuarios
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
-    VALUES (1, 0, TRUE, 'a', 'a', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'ADMIN,USER', 'a', null);
+    VALUES (1, 0, TRUE, 'a', 'a', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'ADMIN,USER', 'Peibol', null);
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
-    VALUES (2, 0, TRUE, 'b', 'b', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'b', null);
+    VALUES (2, 0, TRUE, 'b', 'b', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Ivan', null);
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
-    VALUES (3, 0, TRUE, 'c', 'c', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'c', null);
+    VALUES (3, 0, TRUE, 'c', 'c', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Jesus', null);
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
-    VALUES (4, 0, TRUE, 'd', 'd', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'd', null);
+    VALUES (4, 0, TRUE, 'd', 'd', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Gabriel', null);
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
-    VALUES (5, 0, TRUE, 'e', 'e', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'e', null);
+    VALUES (5, 0, TRUE, 'e', 'e', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Manuel', null);
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
-    VALUES (6, 0, TRUE, 'f', 'f', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'f', null);
+    VALUES (6, 0, TRUE, 'f', 'f', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Juan', null);
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
-    VALUES (7, 0, TRUE, 'g', 'g', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'g', null);
+    VALUES (7, 0, TRUE, 'g', 'g', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Pepe', null);
 
 
 -- Topics
@@ -47,22 +47,22 @@
 -- Teams
 
     INSERT INTO Team (id, name)
-    VALUES (20, 'Primer Equipo');
+    VALUES (20, 'Los Guasones');
 
-    INSERT INTO Team (id, name)
-    VALUES (21, 'Segundo Equipo');
+    -- INSERT INTO Team (id, name)
+    -- VALUES (21, 'Segundo Equipo');
 
-    INSERT INTO Team (id, name)
-    VALUES (22, 'Tercer Equipo');
+    -- INSERT INTO Team (id, name)
+    -- VALUES (22, 'Tercer Equipo');
 
-    INSERT INTO Team (id, name)
-    VALUES (23, 'Cuarto Equipo');
+    -- INSERT INTO Team (id, name)
+    -- VALUES (23, 'Cuarto Equipo');
 
-    INSERT INTO Team (id, name)
-    VALUES (24, 'Quinto Equipo');
+    -- INSERT INTO Team (id, name)
+    -- VALUES (24, 'Quinto Equipo');
 
-    INSERT INTO Team (id, name)
-    VALUES (25, 'Sexto Equipo');  
+    -- INSERT INTO Team (id, name)
+    -- VALUES (25, 'Sexto Equipo');  
 
 
 -- Relaciones (TeamMember y TournamentTeam)
@@ -73,52 +73,52 @@
     VALUES (30, 1, 20, 1);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (31, 0, 21, 2);  
+    VALUES (31, 0, 20, 2);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (32, 0, 22, 3);  
+    VALUES (32, 0, 20, 3);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (33, 0, 23, 4);  
+    VALUES (33, 0, 20, 4);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (34, 0, 24, 5);  
+    VALUES (34, 0, 20, 5);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (35, 0, 25, 6);  
+    VALUES (35, 0, 20, 6);  
 
-    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (36, 0, 20, 7);  
+    -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+    -- VALUES (36, 0, 20, 7);  
 
 
     -- TournamentTeams
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (40, null, null, null, null, 20, 10);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (40, null, null, null, null, 20, 10);
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (41, null, null, null, null, 21, 10);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (41, null, null, null, null, 21, 10);
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (42, null, null, null, null, 22, 10);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (42, null, null, null, null, 22, 10);
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (43, null, null, null, null, 23, 10);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (43, null, null, null, null, 23, 10);
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (44, null, null, null, null, 24, 11);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (44, null, null, null, null, 24, 11);
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (45, null, null, null, null, 25, 11);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (45, null, null, null, null, 25, 11);
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (46, null, null, null, null, 20, 12);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (46, null, null, null, null, 20, 12);
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (47, null, null, null, null, 22, 12);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (47, null, null, null, null, 22, 12);
 
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (48, null, null, null, null, 24, 12);
+    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    -- VALUES (48, null, null, null, null, 24, 12);
 
 
 -- Apaños
@@ -128,23 +128,23 @@
     WHERE ID = 1;
 
     UPDATE IWUSER
-    SET TEAM_ID = 21
+    SET TEAM_ID = 20
     WHERE ID = 2;
 
     UPDATE IWUSER
-    SET TEAM_ID = 22
+    SET TEAM_ID = 20
     WHERE ID = 3;
 
     UPDATE IWUSER
-    SET TEAM_ID = 23
+    SET TEAM_ID = 20
     WHERE ID = 4;
 
     UPDATE IWUSER
-    SET TEAM_ID = 24
+    SET TEAM_ID = 20
     WHERE ID = 5;
 
     UPDATE IWUSER
-    SET TEAM_ID = 25
+    SET TEAM_ID = 20
     WHERE ID = 6;
 
     UPDATE IWUSER

@@ -8,6 +8,42 @@
   justify-content: center;
 }
 
+.team {
+  justify-content: center;
+  display: grid;
+  text-align: center;
+  margin-top: 2em;
+  background-color:rgb(33,37,41,0.9);
+  width: 100%;
+  padding: 1em;
+  border-radius: 10px;
+  color: white;
+}
+
+.player-image {
+  width: 50px;
+  height: 50px;
+  margin-left: 2em;
+}
+
+.players-list {
+  display: flex;
+}
+
+.integrante {
+  display: flex;
+  justify-content: left;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.member-text {
+  font-size: 24px;
+}
+
 /*ventana modal de creación de equipo*/
 .modal {
   margin-top: 4em;

@@ -10,6 +10,11 @@ h1, h2, h3 {
     font-weight: bold;
 }
 
+.footer-text {
+    display: flex;
+    justify-content: space-between;
+}
+
 .background {
   position: fixed;
   top: 0;
