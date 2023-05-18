@@ -2,6 +2,8 @@ package es.ucm.fdi.iw.controller;
 import es.ucm.fdi.iw.model.Transferable;
 import es.ucm.fdi.iw.model.TeamMember;
 import es.ucm.fdi.iw.model.User.Role;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.Match;
 import es.ucm.fdi.iw.model.User;
@@ -376,66 +378,55 @@ public class UserController {
 	 /*
      * Clase para manejar la informacion de un team (par {Team, List<User> jugadores})
      */
-    // @Data
-    // @AllArgsConstructor
-    // public static class TeamData {
-    //     Team t; // Team
-	// 	List<User> members;
-    // }
+    @Data
+    @AllArgsConstructor
+    public static class TeamData {
+        Team t; // Team
+		List<User> members;
+    }
 
-	// @GetMapping("{id}/teams")
-    // public String team(Model model, HttpSession session) {
-    //     model.addAttribute("teams", "active");
+	@GetMapping("{id}/teams")
+    public String team(Model model, HttpSession session) {
+        model.addAttribute("teams", "active");
 
-	// 	User user = (User) session.getAttribute("u");
-	// 	model.addAttribute("user", user);
+		User user = (User) session.getAttribute("u");
+		model.addAttribute("user", user);
 
-	// 	List<TeamData> teams = getUserTeams(session);
-	// 	model.addAttribute("Teams", teams);
+		List<TeamData> teams = getUserTeams(session);
+		model.addAttribute("Teams", teams);
 
-    //     return "teams";
-    // }
+        return "teams";
+    }
 
 	/*
      * Devuelve una lista con los equipos a los que pertence el usuario
      */
-    // private List<TeamData> getUserTeams(HttpSession session) {
+    private List<TeamData> getUserTeams(HttpSession session) {
 
-	// 	User user = (User) session.getAttribute("u");
+		User user = (User) session.getAttribute("u");
 
-	// 	List<Long> teamsIds = new ArrayList<>();
-	// 	List<TeamData> teams = new ArrayList<>();
+		List<TeamData> teamsData = new ArrayList<>();
 
-	// 	try {
-    //         // Consulta a la DB para obtener todos los ids de equipos en los que esta el usuario
-    //         teamsIds = entityManager.createNamedQuery("AllTeamsIdsByUser", Long.class).
-	// 										  setParameter("userid", user.getId()).getResultList();
-    //     } catch (IllegalArgumentException e) {
-    //         log.error(e.getMessage());
-    //     }
+		List<Team> teams = new ArrayList<>();
 
-	// 	for (Long id : teamsIds) {
-	// 		// Obtiene el Team buscando por id
-	// 		Team t = entityManager.createNamedQuery("TeamByTeamId", Team.class).
-	// 										   setParameter("teamid", id).getSingleResult();
+		// Obtiene todos los equipos del usuario
+		try {
+			teams = entityManager.createNamedQuery("AllMemberTeams", Team.class).
+ 									  setParameter("userId", user.getId()).getResultList();
+		} catch (IllegalArgumentException e) {
+			log.error(e.getMessage());
+		}
 
-	// 		List<Long> membersIds = entityManager.createNamedQuery("AllUsersWithSameTeamId", Long.class).
-	// 																   setParameter("teamid", id).getResultList();
+		// Por cada equipo del usuario, obtiene la lista de miembros en él
+		for (Team t : teams) {
+			List<User> members = entityManager.createNamedQuery("MembersByTeam", User.class).
+			setParameter("teamId", t.getId()).getResultList();
 
-	// 		List<User> members = new ArrayList<>();
+			teamsData.add(new TeamData(t, members));
+		}
 
-	// 		for (Long mId : membersIds) {
-	// 			User u = entityManager.createNamedQuery("UserById", User.class).
-	// 										  setParameter("userid", mId).getSingleResult();
+        return teamsData;
 
-	// 			members.add(u);
-	// 		}
-			
-	// 		teams.add(new TeamData(t, members));							   
-	// 	}
-
-    //     return teams;
-
-    // }
+    }
 	
 }

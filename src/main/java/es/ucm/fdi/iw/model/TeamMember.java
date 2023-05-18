@@ -14,6 +14,10 @@ import lombok.Data;
 
 // Obtiene el equipo de un partido en el que este el usuario
 @NamedQuery(name = "MyTeamFromMatch", query = "SELECT m.team FROM TeamMember m WHERE (m.team.id = :team1 OR m.team.id = :team2) AND m.user.id = :userId")
+
+// Obtiene todos los equipos en los que se encuentra el usuario
+@NamedQuery(name = "AllMemberTeams", query = "SELECT t.team FROM TeamMember t WHERE t.user.id = :userId")
+
 public class TeamMember {
 
     /*

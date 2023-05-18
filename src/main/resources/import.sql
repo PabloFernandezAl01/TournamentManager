@@ -124,31 +124,31 @@
 -- Apaños
 
     UPDATE IWUSER
-    SET TEAM_ID = 999
+    SET TEAM_ID = 20
     WHERE ID = 1;
 
     UPDATE IWUSER
-    SET TEAM_ID = 1000
+    SET TEAM_ID = 21
     WHERE ID = 2;
 
     UPDATE IWUSER
-    SET TEAM_ID = 1001
+    SET TEAM_ID = 22
     WHERE ID = 3;
 
     UPDATE IWUSER
-    SET TEAM_ID = 1002
+    SET TEAM_ID = 23
     WHERE ID = 4;
 
     UPDATE IWUSER
-    SET TEAM_ID = 1003
+    SET TEAM_ID = 24
     WHERE ID = 5;
 
     UPDATE IWUSER
-    SET TEAM_ID = 1004
+    SET TEAM_ID = 25
     WHERE ID = 6;
 
     UPDATE IWUSER
-    SET TEAM_ID = 999
+    SET TEAM_ID = 20
     WHERE ID = 7;
 
     -- start id numbering from a value that is larger than any assigned above
