@@ -342,7 +342,7 @@ public class RootController {
         // crear partidos
         List<Team> teams = new ArrayList<>();
         TypedQuery<Team> query = entityManager.createQuery(
-                "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+                "SELECT e.team FROM TournamentTeam e WHERE e.tournament.id = :tournamentid",
                 Team.class);
 
         teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
