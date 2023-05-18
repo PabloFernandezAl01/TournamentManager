@@ -73,16 +73,16 @@
     VALUES (30, 1, 20, 1);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (31, 0, 21, 2);  
+    VALUES (31, 1, 21, 2);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (32, 0, 22, 3);  
+    VALUES (32, 1, 22, 3);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (33, 0, 23, 4);  
+    VALUES (33, 1, 23, 4);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (34, 0, 24, 5);  
+    VALUES (34, 1, 24, 5);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
     VALUES (35, 0, 25, 6);  

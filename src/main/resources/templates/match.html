@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="fragments/head :: header" />
+
+  <link rel="stylesheet" th:href="@{/css/match.css}" type="text/css" />
+
+  <title>Tournament Manager</title>
+</head>
+
+<body class="d-flex flex-column h-100 body">
+  <!-- Reemplazo del header desde el archivo nav.html -->
+  <header th:replace="fragments/nav.html :: nav"></header>
+
+  <!-- Imagen de fondo -->
+  <div class="background"></div>
+
+  <main class="flex-shrink-0 main">
+    <div class="container">
+      <h1 class="text-center page-title">Visualización de partido</h1>
+     
+      <h2>
+        <a class="back-button" th:href="@{|/tournament/${tournament.id}/bracket|}">Volver al torneo</a>
+      </h2>
+
+      <table class="mt-5">
+        <tr>
+          <td>NOMBRE DE EQUIPO</td>
+          <td>RESULTADO DADO</td>
+          <td>RESULTADO DEL PARTIDO</td>
+        </tr>
+
+        <tr>
+          <td th:text="${match.team1.name}"></td>
+          <td class="result">
+              <form th:if="${match.resultTeam1 == null && coachingTeam != null && coachingTeam == match.team1}"
+              th:action="@{|/tournament/sendResults/${tournament.id}/${match.id}/${match.team1.id}|}" class="resultsForm"
+              method="POST">          
+                  <label for="resultados1" class="input-label" th:text="${match.team1.name}"></label>  
+                  <input type="number" id="resultados1" class="matchResult" name="resultadoTeam1" min="0" required />
+
+                  <label for="resultados2" class="input-label" th:text="${match.team2.name}"></label>
+                  <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" min="0"
+                    required />
+                  <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
+              </form>
+              
+              <span th:if="${match.resultTeam1 != null}" th:text="${match.resultTeam1}"></span>
+              <span th:if="${match.resultTeam1 == null &&(coachingTeam == null || coachingTeam != match.team1)}" >Solo el entrenador del equipo puede enviar el resultado</span>
+
+          </td>
+
+          <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null}" th:classappend="${match.winner == match.team1} ? 'winner' : 'loser'" th:text="${match.winner == match.team1} ? 'GANADOR' : 'PERDEDOR'"></td>
+
+          <td th:if="${(match.resultTeam1 != null && match.resultTeam2 != null && match.winner == null) || (match.resultTeam1 == null || match.resultTeam2 == null)}"  
+            th:text="${match.resultTeam1 != null && match.resultTeam2 != null && match.resultTeam1 != match.resultTeam2 } ? 'Esperando a que un administrador decida' : 'Esperando resultados'" class="result" rowspan="2">
+          </td>
+
+          <td th:if="${session.u.hasRole('ADMIN')}">
+            <form th:action="@{|/tournament/sendResults/setWinner/${tournament.id}/${match.id}/${match.team1.id}|}" class="resultsForm"
+            method="POST">
+              <button class="btn btn-primary">Establecer ganador</button>
+            </form>
+          </td>
+        </tr>
+
+
+
+        <tr>
+          <td th:text="${match.team2.name}"></td>
+          <td class="result">
+            <form th:if="${match.resultTeam2 == null && coachingTeam != null && coachingTeam == match.team2}"
+            th:action="@{|/tournament/sendResults/${tournament.id}/${match.id}/${match.team2.id}|}" class="resultsForm"
+            method="POST">            
+                <label for="resultados1" class="input-label" th:text="${match.team1.name}"></label>  
+                  <input type="number" id="resultados1" class="matchResult" name="resultadoTeam1" min="0" required />
+                  
+                  <label for="resultados2" class="input-label" th:text="${match.team2.name}"></label>
+                  <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" min="0"
+                    required />
+                  <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
+            </form>
+            <span th:if="${match.resultTeam2 != null}" th:text="${match.resultTeam2}"></span>
+            <span th:if="${match.resultTeam1 == null && (coachingTeam == null || coachingTeam != match.team2)}" >Solo el entrenador del equipo puede enviar el resultado</span>
+        </td>
+        <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null}" th:classappend="${match.winner == match.team2} ? 'winner' : 'loser'" th:text="${match.winner == match.team2} ? 'GANADOR' : 'PERDEDOR'"></td>
+        
+        <td th:if="${session.u.hasRole('ADMIN')}">
+          <form th:action="@{|/tournament/sendResults/setWinner/${tournament.id}/${match.id}/${match.team2.id}|}" class="resultsForm"
+          method="POST">
+            <button class="btn btn-primary">Establecer ganador</button>
+          </form>
+        </td>
+        </tr>
+
+      </table>
+      
+
+    </div>
+  </main>
+
+  <!-- Reemplazo del footer desde el archivo footer.html -->
+  <th:block th:replace="fragments/footer.html :: footer" />
+
+  <!-- Script para cambiar de descripcion de tipo de torneo en base al que esta seleccionado-->
+  <script th:src="@{/js/tournament-description.js}"></script>
+
+  <!-- Script para comprobar si la fecha de inicio esta en el futuro -->
+  <script>
+    var today = new Date().toISOString().split("T")[0];
+    document.getElementById("date").min = today;
+  </script>
+</body>
+
+</html>

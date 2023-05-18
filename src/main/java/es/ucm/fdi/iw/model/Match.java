@@ -47,7 +47,8 @@ public class Match {
     /*
      * Resultado del partido
      */
-    String result;
+    String resultTeam1;
+    String resultTeam2;
 
     /*
      * - Round Number: representa la fase actual del torneo.

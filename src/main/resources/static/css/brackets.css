@@ -256,3 +256,20 @@ td {
 .tituloRoundRobin{
   background-color: rgba(69, 76, 82, 0.9);
 }
+
+.match-button {
+  text-decoration: none;
+  background-color: gray;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.match-button:hover {
+  background-color: darkkhaki;
+  color: white;
+}

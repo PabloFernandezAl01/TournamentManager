@@ -77,7 +77,56 @@ public class TournamentController {
         return new RedirectView("/join");
     }
 
-    private Map<Integer, List<Match>> getPartidosPorRonda(List<Match> matches, Integer maxRound, Match lastMatch) {
+    class IntWrapper {
+        int value;
+    }
+    class MatchWrapper {
+        Match value;
+    }
+
+    @GetMapping("/{tournamentId}/match/{matchId}")
+    @Transactional
+    public String match(HttpSession session, @PathVariable long tournamentId, @PathVariable long matchId, Model model) {
+
+        Tournament t = entityManager.find(Tournament.class, tournamentId);
+        Match m = entityManager.find(Match.class, matchId);
+
+        model.addAttribute("tournament", t);
+        model.addAttribute("match", m);
+
+
+        model.addAttribute("coachingTeam", userCoachingTeam(session) );
+
+        return "match";
+    }
+
+ /*
+     * Devuelve un bool indicando si el usuario es coach de algun equipo
+     */
+    private Team userCoachingTeam(HttpSession session) {
+
+        User user = null;
+        try {
+            // Obtiene la informacion del usuario de la sesion actual
+            user = (User) session.getAttribute("u");
+        } catch (IllegalStateException e) {
+            log.error(e.getMessage());
+        }
+
+        try{
+            Team coachingTeam = (Team) entityManager.createQuery(
+            "SELECT t.team FROM TeamMember t WHERE t.user.id = :userId and t.isCoach = true", Team.class)
+            .setParameter("userId", user.getId())
+            .getSingleResult();
+
+            return coachingTeam;
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Map<Integer, List<Match>> getPartidosPorRonda(List<Match> matches, IntWrapper maxRound, MatchWrapper lastMatch) {
         Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
 
             for (Match match : matches) {
@@ -85,10 +134,10 @@ public class TournamentController {
                 int ronda = match.getRoundNumber();
 
                 log.info("ronda: " + ronda);
-                if (ronda >= maxRound)
-                    maxRound = ronda;
+                if (ronda >= maxRound.value)
+                    maxRound.value = ronda;
 
-                lastMatch = match;
+                lastMatch.value = match;
 
                 //Variable auxiliar para guardar los partidos que hay actualmente en el map
                 List<Match> partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
@@ -120,11 +169,15 @@ public class TournamentController {
             model.addAttribute("tournament", tournament);
         
         
+
+
             boolean isCoach = false;
             boolean isFinalResult = true;
             int maxRound = 0;
             int isLastRound = -1;
             Match lastMatch = null;
+
+
 
             //Lista de los partidos
             List<Match> matches = entityManager.createQuery(
@@ -133,7 +186,13 @@ public class TournamentController {
                     .getResultList();
 
 
-            Map<Integer, List<Match>> partidosPorRonda = getPartidosPorRonda(matches, maxRound, lastMatch);
+            IntWrapper maxRoundWrapper = new IntWrapper();
+            MatchWrapper lastMatchWrapper = new MatchWrapper();
+
+            //Vemos cuantos partidos hay por ronda, cogemos cual es la maxima ronda y el ultimo partido
+            Map<Integer, List<Match>> partidosPorRonda = getPartidosPorRonda(matches, maxRoundWrapper, lastMatchWrapper);
+            maxRound = maxRoundWrapper.value;
+            lastMatch = lastMatchWrapper.value;
             log.info("MaxRound: " + maxRound);
             
             boolean allResults = true;
@@ -142,16 +201,15 @@ public class TournamentController {
             if (tournament.getType() == 0) {
                 // SI ES EL ULTIMO PARTIDO
                 if (maxRound == tournament.getRounds() - 1) {
-                    if (lastMatch.getResult() != null) {
-
-                        if (lastMatch.getResult().contains("/")) {
+                    if (lastMatch.getResultTeam1() != null) {
+                        if (lastMatch.getResultTeam1().contains("/")) {
                             isFinalResult = false;
-                            String[] results = lastMatch.getResult().split("/");
+                            String[] results = lastMatch.getResultTeam1().split("/");
                             String team1 = results[0].trim();
                             String team2 = results[1].trim();
                             // SI EL RESULTADO ENVIADO POR AMBOS EQUIPOS ES EL MISMO
                             if (team1.equals(team2)) {
-                                lastMatch.setResult(team2);
+                                lastMatch.setResultTeam1(team2);
                                 String[] finalResult = team1.split("-");
                                 int number1 = Integer.parseInt(finalResult[0].trim());
                                 int number2 = Integer.parseInt(finalResult[1].trim());
@@ -172,6 +230,7 @@ public class TournamentController {
                             // LOS EQUIPOS NO ESTAN DE ACUERDO EN EL RESULTADO
                             else {
                                 // ENVIAR A ADMIN
+                                allResults = false;
                             }
                         }
                     } else{
@@ -186,17 +245,17 @@ public class TournamentController {
                 // SI NO ES EL ULTIMO PARTIDO
                 else {
                     for (Match partido : matches) {
-                        if (partido.getResult() != null) {
+                        if (partido.getResultTeam1() != null) {
                             // 2 - 1 / 1 - 3 , int - int
 
-                            if (partido.getResult().contains("/")) {
+                            if (partido.getResultTeam1().contains("/")) {
                                 isFinalResult = false;
-                                String[] results = partido.getResult().split("/");
+                                String[] results = partido.getResultTeam1().split("/");
                                 String team1 = results[0].trim();
                                 String team2 = results[1].trim();
                                 // SI EL RESULTADO ENVIADO POR AMBOS EQUIPOS ES EL MISMO
                                 if (team1.equals(team2)) {
-                                    partido.setResult(team2);
+                                    partido.setResultTeam1(team1);
                                     String[] finalResult = team1.split("-");
                                     int number1 = Integer.parseInt(finalResult[0].trim());
                                     int number2 = Integer.parseInt(finalResult[1].trim());
@@ -287,20 +346,20 @@ public class TournamentController {
                             .getSingleResult();
 
                     // SI HAY RESULTADO DEL PARTIDO
-                    if (partido.getResult() != null) {
+                    if (partido.getResultTeam1() != null) {
 
                         // 2 - 1 / 1 - 3 , int - int
 
-                        if (partido.getResult().contains("/")) {
+                        if (partido.getResultTeam1().contains("/")) {
                             isFinalResult = false;
-                            String[] results = partido.getResult().split("/");
+                            String[] results = partido.getResultTeam1().split("/");
                             String team1 = results[0].trim();
                             String team2 = results[1].trim();
                             // SI EL RESULTADO ENVIADO POR AMBOS EQUIPOS ES EL MISMO
                             if (team1.equals(team2)) {
 
-                                partido.setResult(team2);
-                                log.info("RESULTADO PARTIDO: " + partido.getResult());
+                                partido.setResultTeam1(team2);
+                                log.info("RESULTADO PARTIDO: " + partido.getResultTeam1());
                                 String[] finalResult = team1.split("-");
                                 int number1 = Integer.parseInt(finalResult[0].trim());
                                 int number2 = Integer.parseInt(finalResult[1].trim());
@@ -385,6 +444,7 @@ public class TournamentController {
             model.addAttribute("isLastRound", isLastRound);
             model.addAttribute("lastMatch", lastMatch);
             model.addAttribute("isFinalResult", isFinalResult);
+            model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
 
             if (tournament.getType() == 0) {
                 if (isUserCoach(session, tournament))
@@ -681,11 +741,11 @@ public class TournamentController {
         }
     }
 
-    @PostMapping("sendResults/{tournamentId}/{matchId}/{userTeamId}")
+    @PostMapping("sendResults/{tournamentId}/{matchId}/{teamId}")
     @Transactional
-    public ResponseEntity<?> sendResults(@RequestParam("resultadoTeam1") int resultadoTeam1,
+    public String sendResults(@RequestParam("resultadoTeam1") int resultadoTeam1,
             @RequestParam("resultadoTeam2") int resultadoTeam2, HttpSession session, @PathVariable long tournamentId,
-            @PathVariable long matchId, @PathVariable long userTeamId, Model model) {
+            @PathVariable long matchId, @PathVariable long teamId, Model model) {
         try {
             Match match = entityManager
                     .createQuery("select m from Match m where m.id = :matchId AND m.tournament.id = :tournamentId ",
@@ -695,64 +755,28 @@ public class TournamentController {
                     .getSingleResult();
 
             String resultadoNuevo = resultadoTeam1 + " - " + resultadoTeam2;
-            // si hay resultado
-            if (match.getResult() != null) {
-                if (match.getResult().contains("/")) {
-                    int posBarra = match.getResult().indexOf("/");
+           
+            if(teamId == match.getTeam1().getId()) {
+                match.setResultTeam1(resultadoNuevo);
+            }
+            else {
+                match.setResultTeam2(resultadoNuevo);
+            }
 
-                    // El carácter "/" está al principio, el result del team2 ya esta
-                    if (posBarra == 0) {
-                        // si el team del usuario es el team1
-                        if (userTeamId == match.getTeam1().getId()) {
-                            match.setResult(resultadoNuevo + match.getResult());
-                        }
-                        // si el team del usuario es el team2
-                        else {
-                            // sobreescribir antiguo resultado enviado
-                            match.setResult(" / " + resultadoNuevo);
-                        }
-                    }
-                    // El caracter "/" esta al final, el result del team 1 ya está
-                    else if (posBarra == match.getResult().length() - 1) {
-                        // si el team del usuario es el team1
-                        if (userTeamId == match.getTeam1().getId()) {
-                            // sobreescribir antiguo resultado
-                            match.setResult(resultadoNuevo + " / ");
-                        }
-                        // si el team del usuario es el team2
-                        else {
-                            match.setResult(match.getResult() + resultadoNuevo);
-                        }
-                    }
-                    // Ya hay dos resultados
-                    else {
-                        String[] results = match.getResult().split("/");
-                        String team1 = results[0].trim();
-                        String team2 = results[1].trim();
+            if(match.getResultTeam1().equals(match.getResultTeam2())){
+                String[] numbers = resultadoNuevo.split(" - ");
 
-                        // si el team del usuario es el team1
-                        if (userTeamId == match.getTeam1().getId()) {
-                            // sobreescribir antiguo resultado
-                            match.setResult(resultadoNuevo + " / " + team2);
-                        }
-                        // si el team del usuario es el team2
-                        else {
-                            match.setResult(team1 + " / " + resultadoNuevo);
-                        }
-                    }
-                } else {
-                    boolean isFinalResult = true;
-                    model.addAttribute("isFinalResult", isFinalResult);
+                int number1 = Integer.parseInt(numbers[0]); 
+                int number2 = Integer.parseInt(numbers[1]); 
+
+                if(number1 > number2) {
+                    match.setWinner(match.getTeam1());
+                }
+                else {
+                    match.setWinner(match.getTeam2());
                 }
             }
-            // si no hay resultado aún
-            else {
-                // si el team del usuario es team1
-                if (userTeamId == match.getTeam1().getId())
-                    match.setResult(resultadoNuevo + " / ");
-                else
-                    match.setResult(" / " + resultadoNuevo);
-            }
+
             entityManager.persist(match);
 
         } catch (Exception e) {
@@ -760,6 +784,41 @@ public class TournamentController {
         }
         // PROBLEMAS CUANDO SE ACTUALIZA PERO NO CAMBIA EL MATCHID
         entityManager.flush();
-        return ResponseEntity.ok(model);
+        
+        return "redirect:/tournament/" + tournamentId + "/match/" + matchId;
+    }
+
+    @PostMapping("sendResults/setWinner/{tournamentId}/{matchId}/{teamId}")
+    @Transactional
+    public String setMatchWinner(HttpSession session, @PathVariable long tournamentId,
+            @PathVariable long matchId, @PathVariable long teamId, Model model) {
+        try {
+            Match match = entityManager
+                    .createQuery("select m from Match m where m.id = :matchId AND m.tournament.id = :tournamentId ",
+                            Match.class)
+                    .setParameter("matchId", matchId)
+                    .setParameter("tournamentId", tournamentId)
+                    .getSingleResult();
+           
+            match.setResultTeam1("Intervenido por administrador");
+            match.setResultTeam2("Intervenido por administrador");
+
+
+            if(teamId == match.getTeam1().getId()){
+                match.setWinner(match.getTeam1());
+            }
+            else {
+                match.setWinner(match.getTeam2());
+            }
+
+            entityManager.persist(match);
+
+        } catch (Exception e) {
+            log.info("EXCEPTION ENVIANDO RESULTADOS: ", e);
+        }
+        // PROBLEMAS CUANDO SE ACTUALIZA PERO NO CAMBIA EL MATCHID
+        entityManager.flush();
+        
+        return "redirect:/tournament/" + tournamentId + "/match/" + matchId;
     }
 }
