@@ -265,14 +265,14 @@ public class TournamentController {
                 for (Match partido : partidosEnRonda) {
 
                     TournamentTeam tournament_Team1 = entityManager.createQuery(
-                            "SELECT t FROM Tournament_Team t where t.team.id = :teamid and t.tournament.id = :tournamentid ",
+                            "SELECT t FROM TournamentTeam t WHERE t.team.id = :teamid and t.tournament.id = :tournamentid ",
                             TournamentTeam.class)
                             .setParameter("tournamentid", tournament.getId())
                             .setParameter("teamid", partido.getTeam1().getId())
                             .getSingleResult();
 
                     TournamentTeam tournament_Team2 = entityManager.createQuery(
-                            "SELECT t FROM Tournament_Team t where t.team.id = :teamid and t.tournament.id = :tournamentid ",
+                            "SELECT t FROM TournamentTeam t WHERE t.team.id = :teamid and t.tournament.id = :tournamentid ",
                             TournamentTeam.class)
                             .setParameter("tournamentid", tournament.getId())
                             .setParameter("teamid", partido.getTeam2().getId())
@@ -396,7 +396,7 @@ public class TournamentController {
                     // team del usuario
                     model.addAttribute("userTeam",getUserTeamFromMatch(user, getUserMatchFromTournamentLeague(user, tournament, maxRound)));
                     List<TournamentTeam> teamsList = entityManager.createQuery(
-                            "SELECT t FROM Tournament_Team t WHERE t.tournament.id = :tournamentid ORDER BY t.puntuacion DESC",
+                            "SELECT t FROM TournamentTeam t WHERE t.tournament.id = :tournamentid ORDER BY t.puntuacion DESC",
                             TournamentTeam.class)
                             .setParameter("tournamentid", tournamentId)
                             .getResultList();
@@ -622,7 +622,7 @@ public class TournamentController {
 
     private List<Team> getTeamsForTournament(Tournament tournament) {
         TypedQuery<Team> query = entityManager.createQuery(
-                "SELECT t.team FROM Tournament_Team t WHERE t.tournament.id = :tournamentid",
+                "SELECT t.team FROM TournamentTeam t WHERE t.tournament.id = :tournamentid",
                 Team.class);
 
         return query.setParameter("tournamentid", tournament.getId())
