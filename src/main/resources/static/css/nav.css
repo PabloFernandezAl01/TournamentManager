@@ -39,3 +39,39 @@
     background-color: gray;
     border-color: red;
 }
+
+/* Dropdown con mensajes del usuario*/
+/* .dropdown {
+    margin-right: 1em;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+}
+  
+.dropdown-btn {
+    border: none;
+    color: black;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown-btn:hover {
+    background-color: #ccc;
+}
+
+.dropdown-btn:after {
+    content: '\25BC';
+    margin-left: 5px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-content p {
+    display: block;
+    padding: 10px;
+    background-color: #f9f9f9;
+} */
