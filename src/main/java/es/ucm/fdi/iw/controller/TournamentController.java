@@ -152,8 +152,8 @@ public class TournamentController {
                 partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
                 partidosEnRonda.add(match);
 
-                //log.info("Ronda : " + ronda + " Partido entre: " + match.getTeam1().getId() + " - "
-                //        + match.getTeam2().getId());
+                log.info("Ronda : " + ronda + " Partido entre: " + match.getTeam1().getId() + " - "
+                        + match.getTeam2().getId());
 
                 partidosPorRonda.put(ronda, partidosEnRonda);
 
