@@ -39,26 +39,6 @@
                                 <a class="nav-link" th:if="${session.u.hasRole('ADMIN')}" th:href="@{/admin/}">Administrar</a>
                             </li>
 
-                            <!-- <div class="dropdown">
-                                <img class="dropdown-btn" th:src="@{/img/sin_mensajes.png}" alt="Logo" width="65" height="55"></img>
-                                <div class="dropdown-content">
-                                    <p>Mensaje 1</p>
-                                    <p>Mensaje 2</p>
-                                    <p>Mensaje 3</p>
-                                </div>
-                            </div> -->
-
-                            <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                  Seleccionar opción
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                  <li><a class="dropdown-item" href="#">Opción 1</a></li>
-                                  <li><a class="dropdown-item" href="#">Opción 2</a></li>
-                                  <li><a class="dropdown-item" href="#">Opción 3</a></li>
-                                </ul>
-                            </div>
-
                             <!-- Imagen de moneda -->
                             <li class="nav-item" style="margin: auto;">
                                 <img th:src="@{/img/coin.png}" alt="Coin" width="35" height="35"/>
