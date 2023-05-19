@@ -16,3 +16,5 @@ en un torneo en el POST "joinTournament"
     + Mirar que onda con el atributo startingHour de Tournament
 
 - Mirar que onda con el atributo team en User
+
+- Codigo dulicado de creacion de partidos (mejorar)
