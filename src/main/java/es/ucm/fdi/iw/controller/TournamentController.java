@@ -152,16 +152,16 @@ public class TournamentController {
                 partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
                 partidosEnRonda.add(match);
 
-                log.info("Ronda : " + ronda + " Partido entre: " + match.getTeam1().getId() + " - "
-                        + match.getTeam2().getId());
+                //log.info("Ronda : " + ronda + " Partido entre: " + match.getTeam1().getId() + " - "
+                //        + match.getTeam2().getId());
 
                 partidosPorRonda.put(ronda, partidosEnRonda);
 
-                log.info("partidosPorRonda: " + partidosPorRonda);
+                //log.info("partidosPorRonda: " + partidosPorRonda);
             }
 
-            log.info("MaxRound: " + maxRound);
-            boolean allResults = true;
+            //log.info("MaxRound: " + maxRound);
+                boolean allResults = true;
             // EL TORNEO ES ELIMINACION SIMPLE
             if (tournament.getType() == 0) {
                 // SI ES EL ULTIMO PARTIDO
@@ -410,6 +410,16 @@ public class TournamentController {
             model.addAttribute("lastMatch", lastMatch);
             model.addAttribute("isFinalResult", isFinalResult);
 
+            User u = (User) session.getAttribute("u");
+
+            // INSERTAR TOPICSIDS DE USUARIO
+            List<Tournament> tournaments = getAllUserTournaments(u);
+            List<Match> matchestopics = getAllUserMatches(u);
+
+            String topics = String.join(",", getAllTopicIds(tournaments, matchestopics));
+            session.setAttribute("topics", topics);
+            log.info("Topics for {} are {}", u.getUsername(), topics);
+
             if (tournament.getType() == 0) {
                 if (isUserCoach(session, tournament))
                     isCoach = true;
@@ -423,17 +433,6 @@ public class TournamentController {
 
             } else {
                 try {
-
-                    User u = (User) session.getAttribute("u");
-
-                    // INSERTAR TOPICSIDS DE USUARIO
-                    List<Tournament> tournaments = getAllUserTournaments(u);
-                    List<Match> matchestopics = getAllUserMatches(u);
-
-                    String topics = String.join(",", getAllTopicIds(tournaments, matchestopics));
-                    session.setAttribute("topics", topics);
-                    log.info("Topics for {} are {}", u.getUsername(), topics);
-
                     // Match al que mandar mensajes en el chat
                     model.addAttribute("userMatch", getUserMatchFromTournamentLeague(user, tournament, maxRound));
                     // team del usuario
@@ -451,9 +450,7 @@ public class TournamentController {
                 return "tableBracket";
             }
 
-        } catch (
-
-        Exception e) {
+        } catch (Exception e) {
             log.info("HA SALTADO UNA EXCEPCION: ", e);
         }
         return "bracket";

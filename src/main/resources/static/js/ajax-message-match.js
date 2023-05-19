@@ -55,6 +55,7 @@ document.querySelectorAll(".matchButton").forEach(o => {
 
 // y aquí pinta mensajes según van llegando
 if (ws.receive) {
+  console.log("...............RECIBIENDO MENSAJES................")
   const oldFn = ws.receive; // guarda referencia a manejador anterior
   ws.receive = (message) => {
     oldFn(message); // llama al manejador anterior
