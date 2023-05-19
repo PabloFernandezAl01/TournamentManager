@@ -369,8 +369,80 @@ public class RootController {
                 entityManager.persist(mt);
                 entityManager.persist(match);
             }
+
+        User u = (User) session.getAttribute("u");
+
+        // INSERTAR TOPICSIDS DE USUARIO
+		List<Tournament> tournaments = getAllUserTournaments(u);
+		List<Match> matches = getAllUserMatches(u);
+
+		String topics = String.join(",", getAllTopicIds(tournaments, matches));
+		session.setAttribute("topics", topics);
+		log.info("Topics for {} are {}", u.getUsername(), topics);
+
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.info("EXXCEPCION: ", e);
+        }
+
+        entityManager.flush();
+    }
+
+    private List<Tournament> getAllUserTournaments(User u) {
+		if (u.getTeam() == null) {
+			return new ArrayList<>();
+		}
+		List<Tournament> query = entityManager.createQuery(
+				"SELECT e.tournament FROM Tournament_Team e WHERE e.team.id = :teamId",
+				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
+
+		for (Tournament m : query) {
+			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
+		}
+		return query;
+	}
+
+	private List<Match> getAllUserMatches(User u) {
+
+		if (u.getTeam() == null) {
+			return new ArrayList<>();
+		}
+		List<Match> query = entityManager.createQuery(
+				"SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId",
+				Match.class).setParameter("teamId", u.getTeam().getId()).getResultList();
+
+		for (Match m : query) {
+			log.info("My team is {}, and one of my matches is {}", u.getTeam().getId(), m.getId());
+		}
+		return query;
+	}
+
+	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
+		List<String> topicsId = new ArrayList<>();
+		for (Tournament tournament : tournaments) {
+			if (tournament.getMessageTopic() != null) {
+				log.info("my topicid tournament", tournament.getMessageTopic().getTopicId());
+				topicsId.add(tournament.getMessageTopic().getTopicId());
+			}
+		}
+		for (Match match : matches) {
+			if (match.getMessageTopic().getTopicId() != null) {
+				topicsId.add(match.getMessageTopic().getTopicId());
+			}
+		}
+		return topicsId;
+	}
+
+    private boolean isUserCoach(HttpSession session) {
+        User user = (User) session.getAttribute("u");
+        try {
+            entityManager.createQuery(
+                    "select t from Team t where t.coach.id = :id ") // and not exists (Select tt.team.id from
+                                                                    // Tournament_Team tt where tt.team.id = t.id)
+                    .setParameter("id", user.getId()).getSingleResult();
+
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
 }

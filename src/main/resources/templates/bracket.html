@@ -72,7 +72,7 @@
     <div th:if="${userMatch != null}" id="chat" class="chat col-md-6">
       <div id="resultados" class="d-flex justify-content-between align-items-center">
         <h5 th:text="${userMatch.team1.name +' - '+ userMatch.team2.name}">Partido y equipos</h5>
-        <button id="m${userMatch.id}" class="match">Ver chat</button>
+        <button th:id="${userMatch.id}" class="matchButton">Ver chat</button>
         <div th:if="${isFinalResult}" class="EnvioResultados inputs-container">Partido Finalizado</div>
         <div th:if="${isCoach && !isFinalResult}" class="EnvioResultados inputs-container">Resultados del partido:
           <form id="resultsForm"
