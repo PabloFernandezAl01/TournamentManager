@@ -4,12 +4,17 @@
 <head>
   <th:block th:replace="fragments/head :: header" />
 
+  <link rel="stylesheet" th:href="@{/css/create.css}" type="text/css" />
+
   <title>Tournament Manager</title>
 </head>
 
 <body class="d-flex flex-column h-100 body">
   <!-- Reemplazo del header desde el archivo nav.html -->
   <header th:replace="fragments/nav.html :: nav"></header>
+
+  <!-- Imagen de fondo -->
+  <div class="background"></div>
 
   <main class="flex-shrink-0 main">
     <div class="container">
@@ -20,6 +25,7 @@
       <form method="post" th:action="@{tournament/createTournament}" class="create-form container">
         <h2>Crea tu torneo</h2>
 
+        <!-- Maximo numero de equipos del torneo -->
         <p>
           <label for="maxTeams">Numero de equipos:</label>
           <input type="number" id="maxTeams" name="maxTeams" step="2" min="2" max="128" placeholder="Nº" required />
@@ -32,10 +38,10 @@
             required />
         </p>
 
-        <!-- Opciones de cantidad de jugadores -->
+        <!-- Seleccion del tipo de torneo (Simple, Double, Round Robin) -->
         <p>
           <label for="type">Tipo de torneo:</label>
-          <select class="form-control dropdown" id="option" onchange="mostrarTexto()" name="type"
+          <select class="form-control dropdown" id="option" onchange="mostrarDescripcion()" name="type"
             placeholder="Tipo de torneo:" required>
             <option disabled selected value>
               -- Selecciona tipo de torneo --
@@ -43,8 +49,9 @@
             <option value="0">Eliminación simple</option>
             <option value="1">Liga</option>
           </select>
-          <span id="textoInfo"></span>
+          <span id="tournament-type"></span>
         </p>
+
         <!-- Calendario para seleccionar fecha -->
         <p>
           <label for="date">Fecha de inicio de torneo:</label>
@@ -52,23 +59,21 @@
             required />
         </p>
 
+        <!-- Mirar como juntarlo a la fecha //TODO -->
         <p>
           <label for="startingHour">Hora de inicio de torneo:</label>
           <input type="time" class="form-control" id="startingHour" name="startingHour" placeholder="Hora del torneo:"
             required />
         </p>
 
-        <!-- HAY QUE PENSAR EN SI SE AÑADE FECHA DE FIN, COMO ESTABLECER HORARIOS DE PARTIDOS SI NO CABEN ANTES DE QUE LLEGUE LA FECHA DE FIN -->
-
-        <!-- <p>
-                    <label for="tournament-date" >Fecha de fin de torneo:</label>
-                    <input type="date" class="form-control" id="tournament-date" name="tournament-date" placeholder="Fecha del torneo:">
-                </p> -->
+        <!-- Precio de entrada al torneo (En Monedas) -->
         <p>
           <label for="entryPrice">Precio de entrada:</label>
-          <input type="number" class="form-control" id="entryPrice" name="entryPrice" placeholder="Precio de entrada:"
+          <input type="number" class="form-control" id="entryPrice" name="entryPrice" placeholder="Monedas de entrada:"
             min="0" required />
         </p>
+
+        <!-- Juego del torneo -->
         <p>
           <label for="game">Juego</label>
           <select class="form-control dropdown" id="game" name="game"
@@ -82,44 +87,36 @@
             <option value="4">League of Legends</option>
           </select>
         </p>
+
+        <!-- Premio del torneo (En Monedas) -->
         <p>
           <label for="prizePool">Prizepool:</label>
           <input type="number" class="form-control" id="prizePool" name="prizePool" placeholder="Pricepool:" min="0"
             required />
         </p>
+
+        <!-- Descripcion del torneo -->
         <p>
           <label for="description">Descripción:</label>
           <textarea rows="4" cols="50" class="form-control" id="description" name="description"
             placeholder="Descripción:" required></textarea>
         </p>
+
         <button type="submit" class="createButton btn btn-primary submit">
           Crear torneo
         </button>
+
       </form>
     </div>
   </main>
 
   <!-- Reemplazo del footer desde el archivo footer.html -->
   <th:block th:replace="fragments/footer.html :: footer" />
-  <script>
-    function mostrarTexto() {
-      var opciones = document.getElementById("option");
-      var textoInfo = document.getElementById("textoInfo");
 
-      if (option.value == "1") {
-        textoInfo.innerHTML =
-          "También llamado Liga, este formato consiste en un todos contra todos en el que gana el equipo con más victorias.";
-      } else if (option.value == "2") {
-        textoInfo.innerHTML =
-          "Consta de varias fases, depende del número de equipos apuntados. Para pasar a la siguiente fase, cada equipo tiene que ganar a su rival, emparejados aleatoriamente. Si pierde, se elimina del torneo.";
-      } else if (option.value == "3") {
-        textoInfo.innerHTML =
-          "Al igual que Eliminación Simple, consta de varias fases, depende del número de equipos apuntados. Para pasar a la siguiente fase, cada equipo tiene que ganar a su rival, emparejados aleatoriamente. Si pierde, pasa a un bracket inferior en el que tendrá que jugar contra equipos que también hayan perdido. Si se pierde en este bracket, se elimina del torneo.";
-      } else {
-        textoInfo.innerHTML = "";
-      }
-    }
-  </script>
+  <!-- Script para cambiar de descripcion de tipo de torneo en base al que esta seleccionado-->
+  <script th:src="@{/js/tournament-description.js}"></script>
+
+  <!-- Script para comprobar si la fecha de inicio esta en el futuro -->
   <script>
     var today = new Date().toISOString().split("T")[0];
     document.getElementById("date").min = today;

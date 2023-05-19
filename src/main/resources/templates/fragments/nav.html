@@ -12,17 +12,18 @@
         <nav class="navbar nav-pills navbar-expand-lg fixed-top navbar-dark bg-dark">
             <div class="container-fluid">
 
-                <!-- nombre del sitio; es un enlace que lleva a la página ppal -->
-                <a class="navbar-brand" th:href="@{/}" href="/">
-                    <img th:src="@{/img/logovalorant.png}" src="/img/logovalorant.png" alt="Valorant Logo" width="35" height="25"/>
+                <!-- nombre del sitio; es un enlace que lleva a la página ppal (Logo de Valorant) -->
+                <a class="navbar-brand" th:href="@{/}">
+                    <img th:src="@{/img/logo.png}" alt="Logo" width="40" height="40"/>
                 </a>
 
+                <!-- Barra de navegacion con las referencias a las vistas principales -->
                 <div class="navbar-brand nav-menu">
-                    <a th:href="@{/}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${home} ? active : null">Home</div></a>
-                    <a th:href="@{/create}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${create} ? active : null">Create</div></a>
-                    <a th:href="@{/join}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${join} ? active : null">Join</div></a>
-                    <a th:href="@{/ongoing}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${onGoing} ? active : null">On-Going</div></a>
-                    <a th:href="@{/record}" href="/"><div  class="nav-item nav-link text-light" th:classappend="${record} ? active : null">Record</div></a>
+                    <a th:href="@{/create}"><div  class="nav-item nav-link text-light" th:classappend="${create}">Crear</div></a>
+                    <a th:href="@{/join}"><div  class="nav-item nav-link text-light" th:classappend="${join}">Unirse</div></a>
+                    <a th:href="@{/ongoing}"><div  class="nav-item nav-link text-light" th:classappend="${onGoing}">Torneos</div></a>
+                    <a th:href="@{/record}"><div  class="nav-item nav-link text-light" th:classappend="${record}">Historial</div></a>
+                    <a th:if="${session.u}" th:href="@{/user/{id}/teams(id=${session.u.id})}"><div  class="nav-item nav-link text-light" th:classappend="${teams}">Equipos</div></a>
                 </div>
 
                 <!-- menu hamburguesa si no cabe todo -->
@@ -38,12 +39,25 @@
                                 <a class="nav-link" th:if="${session.u.hasRole('ADMIN')}" th:href="@{/admin/}">Administrar</a>
                             </li>
 
-                            <li class="nav-item mx-2">
-                                <a class="nav-link" th:href="@{/user/{id}(id=${session.u.id})}">
-                                    <img class="iwthumb rounded" th:src="@{/user/{id}/pic(id=${session.u.id})}">
-                                    <span th:text="${session.u.username}">Pepe</span>
+                            <!-- Imagen de moneda -->
+                            <li class="nav-item" style="margin: auto;">
+                                <img th:src="@{/img/coin.png}" alt="Coin" width="35" height="35"/>
+                            </li>
+
+                            <!-- Numero de monedas actuales del usuario -->
+                            <li class="nav-item" style="margin: auto;">
+                                <a class="nav-link text-light" th:text="${session.u.coins}">
+                                    <span>No tienes monedas</span>
                                 </a>
                             </li>
+
+                            <!-- Referencia al perfil de usuario -->
+                            <li class="nav-item mx-2">
+                                <a class="nav-link text-light" th:href="@{/user/{id}(id=${session.u.id})}">
+                                    <span>Mi perfil</span>
+                                </a>
+                            </li>
+                            <!-- Botón de cerrar sesión -->
                             <li class="nav-item align-self-center">
                                 <form th:action="@{/logout}" method="post">
                                     <button type="submit" class="btn btn-outline-secondary btn-sm">Cerrar sesión</button>
@@ -62,14 +76,14 @@
                             */-->
                             <li class="nav-item debug align-self-center" th:if="${application.debug}">
                                 <form class="d-flex" th:action="@{/login}" method="post">
-                                    <input type="hidden" name="username" value="a">
+                                    <input type="hidden" name="username" value="Peibol">
                                     <input type="hidden" name="password" value="aa">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">ADMIN</button>
                                 </form>
                             </li>
                             <li class="nav-item debug align-self-center" th:if="${application.debug}">
                                 <form class="d-flex" th:action="@{/login}" method="post">
-                                    <input type="hidden" name="username" value="b">
+                                    <input type="hidden" name="username" value="Ivan">
                                     <input type="hidden" name="password" value="aa">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">USER</button>
                                 </form>
@@ -80,6 +94,7 @@
             </div>
         </nav>
     </header>
+
 </body>
 
 </html>

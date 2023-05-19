@@ -1,44 +1,34 @@
 package es.ucm.fdi.iw.controller;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.hibernate.engine.transaction.spi.JoinStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.view.RedirectView;
-
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-
-import java.io.*;
-import java.time.LocalDate;
-
-import es.ucm.fdi.iw.model.Team;
-import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.model.Tournament;
+import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Match;
 import es.ucm.fdi.iw.model.MessageTopic;
 
-import java.util.List;
-import javax.persistence.NoResultException;
-import java.util.ArrayList;
-import java.util.Collections;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
+import org.springframework.stereotype.Controller;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.ui.Model;
+
+import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.*;
+import java.time.LocalDate;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * Non-authenticated requests only.
@@ -48,66 +38,99 @@ public class RootController {
 
     private static final Logger log = LogManager.getLogger(RootController.class);
 
+    /*
+     * Estructura para manejar la informacion de un torneo
+     */
     @Data
     @AllArgsConstructor
-    public static class TourneyData {
-        int nTeams;
-        int maxTeams;
-        String topicId;
-        TournamentStatus status;
-        boolean isMyTeamJoined;
+    public static class TData {
+
+        int teamsIn; // Equipos inscritos en el torneo
+        int capacity; // Maximo numero de equipos del torneo
+        TournamentStatus status; // Estado actual del torneo
+
+        // Indica si el usuario tiene alguno de sus equipos inscrito en el torneo
+        // Independientemente de si el user es coach o no
+        boolean userWithTeamIn;
     }
 
+    /*
+     * Clase para manejar un torneo (par {Tournament, TData})
+     */
+    @Data
+    @AllArgsConstructor
+    public static class Tourney {
+        Tournament t; // Torneo
+        TData data; // Y su informacion
+
+        public boolean isFull() {
+            return data.teamsIn >= data.capacity;
+        }
+
+        public boolean isJoinable() {
+            return !isFull() && !data.userWithTeamIn;
+        }
+    }
+
+    /*
+     * Proporciona acceso a la base de BD desde cualquier parte del controlador
+     */
     @Autowired
     private EntityManager entityManager;
+
+    /*
+     * Herramienta para encriptar contraseñas
+     */
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public String encodePassword(String rawPassword) {
-        return passwordEncoder.encode(rawPassword);
-    }
-
-    private void disableViews(Model model) {
-        model.addAttribute("home", Boolean.FALSE);
-        model.addAttribute("create", Boolean.FALSE);
-        model.addAttribute("join", Boolean.FALSE);
-        model.addAttribute("onGoing", Boolean.FALSE);
-        model.addAttribute("record", Boolean.FALSE);
-    }
+    /**
+	 * Encodes a password, so that it can be saved for future checking. Notice
+	 * that encoding the same password multiple times will yield different
+	 * encodings, since encodings contain a randomly-generated salt.
+	 * 
+	 * @param rawPassword to encode
+	 * @return the encoded password (typically a 60-character string)
+	 *         for example, a possible encoding of "test" is
+	 *         {bcrypt}$2y$12$XCKz0zjXAP6hsFyVc8MucOzx6ER6IsC1qo5zQbclxhddR1t6SfrHm
+	 */
+	public String encodePassword(String rawPassword) {
+		return passwordEncoder.encode(rawPassword);
+	}
 
     @GetMapping("/")
     public String homepage(Model model) {
-        disableViews(model);
-        model.addAttribute("home", Boolean.TRUE);
         return "index";
     }
 
     @GetMapping("/login")
     public String login(Model model) {
-        disableViews(model);
         return "login";
     }
 
     @GetMapping("/create")
     public String create(Model model, String exception) {
-
-        disableViews(model);
-        model.addAttribute("create", Boolean.TRUE);
+        model.addAttribute("create", "active");
         return "create";
     }
 
     @GetMapping("/join")
     @Transactional
     public String join(Model model, HttpSession session) {
-        disableViews(model);
-        model.addAttribute("join", Boolean.TRUE);
+        model.addAttribute("join", "active");
 
-        Map<Tournament, TourneyData> tournaments = getModelTournaments(model, session);
+        // Obtiene la informacion clave de los torneos
+        List<Tourney> tournaments = getTournamentsData(session);
 
-        tournaments = getNotStartedTournaments(tournaments);
+        // Añade los torneos al modelo
+        model.addAttribute("Tournaments", tournaments);
 
-        model.addAttribute("isUserCoach", isUserCoach(session));
-        model.addAttribute("tournaments", tournaments);
+        // Añande el estado de los torneos a filtrar
+        model.addAttribute("Status", TournamentStatus.NOT_STARTED);
+
+        // Marca un flag indicando si el usuario es coach o no
+        // (Solo los coach puede inscribir a sus equipos en torneos)
+        model.addAttribute("IsCoach", isCoach(session));
 
         return "join";
     }
@@ -115,182 +138,211 @@ public class RootController {
     @GetMapping("/ongoing")
     @Transactional
     public String ongoing(Model model, HttpSession session) {
-        disableViews(model);
-        model.addAttribute("onGoing", Boolean.TRUE);
+        model.addAttribute("ongoing", "active");
 
-        Map<Tournament, TourneyData> tournaments = getModelTournaments(model, session);
+        // Obtiene la informacion clave de los torneos
+        List<Tourney> tournaments = getTournamentsData(session);
 
-        tournaments = getOngoingTournaments(tournaments);
+        // Añande los torneos al modelo
+        model.addAttribute("Tournaments", tournaments);
 
-        model.addAttribute("isUserCoach", isUserCoach(session));
-        model.addAttribute("tournaments", tournaments);
+         // Añande el estado de los torneos a filtrar
+         model.addAttribute("Status", TournamentStatus.ON_GOING);
 
         return "ongoing";
     }
 
     @GetMapping("/record")
     public String record(Model model, HttpSession session) {
+        model.addAttribute("record", "active");
 
-        disableViews(model);
-        model.addAttribute("record", Boolean.TRUE);
+        // Obtiene la informacion clave de los torneos
+        List<Tourney> tournaments = getTournamentsData(session);
 
-        Map<Tournament, TourneyData> tournaments = getModelTournaments(model, session);
+        // Añande los torneos al modelo
+        model.addAttribute("Tournaments", tournaments);
 
-        Map<Tournament, TourneyData> finishedTournaments = getFinishedTournaments(tournaments);
-        Map<Tournament, TourneyData> canceledTournaments = getCanceledTournaments(tournaments);
-
-        model.addAttribute("finishedTournaments", finishedTournaments);
-        model.addAttribute("canceledTournaments", canceledTournaments);
+         // Añande el estado de los torneos a filtrar
+         model.addAttribute("Status", TournamentStatus.FINISHED);
 
         return "record";
     }
 
     @GetMapping("/register")
     public String register(Model model) {
-        disableViews(model);
         return "register";
     }
 
+    /*
+     * Registra al usuario en la DB
+     */
     @PostMapping("/register")
     @Transactional
-    public RedirectView register(@ModelAttribute User registered,
-            Model model) throws IOException {
+    public RedirectView register(@ModelAttribute User registered, Model model) throws IOException {
 
-        registered.setEnabled(true);
+        // Lo marca como activo y establece el rol del usuario
+        registered.setEnabled(true); 
         registered.setRoles("USER");
-        registered.setPassword(encodePassword(registered.getPassword()));
-        registered.setTeam(null);
+
+        // Encripta la constraseña introducida por el usuario
+        String encodedPassword = encodePassword(registered.getPassword());
+        registered.setPassword(encodedPassword); 
+
+        // Inicializa el valor de dinero obtenido y los reportes recibidos
+        registered.setCoins(0);
+        registered.setReports(0);
+
+        // Añade/modifica la base de datos
         entityManager.persist(registered);
-        entityManager.flush();
+
+        // Redirige la vista a LOGIN ya que despues de registrarse tiene sentido iniciar sesion
         return new RedirectView("/login");
     }
 
-    private Map<Tournament, TourneyData> getModelTournaments(Model model, HttpSession session) {
-        Map<Tournament, TourneyData> mapa = new HashMap<>();
+    /*
+     * Devuelve la informacion de todos los torneos
+     */
+    private List<Tourney> getTournamentsData(HttpSession session) {
 
-        Long nTeams = 0L;
+        List<Tourney> tourneys = new ArrayList<>();
+        List<Tournament> tournaments = new ArrayList<>();
 
-        List<Tournament> tournaments = entityManager
-                .createQuery("select t from Tournament t", Tournament.class)
-                .getResultList();
+        try {
+            // Consulta a la DB para obtener todos los torneos
+            tournaments = entityManager.createNamedQuery("AllTournaments", Tournament.class).getResultList();
 
-        for (Tournament tournament : tournaments) {
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
 
-            long tournamentId = tournament.getId();
-            try {
-                TypedQuery<Long> query = entityManager.createQuery(
-                        "SELECT count(e.team) FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
-                        Long.class);
+        for (Tournament t : tournaments) {
 
-                nTeams = query.setParameter("tournamentid", tournamentId).getSingleResult();
+            // Obtiene el numero de equipos inscritos en el torneo
+            int nTeams = getNumberOfTeamsInTournament(t);
 
-                if (LocalDate.now().isAfter(LocalDate.parse(tournament.getDate()))
-                        && (tournament.getStatus() == TournamentStatus.NOT_STARTED)) {
-                    if (nTeams < tournament.getMaxTeams()) {
-                        tournament.setStatus(TournamentStatus.CANCELED);
+            if (LocalDate.now().isAfter(LocalDate.parse(t.getDate())) && (t.getStatus() == TournamentStatus.NOT_STARTED)) {
+                    if (nTeams < t.getMaxTeams()) {
+                        t.setStatus(TournamentStatus.CANCELED);
                     } else {
-                        tournament.setStatus(TournamentStatus.ON_GOING);
+                        t.setStatus(TournamentStatus.ON_GOING);
 
-                        // TODO: HACER ESTO DE MANERA ASINCRONA CON WEBSOCKETS
-                        createMatches(tournament, session);
+                        // TODO: Hacer esto de manera asíncrona con WS
+                        createMatches(t, session);
                         // else
                         // createLeagueMatches(tournament, session);
                     }
                 }
 
-            } catch (Exception e) {
-                model.addAttribute("exception", e.getMessage());
-                nTeams = 0L;
-            }
+            // Se crea el objeto con la informacion del torneo para añadirlo a la lista
+            TData data = new TData(nTeams, t.getMaxTeams(), t.getStatus(), isMyTeamInTournament(session, t));
 
-            TourneyData tourneyData = new TourneyData(nTeams.intValue(), tournament.getMaxTeams(),
-                    tournament.getMessageTopic().getTopicId(), tournament.getStatus(),
-                    isMyTeamInTournament(session, tournament));
-            mapa.put(tournament, tourneyData);
+            tourneys.add(new Tourney(t, data));
 
-            log.info("VALOR MAPA" + tourneyData.getNTeams() + tourneyData.getMaxTeams());
         }
 
-        return mapa;
+        return tourneys;
     }
 
-    private boolean isMyTeamInTournament(HttpSession session, Tournament tournament) {
-        User user = (User) session.getAttribute("u");
-        List<Team> teams = new ArrayList<>();
-        try {
-            teams = entityManager.createQuery(
-                    "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid", Team.class)
-                    .setParameter("tournamentid", tournament.getId())
-                    .getResultList();
+    /*
+     * Comprueba si el usuario tiene alguno de sus equipos inscritos en el torneo T
+     */
+    private boolean isMyTeamInTournament(HttpSession session, Tournament t) {
 
-            for (Team team : teams) {
-                if (team.getCoach().getId() == user.getId()) {
+        User user = (User) session.getAttribute("u");
+
+        List<Team> teams = new ArrayList<>();
+        List<Long> usersIdsInTeam = new ArrayList<>();
+
+        try {
+            // Obtiene todos los equipos inscritos en el torneo T
+            teams = entityManager.createNamedQuery("TeamsByTournamentId", Team.class)
+                                         .setParameter("tournamentId", t.getId()).getResultList();
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
+
+        for (Team team : teams) {
+
+            try {
+                // Por cada Id de equipo, obtiene sus integrantes
+                usersIdsInTeam = entityManager.createNamedQuery("MembersByTeam", Long.class)
+                                                            .setParameter("teamId", team.getId()).getResultList();
+            } catch (IllegalArgumentException e) {
+                log.error(e.getMessage());
+            }
+            
+            // Comprueba si algun Id de integrante del equipo concide con el Id del usuario
+            for (Long u : usersIdsInTeam) {
+                if (u == user.getId()) {
                     return true;
                 }
             }
-
-            return false;
-        } catch (Exception e) {
-            // Si el torneo aun no tiene equipos es obvio que el tuyo no está inscrito
-            return false;
         }
+
+        return false;                                
+    }
+    
+    /*
+     * Devuelve el numero de equipos inscritos en un torneo T
+     */
+    private int getNumberOfTeamsInTournament(Tournament t) {
+
+        int nTeams = 0;
+
+        try {
+            // Consulta el tamaño de la lista devuelta por la consulta
+            nTeams = entityManager.createNamedQuery("TeamsByTournamentId", Team.class)
+                                    .setParameter("tournamentId", t.getId()).getResultList().size();
+
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
+
+        return nTeams;
     }
 
-    private Map<Tournament, TourneyData> getNotStartedTournaments(Map<Tournament, TourneyData> mapa) {
-        Map<Tournament, TourneyData> notStarted = new HashMap<>();
+    /*
+     * Devuelve un bool indicando si el usuario es coach de algun equipo
+     */
+    private boolean isCoach(HttpSession session) {
 
-        for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
+        User user = null;
+        List<User> coachs = new ArrayList<>();
 
-            TourneyData tourneyData = entry.getValue();
-            if (tourneyData.getStatus() == TournamentStatus.NOT_STARTED) {
-                notStarted.put(entry.getKey(), tourneyData);
+        try {
+            // Obtiene la informacion del usuario de la sesion actual
+            user = (User) session.getAttribute("u");
+        } catch (IllegalStateException e) {
+            log.error(e.getMessage());
+        }
+
+        try {
+            // Devuelve una lista con los usuarios que sean coach de algun equipo
+            coachs = entityManager.createNamedQuery("AllCoachs", User.class).getResultList();
+
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
+
+         // Comprueba si alguno de esos coachs tienen el mismo id de usuario que el usuario de la sesion
+        for (User u : coachs) {
+            if (u.getId() == user.getId()) {
+                return true;
             }
         }
-        return notStarted;
+
+        return false;
     }
 
-    private Map<Tournament, TourneyData> getOngoingTournaments(Map<Tournament, TourneyData> mapa) {
-        Map<Tournament, TourneyData> ongoing = new HashMap<>();
+    
 
-        for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
-            TourneyData tourneyData = entry.getValue();
-
-            if (tourneyData.getStatus() == TournamentStatus.ON_GOING) {
-                ongoing.put(entry.getKey(), tourneyData);
-            }
-        }
-        return ongoing;
-    }
-
-    private Map<Tournament, TourneyData> getFinishedTournaments(Map<Tournament, TourneyData> mapa) {
-        Map<Tournament, TourneyData> finished = new HashMap<>();
-
-        for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
-            TourneyData tourneyData = entry.getValue();
-            if (tourneyData.getStatus() == TournamentStatus.FINISHED) {
-                finished.put(entry.getKey(), tourneyData);
-            }
-        }
-        return finished;
-    }
-
-    private Map<Tournament, TourneyData> getCanceledTournaments(Map<Tournament, TourneyData> mapa) {
-        Map<Tournament, TourneyData> canceled = new HashMap<>();
-
-        for (Map.Entry<Tournament, TourneyData> entry : mapa.entrySet()) {
-            TourneyData tourneyData = entry.getValue();
-            if (tourneyData.getStatus() == TournamentStatus.CANCELED) {
-                canceled.put(entry.getKey(), tourneyData);
-            }
-        }
-        return canceled;
-    }
+    // ------------------- Logica de creacion de partidos ----------------------
 
     private void createMatches(Tournament tournament, HttpSession session) {
         // crear partidos
         List<Team> teams = new ArrayList<>();
         TypedQuery<Team> query = entityManager.createQuery(
-                "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
+                "SELECT e.team FROM TournamentTeam e WHERE e.tournament.id = :tournamentid",
                 Team.class);
 
         teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
@@ -340,7 +392,7 @@ public class RootController {
 			return new ArrayList<>();
 		}
 		List<Tournament> query = entityManager.createQuery(
-				"SELECT e.tournament FROM Tournament_Team e WHERE e.team.id = :teamId",
+				"SELECT e.tournament FROM TournamentTeam e WHERE e.team.id = :teamId",
 				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
 
 		for (Tournament m : query) {

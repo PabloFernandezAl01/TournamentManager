@@ -2,74 +2,86 @@
 <html class="h-100" xmlns:th="http://www.thymeleaf.org">
   <head>
     <th:block th:replace="fragments/head :: header" />
-    <title>Create Account</title>
+
+    <link rel="stylesheet" th:href="@{/css/register.css}" type="text/css" /> 
+
+    <title>Crear cuenta</title>
   </head>
 
   <body class="d-flex flex-column h-100 body">
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
     <main class="flex-shrink-0">
-      <div class="login container">
+      <div class="register container">
         <form method="post" th:action="@{/register}">
-          <h2>Register</h2>
+          <h2>Registrarse</h2>
           
-          <p th:if="${#request.getQueryString() == 'error'}" class="error">
-            Error al registrar
-          </p>
+          <!-- Comprueba si ha sucedido algún error al crear la cuenta -->
+          <p th:if="${#request.getQueryString() == 'error'}" class="error">Error al registrar</p>
 
           <p>
-            <label for="username" class="visually-hidden">Username</label>
+            <label for="username" class="visually-hidden">Nombre de usuario</label>
             <input
               type="text"
               id="username"
               name="username"
               class="inputTextStyle form-control"
-              placeholder="Username"
+              placeholder="Nombre de usuario"
               required
             />
           </p>
           
+          <!-- Campo para el nombre -->
           <p>
-            <label for="firstName" class="visually-hidden">First Name</label>
+            <label for="firstName" class="visually-hidden">Nombre</label>
             <input
               type="text"
               id="firstName"
               name="firstName"
               class="inputTextStyle form-control"
-              placeholder="First Name"
+              placeholder="Nombre"
               required
             />
           </p>
+
+           <!-- Campo para el primer apellido -->
           <p>
-            <label for="lastName" class="visually-hidden">Last Name</label>
+            <label for="lastName" class="visually-hidden">Apellido</label>
             <input
               type="text"
               id="lastName"
               name="lastName"
               class="inputTextStyle form-control"
-              placeholder="Last Name"
+              placeholder="Apellido"
               required
             />
           </p>
+
+           <!-- Campo para la contraseña -->
           <p>
-            <label for="password" class="visually-hidden">Password</label>
+            <label for="password" class="visually-hidden">Contraseña</label>
             <input
               type="password"
               id="password"
               name="password"
               class="inputTextStyle form-control"
-              placeholder="Password"
+              placeholder="Contraseña"
               required
             />
           </p>
+
+           <!-- Boton submit para registrarse -->
           <button
             type="submit"
             class="registerButton btn btn-primary submit"
-            style="margin: 0"
-          >
-            Create account
+            style="margin: 0">
+            Crear cuenta
           </button>
+
         </form>
       </div>
     </main>

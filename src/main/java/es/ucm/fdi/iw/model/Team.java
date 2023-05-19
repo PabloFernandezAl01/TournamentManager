@@ -10,18 +10,26 @@ import lombok.Data;
 @Entity
 @Data
 public class Team  {
+
+    /*
+     * Id autogenerado que actua como clave primaria de la tabla Team
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gen")
     @SequenceGenerator(name = "gen", sequenceName = "gen")
 	private long id;
 
+    /*
+     * Nombre del equipo, no NULL y unico
+     */
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToOne
-    private User coach;
-
+    /*
+     * Lista de torneos ganados por el equipo
+     */
     @OneToMany
     @JoinColumn(name = "winner_id")
     List<Tournament> wins = new ArrayList<>();
+
 }

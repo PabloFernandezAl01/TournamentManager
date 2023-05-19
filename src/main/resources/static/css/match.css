@@ -1,0 +1,67 @@
+html,
+body,
+.brackets {
+  width: 100%;
+  min-height: 100%;
+  font-family: "Arial", sans-serif;
+  margin-top: 5em;
+  color: white;
+}
+
+.metroBtn {
+  margin-top: 10em;
+  background-color: #2e7bcc;
+  color: #fff;
+  font-size: 1.1em;
+  padding: 10px;
+  display: inline-block;
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+
+h2{
+  display: flex;
+  justify-content: center;
+}
+
+.back-button {
+  text-decoration: none;
+  background-color: gray;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: darkkhaki;
+  color: white;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: rgb(33,37,41,0.9);
+}
+
+td {
+  padding: 8px;
+  border: 1px solid black;
+}
+
+.result {
+  text-align: center;
+}
+
+.winner {
+  background-color: green;
+  color: white;
+  text-align: center;
+}
+
+
+.loser {
+  background-color: crimson;
+  color: white;
+  text-align: center;
+}

@@ -19,17 +19,11 @@
     align-items: center;
 }
 
-.tournament-ongoing {
+.tournament-record {
     margin-left: 10px;
     margin-right: 20px;
   
     color: white;
-}
-
-.tournament-joined {
-    display: flex;
-    align-items: center;
-    color: lightgreen;
 }
 
 .tournament-name {

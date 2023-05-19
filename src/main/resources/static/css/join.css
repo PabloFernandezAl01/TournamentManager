@@ -14,15 +14,26 @@
     padding: 10px;
 }
 
-.tournament-name {
-    margin-right: 10px;
-    color: white;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+.tournament-info {
+  display: flex;
+  align-items: center;
 }
 
-.tournament-info {
-    display: flex;
-    align-items: center;
+.tournament-status {
+  font-weight: bold;
+  color: lightsalmon;
+}
+
+.tournament-full {
+font-weight: bold;
+color: crimson;
+}
+
+.tournament-slots {
+  margin-left: 10px;
+  margin-right: 10px;
+
+  color: white;
 }
 
 .tournament-joined {
@@ -31,31 +42,15 @@
   color: lightgreen;
 }
 
-
-.tournament-status {
-    font-weight: bold;
-    color: lightsalmon;
-}
-
-.tournament-full {
-  font-weight: bold;
-  color: crimson;
-}
-
-.tournament-ongoing {
-  margin-left: 10px;
-  margin-right: 20px;
-
-  color: white;
-}
-
-.tournament-slots {
-    margin-left: 10px;
+.tournament-name {
     margin-right: 10px;
-
     color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
+.body {
+  margin-top: 50px;
+}
 
 .modal {
   display: none; /* Hidden by default */

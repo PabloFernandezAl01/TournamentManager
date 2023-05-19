@@ -3,6 +3,9 @@
 
 <head>
     <th:block th:replace="fragments/head :: header" />
+
+    <link rel="stylesheet" th:href="@{/css/ongoing.css}" type="text/css" />
+
     <title>Tournament Manager</title>
 </head>
 
@@ -10,28 +13,33 @@
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
-    <main class="flex-shrink-0 main">
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
+    <main class="flex-shrink-0">
+         <!-- Informacion principal de ONGOING -->
         <div class="container">
           <h1 class="text-center page-title">TORNEOS ACTUALES</h1>
           <h2 class="mt-3 text-center">¡Echa un vistazo a los torneos en juego!</h2>
         </div>
+
+
         <div class="container">
+          <!-- Se genera una lista para representar los torneos que se estan celebrando -->
           <ul class="tournament-list">
-            <li th:each="tournament : ${tournaments}">
+            <!-- Se recorre la lista con la informacion de los torneos ON GOING -->
+            <li th:each="tourney : ${Tournaments}" th:if="${tourney.data.status} == ${Status}">
+
+              <!-- Informacion general del torneo-->
               <div class="tournament-info">
-  
-                <span class="tournament-ongoing">🟢 LIVE</span>
-                
-                <div class="tournament-joined" th:if="${tournament.value.isMyTeamJoined()}">Your team is in this tournament!</div>
-  
-                <a
-                  class="brackets-button"
-                  th:href="@{|/tournament/${tournament.key.id}/bracket|}"
-                >
-                  View brackets
-                </a>
+                <span class="tournament-ongoing">🟢 EN VIVO</span>
+                <div class="tournament-joined" th:if="${tourney.data.userWithTeamIn}">Tu equipo esta jugando este torneo!</div>
               </div>
-              <div class="tournament-name" th:text="${tournament.key.name}"></div>
+
+              <a class="brackets-button" th:href="@{|/tournament/${tourney.t.id}/bracket|}">Ver torneo</a>
+
+              <!-- Informacion sobre el nombre del torneo-->
+              <div class="tournament-name" th:text="${tourney.t.name}"></div>
             </li>
           </ul>
         </div>        

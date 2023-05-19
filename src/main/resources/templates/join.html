@@ -2,6 +2,9 @@
 <html class="h-100" xmlns:th="http://www.thymeleaf.org">
   <head>
     <th:block th:replace="fragments/head :: header" />
+
+    <link rel="stylesheet" th:href="@{/css/join.css}" type="text/css" /> 
+
     <title>Tournament Manager</title>
   </head>
 
@@ -9,44 +12,56 @@
     <!-- Reemplazo del header desde el archivo nav.html -->
     <header th:replace="fragments/nav.html :: nav"></header>
 
-    <main class="flex-shrink-0 main">
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
+    <main class="flex-shrink-0">
+      <!-- Informacion principal de JOIN -->
       <div class="container">
         <h1 class="text-center page-title">ÚNETE A UN TORNEO</h1>
-        <h2 class="mt-3 text-center">
-          ¡Inscribe a tu equipo en el torneo que más te guste!
-        </h2>
-        <h3 class="text-center" th:if="${tournaments.isEmpty()}">No hay torneos actualmente.</h3>
+        <h2 class="mt-3 text-center" th:unless="${Tournaments.isEmpty()}">¡Inscribe a tu equipo en el torneo que más te guste!</h2>
+        <h3 class="text-center" th:if="${Tournaments.isEmpty()}">No hay torneos a los que unirse actualmente</h3>
       </div> 
-      <div class="container">
 
+
+      <div class="container">
+        <!-- Se genera una lista para representar los torneos en los que los coach pueden inscribir a sus equipos -->
         <ul class="tournament-list">
-          <li th:each="tournament : ${tournaments}">
+          <!-- Se recorre la lista con la informacion de los torneos NOT STARTED -->
+          <li th:each="tourney : ${Tournaments}" th:if="${tourney.data.status} == ${Status}">
             <div class="tournament-info">
 
-              <div th:classappend="${tournament.value.getNTeams()} == ${tournament.value.getMaxTeams()} ? tournament-full : tournament-status" 
-              th:text="${tournament.value.getNTeams()} == ${tournament.value.getMaxTeams()} ? 'Tournament full' : 'Waiting for teams'"></div>
-              
+              <!-- En caso de que el torneo no este lleno -->
+              <div th:if="${!tourney.isFull()}" th:classappend="tournament-status">Esperando a nuevos equipos </div>
+              <!-- En caso de que este lleno -->
+              <div th:if="${tourney.isFull()}" th:classappend="tournament-full">Torneo completo</div>
+
               <div class="tournament-slots">
-                <span th:text="${tournament.value.getNTeams()}"></span>
-                <!-- Acceder al primer valor del Pair -->
+                <!-- Informacion sobre el numero de equipos inscritos -->
+                <span th:text="${tourney.data.teamsIn}"></span>
                 <span>/</span>
-                <span th:text="${tournament.value.getMaxTeams()}"></span>
-                <!-- Acceder al segundo valor del Pair -->
+                <!-- Informacion sobre el numero maximo de equipos -->
+                <span th:text="${tourney.data.capacity}"></span>
               </div>
 
-              <span
-                th:if="${tournament.value.getNTeams() < tournament.value.getMaxTeams() && isUserCoach && !tournament.value.isMyTeamJoined()}"
-              >
+              <!-- Se mostrar el contenido de este span en caso de que el numero de equipos inscrito sea menos que el maximo, 
+              el usuario se coach de algun equipo y no tenga ninguno de sus equipos ya inscrito en el torneo -->
+              <span th:if="${tourney.isJoinable() && IsCoach}">
+
                 <form method="post" th:action="@{/tournament/joinTournament}">
-                  <input type="hidden" name="tournamentId" th:value="${tournament.key.id}" />
+                  <input type="hidden" name="tournamentId" th:value="${tourney.t.id}" />
                   <input type="hidden" name="userId" th:value="${session.u.id}" />
-                  <button class="btn btn-primary submit" type="submit">Join</button>
+                  <button class="btn btn-primary submit" type="submit">Incribir a mi equipo</button>
                 </form>          
               </span>
-
-              <div class="tournament-joined" th:if="${tournament.value.isMyTeamJoined()}">Your team is already in this tournament!</div>
+              
             </div>
-            <div class="tournament-name" th:text="${tournament.key.name}"></div>
+
+            <!-- En caso de que el user o coach ya tenga a uno de sus equipos inscritos en el torneo -->
+            <div class="tournament-joined" th:if="${tourney.data.userWithTeamIn}">Tu equipo ya está inscrito!</div>
+            <!-- Informacion sobre el nombre del torneo-->
+            <div class="tournament-name" th:text="${tourney.t.name}"></div>
+
           </li>
         </ul>
       </div>

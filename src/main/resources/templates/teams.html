@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="fragments/head :: header" />
+
+    <link rel="stylesheet" th:href="@{/css/teams.css}" type="text/css" /> 
+
+    <title>Tournament Manager</title>
+</head>
+
+<body class="d-flex flex-column h-100 body">
+    <!-- Reemplazo del header desde el archivo nav.html -->
+    <header th:replace="fragments/nav.html :: nav"></header>
+
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
+    <main class="flex-shrink-0 main">
+
+        <!-- Informacion principal de equipos y creacion de nuevos -->
+        <div class="container">
+          <h1 class="text-center page-title">TUS EQUIPOS</h1>
+          <h2 class="mt-3 text-center">¡Consulta tus equipos y crea nuevos!</h2>
+        </div>
+
+        <!-- Boton para ablir el content -->
+        <div class="container team-button">
+            <span style="color: grey" th:text="${excepcion}"></span>
+            <button id="button" class="mt-5 btn btn-primary submit">Nuevo equipo</button>
+        </div>
+
+        <!-- Modal content -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <form method="post" th:action="@{/user/__${user.id}__/createTeam}">
+                    <!-- Titulo -->
+                    <h2>Creación de equipo</h2>
+
+                    <!-- Manejador de error en caso de fallo al crear equipo -->
+                    <p th:if="${#request.getQueryString() == 'error'}" class="error">Error al crear el equipo</p>
+
+                    <!-- Formulario para el nombre del equipo -->
+                    <p>
+                        <label for="name" class="visually-hidden">Nombre</label>
+                        <input type="text" id="name" name="name" class="inputTextStyle form-control mt-3" 
+                                                    placeholder="Nombre del equipo" required="required">
+                    </p>
+
+                    <button type="submit" class="btn btn-primary submit mt-5" style="margin: 0;">Crear equipo</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Contenido principal de la vista -->
+        <div class="flex">
+
+            <!-- Lista de equipos del usuario -->
+            <div class="container grid">
+                <div class="teams">
+                    <h2 class="mt-5 text-center">Lista de equipos</h2>
+                    <div class="container center">
+                        <ul class="teams-list">
+                        <!-- Se recorre la lista con la informacion de los equipos -->
+                        <li class="team mt-5" th:each="team : ${Teams}">
+
+                            <!-- Nombre del equipo -->
+                            <h3 class="text-center" th:text="${team.t.name}"></h3>
+
+                            <!-- Lista de jugadores -->
+                            <h4 class="mt-2">Jugadores</h4>
+                            <div class="mt-3 players-list">
+                                <ul th:each="player : ${team.players}">
+                                    <article class="integrante">
+                                        <span class="member-text" th:text="${player.username}">Nombre</span>
+                                        <img class="player-image rounded" th:src="@{/user/{id}/pic(id=${player.id})}">
+                                    </article>
+                                </ul>
+                            </div>
+                            
+                            <!-- Lista de entrenadores -->
+                            <h4 class="mt-4">Entrenadores</h4>
+                            <div class="mt-3 players-list">
+                                <ul th:each="coach : ${team.coachs}">
+                                    <article class="integrante">
+                                        <span class="member-text" th:text="${coach.username}">Nombre</span>
+                                        <img class="player-image rounded" th:src="@{/user/{id}/pic(id=${coach.id})}">
+                                    </article>
+                                </ul>
+                            </div>
+                            
+                        </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solicitudes de union de equipos -->
+            <div class="container grid">
+                <div class="teams">
+                    <h2 class="mt-5 text-center">Solicitudes de unión</h2>
+                    <div class="container center">
+                        
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+ 
+    </main>
+    
+    <!-- Reemplazo del footer desde el archivo footer.html -->
+    <th:block th:replace="fragments/footer.html :: footer" />
+
+    <script th:src="@{/js/modal-controller.js}"></script>
+
+</body>
+
+</html>

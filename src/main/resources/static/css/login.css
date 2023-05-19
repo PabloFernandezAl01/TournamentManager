@@ -7,15 +7,18 @@
     border-radius: 10px;
 }
 
-/* InputText - rellenar */
 .inputTextStyle{
     background-color:rgba(78, 84, 90, 0.5);
     border-color: rgba(78, 84, 90, 0);
     color: white;
     
 }
+
+.body {
+    margin-top: 50px;
+}
+
 .or{
     color: white;
     margin: 5px;
 }
-/* InputText - rellenar */

@@ -14,11 +14,17 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author mfreire
  */
-public class LocalData {    	    
+
+public class LocalData {    	 
+
 	private static Log log = LogFactory.getLog(LocalData.class);
 
     private File baseFolder;
     
+    /**
+     * Creates a baseFolder for the user files and folders
+     * @param baseFolder name of the baseFolder
+     */
     public LocalData(File baseFolder) {
 		this.baseFolder = baseFolder;
     	log.info("base folder is " + baseFolder.getAbsolutePath());
