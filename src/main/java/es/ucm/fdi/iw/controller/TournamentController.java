@@ -695,7 +695,7 @@ public class TournamentController {
                 if(number1 > number2) {
                     match.setWinner(match.getTeam1());
                 }
-                else {
+                else if(number2 > number1){
                     match.setWinner(match.getTeam2());
                 }
             }
