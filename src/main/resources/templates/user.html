@@ -18,7 +18,7 @@
     <main class="flex-shrink-0">
 
         <!-- Contenedor de toda la informacion del perfil -->
-        <div class ="profile container">
+        <div class="profile container">
 
             <h2>Mi perfil</h2>
 
@@ -39,24 +39,43 @@
                 <img class="rounded userimage" th:src="@{/user/{id}/pic(id=${session.u.id})}">
 
             </div>
-            
+
         </div>
 
         <!-- Contenedor de toda la informacion de los proximos partidos -->
-        <div class ="matches container">
+        <div class="matches container">
 
             <h2>Próximos partidos</h2>
 
             <!-- TODO -->
+            <span th:if="${allMatches}!=null">
+                <span th:each="match : ${allMatches}">
+                    <a th:if="${match.winner} == null" th:href="@{|/tournament/${match.tournament.id}/match/${match.id}}" class="linkToMatch">
+                        <span class="mt-1" th:text="${match.tournament.name}"></span>
+                        <span class="mt-4" th:text="${match.team1.name}">Equipo 1</span>
+                        <span class="mt-4">vs</span>
+                        <span class="mt-4" th:text="${match.team2.name}">Equipo 2</span>
+                    </a>
+                </span>
+            </span>
 
         </div>
 
         <!-- Contenedor de toda la informacion de los proximos partidos -->
-        <div class ="matches container">
+        <div class="matches container">
 
             <h2>Historial de partidos</h2>
 
-            <!-- TODO -->
+            <span th:if="${allMatches}!=null">
+                <span th:each="match : ${allMatches}" >
+                    <a th:if="${match.winner} != null" th:href="@{|/tournament/${match.tournament.id}/match/${match.id}}" class="linkToMatch">
+                        <span class="mt-1" th:text="${match.tournament.name}"></span>
+                        <span class="mt-4" th:text="${match.team1.name}">Equipo 1</span>
+                        <span class="mt-4">vs</span>
+                        <span class="mt-4" th:text="${match.team2.name}">Equipo 2</span>
+                    </a>
+                </span>
+            </span>
 
         </div>
 

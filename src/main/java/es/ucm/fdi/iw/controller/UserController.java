@@ -123,6 +123,8 @@ public class UserController {
 		User user = (User) session.getAttribute("u");
 		model.addAttribute("user", user);
 
+		model.addAttribute("allMatches", getAllMatches(user));
+
 		return "user";
 	}
 
@@ -444,5 +446,26 @@ public class UserController {
         return teamsData;
 
     }
-	
+	private List<Match> getAllMatches(User user){
+		try{
+			List<Team> userTeams= new ArrayList<>();
+
+			userTeams = entityManager.createQuery("select t.team from TeamMember t where t.user.id = :userId",Team.class)
+			.setParameter("userId", user.getId())
+			.getResultList();
+			List<Match> userMatches = new ArrayList<>();
+			for(Team team: userTeams){
+
+				userMatches = entityManager.createQuery("select m from Match m where (m.team1.id = :teamId OR m.team2.id = :teamId)",Match.class)
+				.setParameter("teamId", team.getId())
+				.getResultList();
+			}
+			if(userMatches.isEmpty()){
+				return null;
+			}
+			return userMatches;
+		} catch (NoResultException e){
+			return null;
+		}
+	}
 }
