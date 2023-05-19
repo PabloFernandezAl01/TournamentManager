@@ -310,7 +310,6 @@ public class TournamentController {
 
         entityManager.persist(mt);
         entityManager.persist(tournament);
-        entityManager.flush();
 
         return new RedirectView("/join");
     }
@@ -341,7 +340,6 @@ public class TournamentController {
             entityManager.persist(match);
         }
 
-        entityManager.flush();
     }
 
     private void createMatchesLeague(Tournament tournament, int currentRound) {
@@ -385,7 +383,6 @@ public class TournamentController {
             }
         }
 
-        entityManager.flush();
     }
 
     private boolean havePlayedBefore(Team team1, Team team2, Tournament tournament) {

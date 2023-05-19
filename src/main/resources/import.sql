@@ -53,7 +53,7 @@ WHERE ID = 7;
 -- Teams
 
     INSERT INTO Team (id, name)
-    VALUES (20, 'Los Guasones');
+    VALUES (20, 'Team Heretics');
 
     INSERT INTO Team (id, name)
     VALUES (21, 'Segundo Equipo');
@@ -79,7 +79,7 @@ WHERE ID = 7;
     VALUES (30, 1, 20, 1);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (31, 1, 21, 2);  
+    VALUES (31, 0, 20, 2);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
     VALUES (32, 0, 20, 3);  
@@ -91,7 +91,7 @@ WHERE ID = 7;
     VALUES (34, 0, 20, 5);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (35, 0, 20, 6);  
+    VALUES (35, 0, 21, 6);  
 
     -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
     -- VALUES (30, 1, 20, 1);  

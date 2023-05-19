@@ -35,7 +35,7 @@
                 <span class="tournament-record">🔴 TERMINADO</span>
               </div>
 
-              <a class="brackets-button" th:href="@{|/tournament/${tourney.t.id}/${session.u.id}/bracket|}">Ver torneo</a>
+              <a class="brackets-button" th:href="@{|/tournament/${tourney.t.id}/bracket|}">Ver torneo</a>
 
               <!-- Informacion sobre el nombre del torneo-->
               <div class="tournament-name" th:text="${tourney.t.name}"></div>

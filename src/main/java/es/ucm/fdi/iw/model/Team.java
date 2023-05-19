@@ -12,6 +12,12 @@ import lombok.Data;
 public class Team  {
 
     /*
+     * Constante para definir el numero de jugadores en un equipo
+     */
+    @Transient
+    public static Integer MAX_PLAYERS_IN_TEAM = 5;
+
+    /*
      * Id autogenerado que actua como clave primaria de la tabla Team
      */
     @Id

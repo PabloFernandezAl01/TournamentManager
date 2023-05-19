@@ -35,7 +35,6 @@ import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.persistence.NoResultException;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
@@ -380,7 +379,7 @@ public class UserController {
 		return received.stream().map(Transferable::toTransfer).collect(Collectors.toList());
 	}
 
-	// ----------------- Vista Teams.html (Adaptarlo al modelo de siempre) ----------------
+	// ----------------- Vista Teams.html ----------------
 
 	 /*
      * Clase para manejar la informacion de un team (par {Team, List<User> jugadores})
@@ -391,6 +390,10 @@ public class UserController {
         Team t; // Team
 		List<User> players;
 		List<User> coachs;
+
+		public boolean isFull() {
+			return players.size() >= Team.MAX_PLAYERS_IN_TEAM;
+		}
     }
 
 	@GetMapping("{id}/teams")
