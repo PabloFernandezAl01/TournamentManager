@@ -13,11 +13,49 @@
   display: grid;
   text-align: center;
   margin-top: 2em;
+  margin-bottom: 2em;
   background-color:rgb(33,37,41,0.9);
   width: 100%;
   padding: 1em;
   border-radius: 10px;
   color: white;
+}
+
+.teams-list {
+  padding: 0;
+  margin: 1em;
+}
+
+.teams {
+  justify-content: center;
+  display: grid;
+  text-align: center;
+  margin-top: 2em;
+  background-color:rgba(220, 20, 60, 0.5);
+  width: 100%;
+  border-radius: 10px;
+  color: white;
+}
+
+.requests {
+  justify-content: center;
+  display: grid;
+  text-align: center;
+  margin-top: 2em;
+  background-color:rgb(33,37,41,0.9);
+  width: 100%;
+  padding: 1em;
+  border-radius: 10px;
+  color: white;
+}
+
+.flex {
+  display: flex;
+  justify-content: space-between;
+}
+
+.grid {
+  display: grid;
 }
 
 .player-image {
