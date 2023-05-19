@@ -23,8 +23,8 @@
     <h2 th:text="${tournament.name}">Tournament</h2>
 
     <div th:each="partido : ${partidosPorRonda.entrySet()}" class="round">
-      <h3 th:if="${isLastRound != partido.key}" th:text="'Ronda '+ ${partido.key}">Ronda</h3>
-      <h3 th:if="${isLastRound == partido.key}" th:text="Final">Ronda</h3>
+      <h3 th:if="${lastRound != partido.key}" th:text="'Ronda '+ ${partido.key}">Ronda</h3>
+      <h3 th:if="${lastRound == partido.key}" th:text="Final">Ronda</h3>
 
       <div th:each="match : ${partido.value}" class="match">
 
@@ -45,18 +45,18 @@
 
     </div>
 
-    <div th:if="${isLastRound != -1}" class="winnerDiv">
+    <div th:if="${lastRound != -1}" class="winnerDiv">
       <h3> GANADOR </h3>
 
-      <divclass="match">
+      <div class="match">
         <div th:if="${lastMatch.winner}" th:text="${lastMatch.winner.name}" class="team winner"></div>
-    </div>
+      </div>
   </div>
 
 
   </div>
 
-  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <!-- <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="liveToast" class="toast bg-primary align-items-center text-bg-primary border-0" role="alert"
       aria-live="assertive" aria-atomic="true">
       <div class="d-flex">
@@ -74,7 +74,7 @@
         <h5 th:text="${userMatch.team1.name +' - '+ userMatch.team2.name}">Partido y equipos</h5>
         <button th:id="${userMatch.id}" class="matchButton">Ver chat</button>
         <div th:if="${isFinalResult}" class="EnvioResultados inputs-container">Partido Finalizado</div>
-        <div th:if="${isCoach && !isFinalResult}" class="EnvioResultados inputs-container">Resultados del partido:
+        <div th:if="${!isFinalResult}" class="EnvioResultados inputs-container">Resultados del partido:
           <form id="resultsForm"
             th:action="@{|/tournament/sendResults/${tournament.id}/${userMatch.id}/${userTeam.id}|}" class="resultsForm"
             method="POST">
@@ -87,18 +87,18 @@
 
           </form>
         </div>
-      </div>
+      </div> -->
       <!--RECEPCIÓN DE MENSAJES-->
-      <div id="mensajes" class="messages"></div>
+      <!-- <div id="mensajes" class="messages"></div> -->
 
       <!--ENVÍO DE MENSAJES-->
-      <div class="input-group">
+      <!-- <div class="input-group">
         <form th:action="@{|/user/sendMsg/match/${userMatch.id}|}" class="formMessage" method="POST">
           <input type="text" id="messageInput" class="inputMessage" placeholder="Escribe tu mensaje..." />
           <button id="sendButton" class="buttonMensaje" type="submit"></button>
         </form>
       </div>
-    </div>
+    </div> -->
 
   </div>
 
