@@ -251,7 +251,7 @@ public class RootController {
         User user = (User) session.getAttribute("u");
 
         List<Team> teams = new ArrayList<>();
-        List<Long> usersIdsInTeam = new ArrayList<>();
+        List<User> usersInTeam = new ArrayList<>();
 
         try {
             // Obtiene todos los equipos inscritos en el torneo T
@@ -265,15 +265,15 @@ public class RootController {
 
             try {
                 // Por cada Id de equipo, obtiene sus integrantes
-                usersIdsInTeam = entityManager.createNamedQuery("MembersByTeam", Long.class)
-                                                            .setParameter("teamId", team.getId()).getResultList();
+                usersInTeam = entityManager.createNamedQuery("MembersByTeam", User.class)
+                                                .setParameter("teamId", team.getId()).getResultList();
             } catch (IllegalArgumentException e) {
                 log.error(e.getMessage());
             }
             
             // Comprueba si algun Id de integrante del equipo concide con el Id del usuario
-            for (Long u : usersIdsInTeam) {
-                if (u == user.getId()) {
+            for (User u : usersInTeam) {
+                if (u.getId() == user.getId()) {
                     return true;
                 }
             }

@@ -36,6 +36,7 @@ import org.springframework.ui.Model;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.stream.Collectors;
