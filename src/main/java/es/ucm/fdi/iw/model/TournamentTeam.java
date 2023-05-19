@@ -34,12 +34,12 @@ public class TournamentTeam {
     private Team team;
 
     @Column(nullable = true)
-    private int puntuacion;
+    private int puntuacion = 0;
     @Column(nullable = true)
-    private int victorias;
+    private int victorias = 0;
     @Column(nullable = true)
-    private int empates;
+    private int empates = 0;
     @Column(nullable = true)
-    private int derrotas;
+    private int derrotas = 0;
 
 }

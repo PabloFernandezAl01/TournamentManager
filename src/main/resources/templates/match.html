@@ -51,10 +51,10 @@
 
           </td>
 
-          <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null}" th:classappend="${match.winner == match.team1} ? 'winner' : 'loser'" th:text="${match.winner == match.team1} ? 'GANADOR' : 'PERDEDOR'"></td>
+          <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null && match.winner != null}" th:classappend="${match.winner == match.team1} ? 'winner' : 'loser'" th:text="${match.winner == match.team1} ? 'GANADOR' : 'PERDEDOR'"></td>
 
           <td th:if="${(match.resultTeam1 != null && match.resultTeam2 != null && match.winner == null) || (match.resultTeam1 == null || match.resultTeam2 == null)}"  
-            th:text="${match.resultTeam1 != null && match.resultTeam2 != null && match.resultTeam1 != match.resultTeam2 } ? 'Esperando a que un administrador decida' : 'Esperando resultados'" class="result" rowspan="2">
+            th:text="${match.resultTeam1 != null && match.resultTeam2 != null && (match.resultTeam1 != match.resultTeam2 || match.winner == null) } ? 'Esperando a que un administrador decida' : 'Esperando resultados'" class="result" rowspan="2">
           </td>
 
           <td th:if="${session.u.hasRole('ADMIN')}">
@@ -84,7 +84,7 @@
             <span th:if="${match.resultTeam2 != null}" th:text="${match.resultTeam2}"></span>
             <span th:if="${match.resultTeam1 == null && (coachingTeam == null || coachingTeam != match.team2)}" >Solo el entrenador del equipo puede enviar el resultado</span>
         </td>
-        <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null}" th:classappend="${match.winner == match.team2} ? 'winner' : 'loser'" th:text="${match.winner == match.team2} ? 'GANADOR' : 'PERDEDOR'"></td>
+        <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null  && match.winner != null}" th:classappend="${match.winner == match.team2} ? 'winner' : 'loser'" th:text="${match.winner == match.team2} ? 'GANADOR' : 'PERDEDOR'"></td>
         
         <td th:if="${session.u.hasRole('ADMIN')}">
           <form th:action="@{|/tournament/sendResults/setWinner/${tournament.id}/${match.id}/${match.team2.id}|}" class="resultsForm"
