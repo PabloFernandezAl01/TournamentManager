@@ -361,6 +361,16 @@ public class TournamentController {
             model.addAttribute("isFinalResult", isFinalResult);
             model.addAttribute("userMatch", getUserMatchFromTournament(user, tournament));
 
+            User u = (User) session.getAttribute("u");
+
+                    // INSERTAR TOPICSIDS DE USUARIO
+                    List<Tournament> tournaments = getAllUserTournaments(u);
+                    List<Match> matchestopics = getAllUserMatches(u);
+
+                    String topics = String.join(",", getAllTopicIds(tournaments, matchestopics));
+                    session.setAttribute("topics", topics);
+                    log.info("Topics for {} are {}", u.getUsername(), topics);
+
             if (tournament.getType() == 0) {
                 if (isUserCoach(session, tournament))
                     isCoach = true;
@@ -374,16 +384,6 @@ public class TournamentController {
 
             } else {
                 try {
-
-                    User u = (User) session.getAttribute("u");
-
-                    // INSERTAR TOPICSIDS DE USUARIO
-                    List<Tournament> tournaments = getAllUserTournaments(u);
-                    List<Match> matchestopics = getAllUserMatches(u);
-
-                    String topics = String.join(",", getAllTopicIds(tournaments, matchestopics));
-                    session.setAttribute("topics", topics);
-                    log.info("Topics for {} are {}", u.getUsername(), topics);
 
                     // Match al que mandar mensajes en el chat
                     model.addAttribute("userMatch", getUserMatchFromTournamentLeague(user, tournament, maxRound));
