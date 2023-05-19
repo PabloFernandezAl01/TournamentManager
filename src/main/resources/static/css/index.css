@@ -17,6 +17,7 @@
 .menu-container {
     justify-content: center;
     margin-top: 5em;
+    margin-bottom: 8em;
     display: flex;
     position: relative;
     width: 100%; /* Ancho del contenedor al 100% del ancho de la pantalla */
