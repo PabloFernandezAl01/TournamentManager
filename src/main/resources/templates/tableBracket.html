@@ -63,9 +63,7 @@
         <a class="match-button" th:href="@{|/tournament/${tournament.id}/match/${match.id}}">Ver partido</a>
         
       </div>
-
     </div>
-
   </div>
 
   <div th:if="${userInTournament}" class="d-flex justify-content-center align-items-center h-100">
@@ -94,7 +92,6 @@
   <th:block th:replace="fragments/footer.html :: footer" />
   <script th:src="@{/js/ajax-message-tournament.js}"></script>
 </body>
-
 
 <!-- <script>
   $(document).ready(function () {

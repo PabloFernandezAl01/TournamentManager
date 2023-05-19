@@ -45,3 +45,19 @@
   height: 200px;
   object-fit: cover;
 }
+.linkToMatch{
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  padding: 10px;
+  border-radius: 10px;
+  transition: 0.5 ease;
+  color: white;
+  text-decoration: none;  
+}
+
+.linkToMatch:hover{
+  color: rgb(225, 245, 250); 
+  background-color: rgba(44, 47, 49, 0.9);
+}

@@ -28,7 +28,15 @@
         <!-- Maximo numero de equipos del torneo -->
         <p>
           <label for="maxTeams">Numero de equipos:</label>
-          <input type="number" id="maxTeams" name="maxTeams" step="2" min="2" max="128" placeholder="Nº" required />
+          <select id="maxTeams" name="maxTeams" required>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+            <option value="32">32</option>
+            <option value="64">64</option>
+            <option value="128">128</option>
+          </select>
         </p>
 
         <!-- Nombre del torneo -->
@@ -76,8 +84,7 @@
         <!-- Juego del torneo -->
         <p>
           <label for="game">Juego</label>
-          <select class="form-control dropdown" id="game" name="game"
-            placeholder="Juego de torneo:" required>
+          <select class="form-control dropdown" id="game" name="game" placeholder="Juego de torneo:" required>
             <option disabled selected value>
               -- Selecciona el juego del torneo --
             </option>

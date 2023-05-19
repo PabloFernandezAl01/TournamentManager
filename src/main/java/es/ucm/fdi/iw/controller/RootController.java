@@ -131,7 +131,7 @@ public class RootController {
         // Marca un flag indicando si el usuario es coach o no
         // (Solo los coach puede inscribir a sus equipos en torneos)
         model.addAttribute("IsCoach", isCoach(session));
-
+        
         return "join";
     }
 
@@ -431,18 +431,4 @@ public class RootController {
 		}
 		return topicsId;
 	}
-
-    private boolean isUserCoach(HttpSession session) {
-        User user = (User) session.getAttribute("u");
-        try {
-            entityManager.createQuery(
-                    "select t from Team t where t.coach.id = :id ") // and not exists (Select tt.team.id from
-                                                                    // Tournament_Team tt where tt.team.id = t.id)
-                    .setParameter("id", user.getId()).getSingleResult();
-
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
 }
