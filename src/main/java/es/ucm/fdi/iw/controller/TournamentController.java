@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.stereotype.Controller;
 import org.apache.logging.log4j.LogManager;
-import org.springframework.http.ResponseEntity;
 import org.apache.logging.log4j.Logger;
 import org.springframework.ui.Model;
 
@@ -129,6 +128,8 @@ public class TournamentController {
     private Map<Integer, List<Match>> getPartidosPorRonda(List<Match> matches, IntWrapper maxRound, MatchWrapper lastMatch) {
         Map<Integer, List<Match>> partidosPorRonda = new HashMap<>();
 
+            List<Match> partidosEnRonda = new ArrayList<>();
+
             for (Match match : matches) {
 
                 int ronda = match.getRoundNumber();
@@ -140,7 +141,7 @@ public class TournamentController {
                 lastMatch.value = match;
 
                 //Variable auxiliar para guardar los partidos que hay actualmente en el map
-                List<Match> partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
+                partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
                 partidosEnRonda.add(match);
 
                 partidosPorRonda.put(ronda, partidosEnRonda);

@@ -198,8 +198,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (config.socketUrl) {
         let subs = config.admin ? ["/topic/admin", "/user/queue/updates"] : ["/user/queue/updates"]
         if (config.topics) {
-            // config.topics = ["a", "b", "c"]; => me suscribo a "/topic/a", "/topic/b" ...
-            for (let t of config.topics) {
+            // config.topics = "abc,def" = > 
+            for (let t of config.topics.split(",")) {
                 subs.push("/topic/" + t); 
             }
         }

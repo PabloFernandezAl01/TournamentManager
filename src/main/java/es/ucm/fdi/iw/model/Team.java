@@ -32,5 +32,4 @@ public class Team  {
     @JoinColumn(name = "winner_id")
     List<Tournament> wins = new ArrayList<>();
 
-
 }

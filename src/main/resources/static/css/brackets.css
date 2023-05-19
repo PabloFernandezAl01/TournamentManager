@@ -150,6 +150,7 @@ body,
 }
 
 .chat {
+  margin-top: 20px;
   margin-bottom: 2em;
   background-color: rgb(33, 37, 41, 1);
   border-radius: 5px;
@@ -157,16 +158,37 @@ body,
 }
 
 .messages {
-  height: 200px;
+  height: 350px;
   overflow-y: auto;
   margin-bottom: 10px;
   border-radius: 5px;
   padding: 10px;
   background-color: rgba(69, 76, 82, 0.9)
 }
-
+.formMessage {
+  width: 100%;
+}
 .input-group {
   display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.formMessage {
+  flex: 1;
+  display: flex;
+}
+
+.inputMessage {
+  flex: 1;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+#sendButton {
+  border-radius: 5px;
+  width: 100px;
 }
 
 #messageInput {
@@ -196,21 +218,28 @@ body,
 
 .match {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  width: 100%;
   margin: 10px 0;
 }
 
 .match .team {
+  flex: 1;
+  width: 15em;
+  text-align: center;
   padding: 5px 10px;
-  border: 1px solid #000;
+  border: 0px solid #000;
   background-color: #fff;
+  border-radius: 10px;
   color: #000;
   margin-right: 10px;
   margin-left: 10px;
 }
 
 .match .team.winner {
-  background-color: #0f0;
+  background-color: rgb(163, 255, 163);
+  box-shadow: 0 0 2px rgb(163, 255, 163);
 }
 
 /* Additional styles */
@@ -229,18 +258,24 @@ h3 {
 }
 
 .others_message {
-  color: lightcoral;
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+
+.others_message:hover {
+  color: rgb(218, 107, 107);
 }
 
 .date {
   margin-right: 10px;
-  color: white;
+  color: rgb(138, 138, 138);
 }
 
 table {
   text-align: center;
   margin-top: 2em;
-  background-color:rgb(33,37,41,0.9);
+  background-color: rgb(33, 37, 41, 0.9);
   width: 50%;
   padding: 2em;
   border-radius: 10px;
@@ -253,7 +288,8 @@ td {
   text-align: center;
   padding: 8px;
 }
-.tituloRoundRobin{
+
+.tituloRoundRobin {
   background-color: rgba(69, 76, 82, 0.9);
 }
 
