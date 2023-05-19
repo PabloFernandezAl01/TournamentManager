@@ -145,10 +145,6 @@ public class TournamentController {
                 partidosEnRonda.add(match);
 
                 partidosPorRonda.put(ronda, partidosEnRonda);
-
-                log.info("Ronda : " + ronda + " Partido entre: " + match.getTeam1().getId() + " - "
-                        + match.getTeam2().getId());
-                log.info("partidosPorRonda: " + partidosPorRonda);
             }
 
             return partidosPorRonda;
@@ -229,6 +225,8 @@ public class TournamentController {
             model.addAttribute("partidosPorRonda", partidosPorRonda);
             model.addAttribute("lastRound", maxRound);
             model.addAttribute("lastMatch", lastMatch);
+            model.addAttribute("tournamentTopic", tournament.getMessageTopic().getTopicId());
+            model.addAttribute("userInTournament", isUserInTournament(tournament, session));
 
             if (tournament.getType() == 0) {
                 return "bracket";
@@ -250,6 +248,27 @@ public class TournamentController {
             log.info("HA SALTADO UNA EXCEPCION: ", e);
         }
         return "bracket";
+    }
+
+    private boolean isUserInTournament(Tournament tournament, HttpSession session) {
+        
+        User user = (User) session.getAttribute("u");
+
+        Team userTeam = user.getTeam();
+
+        try{
+            entityManager.createQuery(
+                "SELECT t FROM TournamentTeam t WHERE t.tournament.id = :tournamentid and t.team.id = :teamId ",
+                TournamentTeam.class)
+                .setParameter("tournamentid", tournament.getId())
+                .setParameter("teamId", userTeam.getId())
+                .getSingleResult();
+
+            return true;
+        }
+        catch(Exception e) {
+            return false;
+        }
     }
 
     @PostMapping("/createTournament")

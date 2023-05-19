@@ -40,12 +40,6 @@ public class Message implements Transferable<Message.Transfer> {
 	private MessageTopic recipient;
 
 	/*
-	 * Referencia al partido donde se encuentra ese mensaje
-	 */
-	@ManyToOne
-	private Match match;
-
-	/*
 	 * Contenido del mensaje
 	 */
 	private String text;

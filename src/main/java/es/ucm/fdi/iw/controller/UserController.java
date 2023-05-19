@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.Match;
+import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.LocalData;
@@ -290,10 +291,10 @@ public class UserController {
 	 * @param o  JSON-ized message, similar to {"message": "text goes here"}
 	 * @throws JsonProcessingException
 	 */
-	@PostMapping("sendMsg/match/{matchId}")
+	@PostMapping("sendMsg/{tournamentId}")
 	@Transactional
 	@ResponseBody
-	public String sendMessage(@PathVariable long matchId, @RequestBody JsonNode node, Model model, HttpSession session) throws JsonProcessingException {
+	public String sendMessage(@PathVariable long tournamentId, @RequestBody JsonNode node, Model model, HttpSession session) throws JsonProcessingException {
 
 		// Obtiene el contenido del mensaje
 		String text = node.get("message").asText();
@@ -303,19 +304,18 @@ public class UserController {
 		log.info("Mensaje: " + text);
 		
 		// Obtiene el match y el usuario de a sesion
-		Match match = entityManager.find(Match.class, matchId);
+		Tournament tournament = entityManager.find(Tournament.class, tournamentId);
 		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
 		
 		// Obtiene el equipo del usuario a partir del Match
-		Team team = getUserTeamFromMatch(user, match);
+		Team team = user.getTeam();
 
 		// Crea el mensaje
 		Message m = new Message();
-		m.setRecipient(match.getMessageTopic());
+		m.setRecipient(tournament.getMessageTopic());
 		m.setSender(user);
 		m.setDateSent(LocalDateTime.now());
 		m.setText(text);
-		m.setMatch(match);
 		m.setIamSender(true);
 		m.setSenderTeamName(team.getName());
 
@@ -325,10 +325,10 @@ public class UserController {
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(m.toTransfer());
 
-		log.info("Sending a message to {} with contents '{}'", match.getMessageTopic().getTopicId(), json);
+		log.info("Sending a message to {} with contents '{}'", tournament.getMessageTopic().getTopicId(), json);
 																					
 		// messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
-		messagingTemplate.convertAndSend("/topic/" + match.getMessageTopic().getTopicId(), json);
+		messagingTemplate.convertAndSend("/topic/" + tournament.getMessageTopic().getTopicId(), json);
 		entityManager.flush(); // To get Id before commit
 
 		return "{\"result\": \"message sent.\"}";
@@ -340,7 +340,7 @@ public class UserController {
 	@GetMapping(path = "rcvMsg/match/{matchId}", produces = "application/json")
 	@Transactional // Para no recibir resultados inconsistentes
 	@ResponseBody // Para indicar que no devuelve vista, sino un objeto (jsonizado)
-	public List<Message.Transfer> recieveMessages(@PathVariable long matchId, HttpSession session) {
+	public List<Message.Transfer> recieveMessagesMatch(@PathVariable long matchId, HttpSession session) {
 
 		// Obtiene el match y el usuario de a sesion
 		Match match = entityManager.find(Match.class, matchId);
@@ -351,29 +351,34 @@ public class UserController {
 		
 		for(Message msg : messages) {
 			msg.setIamSender(msg.getSender().getId() == user.getId());
-			log.info("MENSAJE RECIBIDO: "+ msg.getText() + " MESSAGE TOPIC: + " + msg.getMatch().getMessageTopic().getId()) ;
 			received.add(msg);
 		}
 
 		return received.stream().map(Transferable::toTransfer).collect(Collectors.toList());
 	}
 
-	private Team getUserTeamFromMatch(User user, Match match) {
-        try {
-			// Obtiene el equipo de un partido en el que este el usuario
-            Team team = entityManager.createNamedQuery("MyTeamFromMatch",Team.class)
-                    .setParameter("team1", match.getTeam1().getId())
-                    .setParameter("team2", match.getTeam2().getId())
-					.setParameter("userId", user.getId()).getSingleResult();
+	/**
+	 * Returns JSON with all received messages
+	 */
+	@GetMapping(path = "rcvMsg/tournament/{tournamentId}", produces = "application/json")
+	@Transactional // Para no recibir resultados inconsistentes
+	@ResponseBody // Para indicar que no devuelve vista, sino un objeto (jsonizado)
+	public List<Message.Transfer> recieveMessagesTournament(@PathVariable long tournamentId, HttpSession session) {
 
-            return team;
+		// Obtiene el match y el usuario de a sesion
+		Tournament tournament = entityManager.find(Tournament.class, tournamentId);
+		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
 
-        } catch (NoResultException e) {
-			log.error(e.getMessage());
-            return null;
-        }
-    }
+		List<Message> received = new ArrayList<>();
+		List<Message> messages = tournament.getMessageTopic().getMessages();
+		
+		for(Message msg : messages) {
+			msg.setIamSender(msg.getSender().getId() == user.getId());
+			received.add(msg);
+		}
 
+		return received.stream().map(Transferable::toTransfer).collect(Collectors.toList());
+	}
 
 	// ----------------- Vista Teams.html (Adaptarlo al modelo de siempre) ----------------
 

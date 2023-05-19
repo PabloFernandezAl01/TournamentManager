@@ -22,6 +22,9 @@
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
     VALUES (7, 0, TRUE, 'g', 'g', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Pepe', null);
 
+    INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
+    VALUES (8, 0, TRUE, 'f', 'f', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'Prueba', null);
+
 UPDATE IWUSER
 SET TEAM_ID = 999
 WHERE ID = 7;

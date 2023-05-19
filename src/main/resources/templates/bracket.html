@@ -45,79 +45,42 @@
 
     </div>
 
-    <div th:if="${lastRound != -1}" class="winnerDiv">
+    <div th:if="${lastMatch != null && lastMatch.winner != null}" class="winnerDiv">
       <h3> GANADOR </h3>
 
       <div class="match">
-        <div th:if="${lastMatch.winner}" th:text="${lastMatch.winner.name}" class="team winner"></div>
-      </div>
-  </div>
-
-
-  </div>
-
-  <!-- <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="liveToast" class="toast bg-primary align-items-center text-bg-primary border-0" role="alert"
-      aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">
-          Resultados Enviados con éxito
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-          aria-label="Close"></button>
+        <div th:text="${lastMatch.winner.name}" class="team winner"></div>
       </div>
     </div>
+
+
   </div>
+
   <div class="d-flex justify-content-center align-items-center h-100">
-    <div th:if="${userMatch != null}" id="chat" class="chat col-md-6">
-      <div id="resultados" class="d-flex justify-content-between align-items-center">
-        <h5 th:text="${userMatch.team1.name +' - '+ userMatch.team2.name}">Partido y equipos</h5>
-        <button th:id="${userMatch.id}" class="matchButton">Ver chat</button>
-        <div th:if="${isFinalResult}" class="EnvioResultados inputs-container">Partido Finalizado</div>
-        <div th:if="${!isFinalResult}" class="EnvioResultados inputs-container">Resultados del partido:
-          <form id="resultsForm"
-            th:action="@{|/tournament/sendResults/${tournament.id}/${userMatch.id}/${userTeam.id}|}" class="resultsForm"
-            method="POST">
+    <div id="chat" class="chat col-md-6">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 th:text="${tournament.name}">Partido y equipos</h5>
 
-            <input type="number" class="matchResult" name="resultadoTeam1" placeholder="Nº" min="0" required />
-            <span>-</span>
-            <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" placeholder="Nº" min="0"
-              required />
-            <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
-
-          </form>
-        </div>
-      </div> -->
+      </div>
+      
       <!--RECEPCIÓN DE MENSAJES-->
-      <!-- <div id="mensajes" class="messages"></div> -->
+      <div id="mensajes" class="messages"></div>
+
+      <button th:id="${tournament.id}" class="tournamentButton" hidden="true"></button>
 
       <!--ENVÍO DE MENSAJES-->
-      <!-- <div class="input-group">
-        <form th:action="@{|/user/sendMsg/match/${userMatch.id}|}" class="formMessage" method="POST">
+      <div class="input-group">
+        <form th:if="${userInTournament}" th:action="@{|/user/sendMsg/${tournament.id}|}" class="formMessage" method="POST">
           <input type="text" id="messageInput" class="inputMessage" placeholder="Escribe tu mensaje..." />
-          <button id="sendButton" class="buttonMensaje" type="submit"></button>
+          <button id="sendButton" class="buttonMensaje" type="submit">Enviar</button>
         </form>
       </div>
-    </div> -->
-
-  </div>
-
-  <div id="myModal" class="modal">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <form class="formReport" method="post" th:action="@{|/user/reportMsg}">
-        <h3>Reportar mensaje</h3>
-        <textarea id="messageInputReport" class="form-control" placeholder="¿Que ha ocurrido?"></textarea>
-        <p></p>
-        <button id="sendButton" class="btn btn-primary" type="submit">Enviar</button>
-      </form>
     </div>
-
   </div>
+
 
   <th:block th:replace="fragments/footer.html :: footer" />
-  <script th:src="@{/js/ajax-message-match.js}"></script>
+  <script th:src="@{/js/ajax-message-tournament.js}"></script>
 </body>
 
 </html>
