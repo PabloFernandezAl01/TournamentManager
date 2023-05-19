@@ -392,7 +392,7 @@ public class RootController {
 			return new ArrayList<>();
 		}
 		List<Tournament> query = entityManager.createQuery(
-				"SELECT e.tournament FROM Tournament_Team e WHERE e.team.id = :teamId",
+				"SELECT e.tournament FROM TournamentTeam e WHERE e.team.id = :teamId",
 				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
 
 		for (Tournament m : query) {
