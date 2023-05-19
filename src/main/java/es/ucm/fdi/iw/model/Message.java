@@ -45,9 +45,6 @@ public class Message implements Transferable<Message.Transfer> {
 	private MessageTopic recipient;
 	private String text;
 
-	@ManyToOne
-	private Match match;
-
 	private String senderTeamName;
 	private boolean iamSender;
 
