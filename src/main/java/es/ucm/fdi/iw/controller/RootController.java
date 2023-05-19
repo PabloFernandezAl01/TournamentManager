@@ -317,6 +317,17 @@ public class RootController {
                 entityManager.persist(mt);
                 entityManager.persist(match);
             }
+
+        User u = (User) session.getAttribute("u");
+
+        // INSERTAR TOPICSIDS DE USUARIO
+		List<Tournament> tournaments = getAllUserTournaments(u);
+		List<Match> matches = getAllUserMatches(u);
+
+		String topics = String.join(",", getAllTopicIds(tournaments, matches));
+		session.setAttribute("topics", topics);
+		log.info("Topics for {} are {}", u.getUsername(), topics);
+
         } catch (Exception e) {
             log.info("EXXCEPCION: ", e);
         }
@@ -324,51 +335,50 @@ public class RootController {
         entityManager.flush();
     }
 
-    // private void createLeagueMatches(Tournament tournament, HttpSession session)
-    // {
-    // // Crear partidos
-    // List<Team> teams = new ArrayList<>();
-    // TypedQuery<Team> query = entityManager.createQuery(
-    // "SELECT e.team FROM Tournament_Team e WHERE e.tournament.id = :tournamentid",
-    // Team.class);
-    // teams = query.setParameter("tournamentid",
-    // tournament.getId()).getResultList();
+    private List<Tournament> getAllUserTournaments(User u) {
+		if (u.getTeam() == null) {
+			return new ArrayList<>();
+		}
+		List<Tournament> query = entityManager.createQuery(
+				"SELECT e.tournament FROM Tournament_Team e WHERE e.team.id = :teamId",
+				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
 
-    // int matchNumber = 1;
-    // int numRounds = teams.size() - 1;
+		for (Tournament m : query) {
+			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
+		}
+		return query;
+	}
 
-    // // Generar jornadas
-    // for (int round = 1; round <= numRounds; round++) {
-    // List<Match> roundMatches = new ArrayList<>();
+	private List<Match> getAllUserMatches(User u) {
 
-    // for (int i = 0; i < teams.size() / 2; i++) {
-    // int j = teams.size() - 1 - i;
+		if (u.getTeam() == null) {
+			return new ArrayList<>();
+		}
+		List<Match> query = entityManager.createQuery(
+				"SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId",
+				Match.class).setParameter("teamId", u.getTeam().getId()).getResultList();
 
-    // Match match = new Match();
-    // match.setRoundNumber(round);
-    // match.setMatchNumber(matchNumber);
-    // match.setTeam1(teams.get(i));
-    // match.setTeam2(teams.get(j));
-    // match.setTopicId(UserController.generateRandomBase64Token(6));
-    // match.setTournament(tournament);
+		for (Match m : query) {
+			log.info("My team is {}, and one of my matches is {}", u.getTeam().getId(), m.getId());
+		}
+		return query;
+	}
 
-    // roundMatches.add(match);
-    // matchNumber++;
-    // }
-
-    // // Rotar equipos
-    // Team lastTeam = teams.get(teams.size() - 1);
-    // teams.remove(teams.size() - 1);
-    // teams.add(1, lastTeam);
-
-    // // Guardar los matches de jornada
-    // for (Match match : roundMatches) {
-    // entityManager.persist(match);
-    // }
-    // }
-
-    // entityManager.flush();
-    // }
+	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
+		List<String> topicsId = new ArrayList<>();
+		for (Tournament tournament : tournaments) {
+			if (tournament.getMessageTopic() != null) {
+				log.info("my topicid tournament", tournament.getMessageTopic().getTopicId());
+				topicsId.add(tournament.getMessageTopic().getTopicId());
+			}
+		}
+		for (Match match : matches) {
+			if (match.getMessageTopic().getTopicId() != null) {
+				topicsId.add(match.getMessageTopic().getTopicId());
+			}
+		}
+		return topicsId;
+	}
 
     private boolean isUserCoach(HttpSession session) {
         User user = (User) session.getAttribute("u");

@@ -349,6 +349,7 @@ public class UserController {
 		List<Message> received = new ArrayList<>();
 		for(Message msg : match.getMessageTopic().getMessages()) {
 			msg.setIamSender(msg.getSender().getId() == user.getId());
+			log.info("MENSAJE RECIBIDO: "+ msg.getText() + " MESSAGE TOPIC: + " + msg.getMatch().getMessageTopic().getId()) ;
 			received.add(msg);
 		}
 

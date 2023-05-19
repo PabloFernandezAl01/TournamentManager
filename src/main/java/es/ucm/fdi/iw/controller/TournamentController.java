@@ -192,13 +192,13 @@ public class TournamentController {
                                     lastMatch.setWinner(lastMatch.getTeam2());
 
                                 }
-                            } 
+                            }
                             // LOS EQUIPOS NO ESTAN DE ACUERDO EN EL RESULTADO
                             else {
                                 // ENVIAR A ADMIN
                             }
                         }
-                    } else{
+                    } else {
                         isFinalResult = false;
                     }
                     if (lastMatch.getWinner() != null) {
@@ -395,7 +395,7 @@ public class TournamentController {
                             maxRound = ronda;
                         partidosEnRonda = partidosPorRonda.getOrDefault(ronda, new ArrayList<>());
                         partidosEnRonda.add(match);
-                        
+
                         partidosPorRonda.put(ronda, partidosEnRonda);
                     }
                 }
@@ -423,10 +423,22 @@ public class TournamentController {
 
             } else {
                 try {
+
+                    User u = (User) session.getAttribute("u");
+
+                    // INSERTAR TOPICSIDS DE USUARIO
+                    List<Tournament> tournaments = getAllUserTournaments(u);
+                    List<Match> matchestopics = getAllUserMatches(u);
+
+                    String topics = String.join(",", getAllTopicIds(tournaments, matchestopics));
+                    session.setAttribute("topics", topics);
+                    log.info("Topics for {} are {}", u.getUsername(), topics);
+
                     // Match al que mandar mensajes en el chat
                     model.addAttribute("userMatch", getUserMatchFromTournamentLeague(user, tournament, maxRound));
                     // team del usuario
-                    model.addAttribute("userTeam",getUserTeamFromMatch(user, getUserMatchFromTournamentLeague(user, tournament, maxRound)));
+                    model.addAttribute("userTeam",
+                            getUserTeamFromMatch(user, getUserMatchFromTournamentLeague(user, tournament, maxRound)));
                     List<Tournament_Team> teamsList = entityManager.createQuery(
                             "SELECT t FROM Tournament_Team t WHERE t.tournament.id = :tournamentid ORDER BY t.puntuacion DESC",
                             Tournament_Team.class)
@@ -482,7 +494,7 @@ public class TournamentController {
     }
 
     private Team getUserTeamFromMatch(User user, Match match) {
-        if(match == null)
+        if (match == null)
             return null;
         try {
             Team team = entityManager.createQuery(
@@ -550,7 +562,7 @@ public class TournamentController {
 
             MessageTopic mt = new MessageTopic();
             mt.setTopicId(UserController.generateRandomBase64Token(6));
-            
+
             match.setMessageTopic(mt);
 
             match.setRoundNumber(round);
@@ -558,7 +570,6 @@ public class TournamentController {
 
             match.setTeam1(winners.get(i));
             match.setTeam2(winners.get(i + 1));
-
 
             match.setTournament(tournament);
 
@@ -786,4 +797,49 @@ public class TournamentController {
         entityManager.flush();
         return ResponseEntity.ok(model);
     }
+
+    private List<Tournament> getAllUserTournaments(User u) {
+		if (u.getTeam() == null) {
+			return new ArrayList<>();
+		}
+		List<Tournament> query = entityManager.createQuery(
+				"SELECT e.tournament FROM Tournament_Team e WHERE e.team.id = :teamId",
+				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
+
+		for (Tournament m : query) {
+			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
+		}
+		return query;
+	}
+
+	private List<Match> getAllUserMatches(User u) {
+
+		if (u.getTeam() == null) {
+			return new ArrayList<>();
+		}
+		List<Match> query = entityManager.createQuery(
+				"SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId",
+				Match.class).setParameter("teamId", u.getTeam().getId()).getResultList();
+
+		for (Match m : query) {
+			log.info("My team is {}, and one of my matches is {}", u.getTeam().getId(), m.getId());
+		}
+		return query;
+	}
+
+	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
+		List<String> topicsId = new ArrayList<>();
+		for (Tournament tournament : tournaments) {
+			if (tournament.getMessageTopic() != null) {
+				log.info("my topicid tournament", tournament.getMessageTopic().getTopicId());
+				topicsId.add(tournament.getMessageTopic().getTopicId());
+			}
+		}
+		for (Match match : matches) {
+			if (match.getMessageTopic().getTopicId() != null) {
+				topicsId.add(match.getMessageTopic().getTopicId());
+			}
+		}
+		return topicsId;
+	}
 }
