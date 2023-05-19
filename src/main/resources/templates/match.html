@@ -82,7 +82,7 @@
                   <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
             </form>
             <span th:if="${match.resultTeam2 != null}" th:text="${match.resultTeam2}"></span>
-            <span th:if="${match.resultTeam1 == null && (coachingTeam == null || coachingTeam != match.team2)}" >Solo el entrenador del equipo puede enviar el resultado</span>
+            <span th:if="${match.resultTeam2 == null && (coachingTeam == null || coachingTeam != match.team2)}" >Solo el entrenador del equipo puede enviar el resultado</span>
         </td>
         <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null  && match.winner != null}" th:classappend="${match.winner == match.team2} ? 'winner' : 'loser'" th:text="${match.winner == match.team2} ? 'GANADOR' : 'PERDEDOR'"></td>
         

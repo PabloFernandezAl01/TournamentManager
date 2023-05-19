@@ -239,7 +239,7 @@ public class TournamentController {
                         .setParameter("tournamentid", tournamentId)
                         .getResultList();
 
-                model.addAttribute("teams", teamsList);
+                model.addAttribute("teamsList", teamsList);
 
                 return "tableBracket";
             }
