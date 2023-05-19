@@ -215,7 +215,7 @@ public class TournamentController {
                     boolean allMatchesFinished = true;
                     for (Match partido : matches) {
                         if (partido.getWinner() == null)
-                        allMatchesFinished = false;
+                            allMatchesFinished = false;
                         else
                             winners.add(partido.getWinner());
                     }
@@ -363,13 +363,13 @@ public class TournamentController {
 
             User u = (User) session.getAttribute("u");
 
-                    // INSERTAR TOPICSIDS DE USUARIO
-                    List<Tournament> tournaments = getAllUserTournaments(u);
-                    List<Match> matchestopics = getAllUserMatches(u);
+            // INSERTAR TOPICSIDS DE USUARIO
+            List<Tournament> tournaments = getAllUserTournaments(u);
+            List<Match> matchestopics = getAllUserMatches(u);
 
-                    String topics = String.join(",", getAllTopicIds(tournaments, matchestopics));
-                    session.setAttribute("topics", topics);
-                    log.info("Topics for {} are {}", u.getUsername(), topics);
+            String topics = String.join(",", getAllTopicIds(tournaments, matchestopics));
+            session.setAttribute("topics", topics);
+            log.info("Topics for {} are {}", u.getUsername(), topics);
 
             if (tournament.getType() == 0) {
                 if (isUserCoach(session, tournament))
@@ -750,7 +750,7 @@ public class TournamentController {
 			return new ArrayList<>();
 		}
 		List<Tournament> query = entityManager.createQuery(
-				"SELECT e.tournament FROM Tournament_Team e WHERE e.team.id = :teamId",
+				"SELECT e.tournament FROM TournamentTeam e WHERE e.team.id = :teamId",
 				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
 
 		for (Tournament m : query) {
