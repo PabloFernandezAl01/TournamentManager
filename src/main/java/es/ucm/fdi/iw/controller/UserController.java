@@ -349,6 +349,49 @@ public class UserController {
 		return "{\"result\": \"message sent.\"}";
 	}
 
+	@PostMapping("sendMsg/match/{userMatchId}")
+	@Transactional
+	@ResponseBody
+	public String sendMessageMatch(@PathVariable long userMatchId, @RequestBody JsonNode node, Model model, HttpSession session) throws JsonProcessingException {
+
+		// Obtiene el contenido del mensaje
+		String text = node.get("message").asText();
+		if (text == "") return "{\"result\": \"message not sent, empty string received.\"}";
+
+		// Lo envia al log
+		log.info("Mensaje: " + text);
+		
+		// Obtiene el match y el usuario de a sesion
+		Match match = entityManager.find(Match.class, userMatchId);
+		User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
+		
+		// Obtiene el equipo del usuario a partir del Match
+		Team team = user.getTeam();
+
+		// Crea el mensaje
+		Message m = new Message();
+		m.setRecipient(match.getMessageTopic());
+		m.setSender(user);
+		m.setDateSent(LocalDateTime.now());
+		m.setText(text);
+		m.setIamSender(true);
+		m.setSenderTeamName(team.getName());
+
+		entityManager.persist(m);
+
+		// Convierte el mensaje en JSON
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(m.toTransfer());
+
+		log.info("Sending a message to {} with contents '{}'", match.getMessageTopic().getTopicId(), json);
+																					
+		// messagingTemplate.convertAndSend("/user/" + recipient.getUsername() + "/queue/updates", json);
+		messagingTemplate.convertAndSend("/topic/" + match.getMessageTopic().getTopicId(), json);
+		entityManager.flush(); // To get Id before commit
+
+		return "{\"result\": \"message sent.\"}";
+	}
+
 	/**
 	 * Returns JSON with all received messages
 	 */
