@@ -22,12 +22,12 @@ function renderMsg(msg) {
             </div>
           `;
 
-  return `
-          <div class="my_message">
-              <span class="date">${msg.sent}</span>
-              ${msg.from} (${msg.fromTeam}): <span class="white"> ${msg.text} </span>
-          </div>
-        `;
+    return `
+            <div class="my_message">
+                <span class="date">${msg.sent}</span>
+                ${msg.from} (${msg.fromTeam}): <span class="white"> ${msg.text} </span>
+            </div>
+          `;
 }
 
 config.currentChat = "";

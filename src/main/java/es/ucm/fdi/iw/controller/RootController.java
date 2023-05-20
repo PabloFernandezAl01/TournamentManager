@@ -5,6 +5,7 @@ import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Match;
 import es.ucm.fdi.iw.model.MessageTopic;
+import es.ucm.fdi.iw.model.TeamMember;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,6 +154,7 @@ public class RootController {
     }
 
     @GetMapping("/record")
+    @Transactional
     public String record(Model model, HttpSession session) {
         model.addAttribute("record", "active");
 
@@ -345,6 +347,10 @@ public class RootController {
                 "SELECT e.team FROM TournamentTeam e WHERE e.tournament.id = :tournamentid",
                 Team.class);
 
+                
+        User u = (User) session.getAttribute("u");
+        String currentTopics = (String) session.getAttribute("topics");
+
         teams = query.setParameter("tournamentid", tournament.getId()).getResultList();
         try {
             // Hacerlo random en el futuro, en lugar de por orden de union
@@ -366,20 +372,14 @@ public class RootController {
 
                 matchNumber++;
 
+                if(u.hasRole(User.Role.ADMIN) || isUserInMatch(match, u)) {
+                    currentTopics = currentTopics + "," + mt.getTopicId();
+                    session.setAttribute("topics", currentTopics);
+                }
+
                 entityManager.persist(mt);
                 entityManager.persist(match);
             }
-
-        User u = (User) session.getAttribute("u");
-
-        // INSERTAR TOPICSIDS DE USUARIO
-		List<Tournament> tournaments = getAllUserTournaments(u);
-		List<Match> matches = getAllUserMatches(u);
-
-		String topics = String.join(",", getAllTopicIds(tournaments, matches));
-		session.setAttribute("topics", topics);
-		log.info("Topics for {} are {}", u.getUsername(), topics);
-
         } catch (Exception e) {
             log.info("EXXCEPCION: ", e);
         }
@@ -387,48 +387,18 @@ public class RootController {
         entityManager.flush();
     }
 
-    private List<Tournament> getAllUserTournaments(User u) {
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Tournament> query = entityManager.createQuery(
-				"SELECT e.tournament FROM TournamentTeam e WHERE e.team.id = :teamId",
-				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Tournament m : query) {
-			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<Match> getAllUserMatches(User u) {
-
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Match> query = entityManager.createQuery(
-				"SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId",
-				Match.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Match m : query) {
-			log.info("My team is {}, and one of my matches is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
-		List<String> topicsId = new ArrayList<>();
-		for (Tournament tournament : tournaments) {
-			if (tournament.getMessageTopic() != null) {
-				log.info("my topicid tournament", tournament.getMessageTopic().getTopicId());
-				topicsId.add(tournament.getMessageTopic().getTopicId());
-			}
-		}
-		for (Match match : matches) {
-			if (match.getMessageTopic().getTopicId() != null) {
-				topicsId.add(match.getMessageTopic().getTopicId());
-			}
-		}
-		return topicsId;
-	}
+    private boolean isUserInMatch(Match m, User user){
+        try{
+            List<TeamMember> tm = entityManager.createQuery("select t from TeamMember t where (t.team.id = :team1Id or t.team.id = :team2Id) and t.user.id = :userId",TeamMember.class)
+            .setParameter("team1Id", m.getTeam1().getId())
+            .setParameter("team2Id", m.getTeam2().getId())
+            .setParameter("userId", user.getId())
+            .getResultList();
+            if(tm.isEmpty())
+                return false;
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+    }
 }
