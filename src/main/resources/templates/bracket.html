@@ -53,6 +53,7 @@
           <div th:if="${match.team2 == null}" class="team">-</div>
 
           <a
+            id="verPartidoButton"
             class="match-button"
             th:href="@{|/tournament/${tournament.id}/match/${match.id}}"
             >Ver partido</a

@@ -21,7 +21,7 @@
                 <div class="navbar-brand nav-menu">
                     <a th:href="@{/create}"><div  class="nav-item nav-link text-light" th:classappend="${create}">Crear</div></a>
                     <a th:href="@{/join}"><div  class="nav-item nav-link text-light" th:classappend="${join}">Unirse</div></a>
-                    <a th:href="@{/ongoing}"><div  class="nav-item nav-link text-light" th:classappend="${onGoing}">Torneos</div></a>
+                    <a id="ongoingButton" th:href="@{/ongoing}"><div  class="nav-item nav-link text-light" th:classappend="${onGoing}">Torneos</div></a>
                     <a th:href="@{/record}"><div  class="nav-item nav-link text-light" th:classappend="${record}">Historial</div></a>
                     <a th:if="${session.u}" th:href="@{/user/{id}/teams(id=${session.u.id})}"><div  class="nav-item nav-link text-light" th:classappend="${teams}">Equipos</div></a>
                 </div>

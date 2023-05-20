@@ -7,6 +7,9 @@
     INSERT INTO Team (id, name)
     VALUES (2, 'Segundo Equipo');
     
+    INSERT INTO Team (id, name)
+    VALUES (3, 'Equipo Test');
+
     -- Usuarios
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
@@ -35,6 +38,9 @@
 
     INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
     VALUES (9, 0, TRUE, 'User', '9', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'USER', 'User9', null);
+
+    INSERT INTO IWUSER (id, coins, enabled, first_name, last_name, password, reports, roles, username, team_id)
+    VALUES (10, 0, TRUE, 'User', 'Test', '{bcrypt}$2a$10$2BpNTbrsarbHjNsUWgzfNubJqBRf.0Vz9924nRSHBqlbPKerkgX.W', 0, 'ADMIN, USER', 'UserTest', 3);
 
     -- TEAM MEMBERS
         -- TEAM 1
@@ -65,6 +71,10 @@
         INSERT INTO Team_Member (id, is_coach, team_id, user_id)
         VALUES (8, 0, 2, 8);  
 
+        -- TEAM TEST
+
+        INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+        VALUES (9, 1, 3, 10);  
 
     -- MESSAGE TOPICS
 
