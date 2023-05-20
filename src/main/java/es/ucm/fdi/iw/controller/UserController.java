@@ -412,6 +412,43 @@ public class UserController {
         return "teams";
     }
 
+	@PostMapping("{id}/addPlayer/{teamId}")
+	@Transactional
+	public RedirectView addPlayerToTeam(@PathVariable long id, @PathVariable long teamId, HttpServletRequest request, Model model) throws Exception {
+
+		// Obtiene el Team a partir de su id como parametro
+		Team t = entityManager.find(Team.class, teamId);
+
+		// Nombre del jugador recogido del formulario
+		String username = request.getParameter("name");
+
+		// Consulta para obtener el usuario por su username
+		User u = null;
+		try {
+			u = entityManager.createNamedQuery("UserByUsername", User.class)
+								   .setParameter("username", username).getSingleResult();
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+
+		// Se crea un nuevo miembro de equipo
+		TeamMember member = new TeamMember();
+
+		/*
+		 * Se dan valor a los atributos del member
+		 * - IsCoach: No es coach porque se estan añadiendo jugadores
+		 * - Team: El team del coach
+		 * - User: El user especificado con el nombre
+		 */
+		member.setIsCoach(false);
+		member.setTeam(t);
+		member.setUser(u);
+
+		entityManager.persist(member);
+
+		return new RedirectView("/user/{id}/teams");
+	}
+
 	/*
      * Devuelve una lista con los equipos a los que pertence el usuario
      */
@@ -447,6 +484,7 @@ public class UserController {
         return teamsData;
 
     }
+	
 	private List<Match> getAllMatches(User user){
 		try{
 			List<Team> userTeams= new ArrayList<>();

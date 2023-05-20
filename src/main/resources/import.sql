@@ -91,7 +91,7 @@ WHERE ID = 7;
     VALUES (34, 0, 20, 5);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (35, 0, 20, 6);  
+    VALUES (35, 0, 21, 6);  
 
     -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
     -- VALUES (30, 1, 20, 1);  

@@ -82,13 +82,22 @@
                             </div>
 
                             <!-- Invitacion de usuarios -->
-                            <div class="container mt-4 center" th:if="${!team.isFull()}">
-                                <form>
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control cuadro" id="nombre" placeholder="Nombre de usuario">
-                                    </div>
-                                    <button id="invite-btn" type="submit" class="btn btn-primary">Invitar</button>
+                            <div th:if="${!team.isFull()}" class="container mt-4 center">
+
+                                <form method="POST" th:action="@{|/user/${user.id}/addPlayer/${team.t.id}|}">
+                                    <!-- Manejador de error en caso de fallo al añadir al jugador -->
+                                    <p th:if="${#request.getQueryString() == 'error'}" class="error">Error al crear el equipo</p>
+
+                                    <!-- Formulario para el nombre del usuario a añadir -->
+                                    <p class="mb-3">
+                                        <input type="text" id="name" name="name" class="form-control cuadro" 
+                                                        placeholder="Nombre de usuario" required="required">
+                                    </p>
+                                    <button type="submit" class="btn btn-primary">Añadir</button>
                                 </form>
+
+                                <div class="text-center" th:if="${team.isFull()}">Equipo completo</div>
+
                             </div>
                             
                             <!-- Lista de entrenadores -->
@@ -108,16 +117,6 @@
                 </div>
             </div>
 
-            <!-- Solicitudes de union de equipos -->
-            <div class="container grid">
-                <div class="teams">
-                    <h2 class="mt-5 text-center">Solicitudes de unión</h2>
-                    <div class="container center">
-                        
-                    </div>
-                </div>
-            </div>
-            
         </div>
  
     </main>
@@ -127,9 +126,6 @@
 
     <!-- Comportamiento del modal (crear equipo) -->
     <script th:src="@{/js/modal-controller.js}"></script>
-
-    <!-- Envio de invitaciones de los jugadores -->
-    <script th:src="@{/js/invite-player.js}"></script>
 
 </body>
 
