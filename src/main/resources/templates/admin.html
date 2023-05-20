@@ -16,13 +16,48 @@
 
     <main class="flex-shrink-0">
       <div class="container">
-        <h1 class="text-center page-title">ADMINISTRACIÓN</h1>
-        <h2 class="mt-3 text-center">
-          No hay nada por aquí, vuelve más tarde...
-        </h2>
-        <a class="btn btn-primary" href="/admin/adminUsers">
-          Gestionar Usuarios</a
-        >
+        <h1 class="text-center page-title">Gestión de usuarios</h1>
+        <h2 class="mt-3 text-center">LISTA DE USUARIOS</h2>
+        <ul class="tournament-list">
+          <!-- Se recorre la lista con la información de los usuarios -->
+          <li th:each="user : ${users}">
+            <div class="adminUsers-info">
+              <div>
+                <span class="username" th:text="${user.username}"></span>
+                <span class="report-count">Número de reportes:</span>
+                <span class="report-number" th:text="${user.reports}"></span>
+                <div class="button-row mt-2">
+                    <form
+                      th:if="${user.enabled}"
+                      th:action="@{/admin/adminUsers/{userId}(userId=${user.id})}"
+                      method="post"
+                    >
+                      <button class="btn-disable" type="submit">
+                        Deshabilitar
+                      </button>
+                    </form>
+                    <form
+                      th:unless="${user.enabled}"
+                      th:action="@{/admin/adminUsers/{userId}(userId=${user.id})}"
+                      method="post"
+                    >
+                      <button class="btn-enable" type="submit">Habilitar</button>
+                    </form>
+                    <a
+                      class="btn-view-profile"
+                      th:href="@{/user/{id}(id=${user.id})}"
+                      >Ver Perfil</a
+                    >
+                    <a
+                      class="btn-view-profile"
+                      th:href="@{/admin/adminMessages/{userId}(userId=${user.id})}"
+                      >Ver Mensajes</a
+                    >
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
     </main>
 

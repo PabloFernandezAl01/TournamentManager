@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.view.RedirectView;
 
+import es.ucm.fdi.iw.model.Message;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.User.Role;
 
@@ -34,23 +35,19 @@ public class AdminController {
     
 
 	@GetMapping("/")
-    public String index(Model model) {
-        return "admin";
-    }
-
-    @GetMapping("/adminUsers")
     @Transactional
-    public String adminUsers(Model model, HttpSession session) {
+    public String index(HttpSession session,Model model) {
         log.info("ESTAMOS EN ADMINUSERS");
 
         // Obtiene la informacion clave de los torneos
         List<User> users = getUsers(session);
 
         // Añade los torneos al modelo
-        model.addAttribute("Users", users);
+        model.addAttribute("users", users);
         
-        return "adminUsers";
+        return "admin";
     }
+
 
     @PostMapping("/adminUsers/{userId}")
     @Transactional
@@ -68,7 +65,19 @@ public class AdminController {
 
         entityManager.persist(user);
 
-        return new RedirectView("/admin/adminUsers");
+        return new RedirectView("/admin/");
+    }
+
+    @GetMapping("/adminMessages/{userId}")
+    @Transactional
+    public String adminMessages(Model model, @PathVariable long userId) {
+
+        User user = entityManager.find(User.class, userId);
+
+        model.addAttribute("messages", getMessages(user));
+        model.addAttribute("username", user.getUsername());
+        
+        return "admin_messages";
     }
 
     @Autowired
@@ -95,6 +104,21 @@ public class AdminController {
         }
 
         return usersFinal;
+    }
+
+    private List<Message> getMessages(User u) {
+
+        List<Message> messages = new ArrayList<>();
+
+        try {
+            messages = entityManager.createQuery("SELECT m FROM Message m WHERE m.sender.id = :userId", Message.class)
+            .setParameter("userId", u.getId())
+            .getResultList();
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
+
+        return messages;
     }
 
 }
