@@ -24,7 +24,7 @@ function fn() {
         // executable: '/usr/bin/chromium-browser',
         executable: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         //executable: "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-        showDriverLog: true
+        showDriverLog: true,
     })
 
     if (env == 'dev') {
