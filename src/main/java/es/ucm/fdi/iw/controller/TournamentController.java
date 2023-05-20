@@ -183,7 +183,9 @@ public class TournamentController {
             log.info("MaxRound: " + maxRound);
              
             // SI ES EL ULTIMO PARTIDO
-            if (maxRound == tournament.getRounds() - 1) {
+            if ((tournament.getType() == 0 && maxRound == tournament.getRounds() - 1) 
+                ||(tournament.getType() == 1 && maxRound == tournament.getRounds())) {
+                    
                 if (lastMatch.getWinner() != null) {
                     tournament.setStatus(TournamentStatus.FINISHED);
                 }
@@ -371,12 +373,19 @@ public class TournamentController {
                 }
 
                 Match match = new Match();
+
+                MessageTopic mt = new MessageTopic();
+                mt.setTopicId(UserController.generateRandomBase64Token(6));
+
+                match.setMessageTopic(mt);
+
                 match.setRoundNumber(nextRound);
                 match.setMatchNumber(matchNumber);
                 match.setTeam1(teams.get(i));
                 match.setTeam2(teams.get(j));
                 match.setTournament(tournament);
 
+                entityManager.persist(mt);
                 entityManager.persist(match);
 
                 matchNumber++;
@@ -600,7 +609,7 @@ public class TournamentController {
 			}
 		}
 		for (Match match : matches) {
-			if (match.getMessageTopic().getTopicId() != null) {
+			if (match.getMessageTopic() != null) {
 				topicsId.add(match.getMessageTopic().getTopicId());
 			}
 		}

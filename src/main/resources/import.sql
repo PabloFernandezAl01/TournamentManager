@@ -41,13 +41,13 @@ WHERE ID = 7;
 -- Tournaments
 
     INSERT INTO Tournament (id, date, description, entry_price, game, max_teams, name, prize_pool, rounds, starting_hour, status, type, message_topic_id, winner_id)
-    VALUES (10, '2023-06-27', 'Torneo de Valorant', 3.0, 'Valorant', 8, 'VCT', 2.0, 3, '12:00', 1, 0, 1975, null);   
+    VALUES (10, '2023-04-27', 'Torneo de Valorant', 3.0, 'Valorant', 4, 'VCT', 2.0, 3, '12:00', 0, 1, 1975, null);   
 
     INSERT INTO Tournament (id, date, description, entry_price, game, max_teams, name, prize_pool, rounds, starting_hour, status, type, message_topic_id, winner_id)
     VALUES (11, '2023-04-28', 'Torneo de Apex', 3.0, 'Apex', 4, 'APX', 2.0, 3, '13:00', 1, 0, 1976, null);
 
     INSERT INTO Tournament (id, date, description, entry_price, game, max_teams, name, prize_pool, rounds, starting_hour, status, type, message_topic_id, winner_id)
-    VALUES (12, '2023-04-29', 'Torneo de COD', 3.0, 'COD', 4, 'COD', 2.0, 3, '14:00', 2, 0, 1977, null);
+    VALUES (12, '2023-04-29', 'Torneo de COD', 3.0, 'COD', 2, 'COD', 2.0, 1, '14:00', 2, 0, 1977, 22);
 
 
 -- Teams
@@ -128,6 +128,19 @@ WHERE ID = 7;
 
     INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
     VALUES (43, 0, 0, 0, 0, 23, 10);
+
+
+
+
+    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    VALUES (52, 0, 0, 0, 0, 22, 12);
+
+    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    VALUES (53, 0, 0, 0, 0, 23, 12);
+
+    INSERT INTO MATCH (id, draw, match_number, result_team1, result_team2, round_number, message_topic_id, team1_id, team2_id, tournament_id, winner_id)
+    VALUES (124, false, 1, '2-1', '2-1', 1, null, 22, 23, 12, 22)
+
 
     INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
     VALUES (44, null, null, null, null, 24, 11);
