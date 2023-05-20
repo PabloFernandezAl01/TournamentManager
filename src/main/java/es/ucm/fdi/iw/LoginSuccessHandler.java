@@ -90,9 +90,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 		String nextUrl = u.hasRole(User.Role.ADMIN) ? "admin/" : "user/" + u.getId();
 
 		// ----------- Topics Ids ------------
-
-			// Se obtienen los topics ids del usuario
-			String topics = String.join(",", getUserTopicsIds(u));
+			String topics;
+			if(u.hasRole(User.Role.ADMIN)) {
+				topics = String.join(",", getAllTopics());
+			}
+			else {
+				// Se obtienen los topics ids del usuario
+				topics = String.join(",", getUserTopicsIds(u));
+			}
 
 			// Se añaden a la sesion
 			session.setAttribute("topics", topics);
@@ -128,6 +133,36 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 			response.addHeader(HttpHeaders.SET_COOKIE,
 					String.format("%s; %s", header, "SameSite=Strict"));
 		}
+	}
+
+	private List<String> getAllTopics() {
+		List<String> topicsId = new ArrayList<>();
+
+		List<Tournament> tournaments = entityManager.createQuery("select t from Tournament t",Tournament.class)
+		.getResultList();
+
+		List<Match> matches = entityManager.createQuery("select m from Match m",Match.class)
+		.getResultList();
+
+		for (Tournament t : tournaments) {
+			if (t.getMessageTopic() != null) {
+
+				String topic = t.getMessageTopic().getTopicId();
+
+				topicsId.add(topic);
+			}
+		}
+
+		for (Match m : matches) {
+			if (m.getMessageTopic() != null) {
+
+				String topic = m.getMessageTopic().getTopicId();
+
+				topicsId.add(topic);
+			}
+		}
+
+		return topicsId;
 	}
 
 	private List<String> getUserTopicsIds(User u) {
