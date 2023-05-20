@@ -65,3 +65,75 @@ td {
   color: white;
   text-align: center;
 }
+.margin{
+  margin-top: 2em;
+}
+
+.chat {
+  margin-bottom: 5em;
+  background-color: rgb(33, 37, 41, 1);
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.messages {
+  height: 350px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: rgba(69, 76, 82, 0.9)
+}
+.formMessage {
+  width: 100%;
+}
+.input-group {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.formMessage {
+  flex: 1;
+  display: flex;
+}
+
+.inputMessage {
+  flex: 1;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+#sendButton {
+  border-radius: 5px;
+  width: 100px;
+}
+
+#messageInput {
+  flex: 1;
+  border-radius: 5px;
+}
+
+#sendButton {
+  border-radius: 5px;
+  margin-left: 10px;
+}
+.my_message {
+  color: lightskyblue;
+}
+
+.others_message {
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  transition: 0.5s ease;
+}
+
+.others_message:hover {
+  color: rgb(218, 107, 107);
+}
+
+.date {
+  margin-right: 10px;
+  color: rgb(138, 138, 138);
+}

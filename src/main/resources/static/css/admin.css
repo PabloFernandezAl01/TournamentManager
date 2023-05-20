@@ -1,3 +1,114 @@
 .body {
-    margin-top: 50px;
+  margin-top: 50px;
+}
+
+.container {
+  margin-top: 40px;
+}
+
+.page-title {
+  text-align: center;
+  color: white;
+}
+
+.tournament-list {
+  list-style: none;
+  margin-top: 40px;
+  margin-bottom: 10em;
+  padding: 0;
+  background-color: rgba(33, 37, 41, 0.9);
+  border-radius: 5px;
+}
+
+.tournament-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+
+.tournament-info {
+  display: flex;
+  align-items: center;
+}
+
+.btn-disable,
+.btn-enable {
+  padding: 5px 10px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-disable {
+  background-color: #ff6666;
+  color: white;
+}
+
+.btn-enable {
+  background-color: #66cc66;
+  color: white;
+}
+
+.btn-disable:hover,
+.btn-enable:hover {
+  background-color: #ff4d4d;
+}
+
+.btn-enable:hover {
+  background-color: #59b359;
+}
+
+.btn-disable:focus,
+.btn-enable:focus {
+  outline: none;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.username {
+  font-weight: bold;
+  margin-right: 10px;
+  color: white;
+}
+
+.report-count,
+.report-number {
+  color: white;
+}
+
+.report-count {
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+.report-number {
+  margin-right: 10px;
+}
+
+.btn-view-profile {
+  padding: 5px 10px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  border-radius: 30px;
+  background-color: #3366cc;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-view-profile:hover {
+  background-color: #3355bb;
+}
+
+.btn-view-profile:focus {
+  outline: none;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }

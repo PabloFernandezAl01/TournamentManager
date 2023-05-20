@@ -25,7 +25,8 @@ import lombok.Setter;
 @NamedQueries({
     @NamedQuery(name = "User.byUsername", query = "SELECT u FROM User u "+ "WHERE u.username = :username AND u.enabled = TRUE"),
     @NamedQuery(name = "User.hasUsername", query = "SELECT COUNT(u) " + "FROM User u " + "WHERE u.username = :username"),
-    @NamedQuery(name = "UserByUsername", query = "SELECT u FROM User u WHERE u.username = :username")
+    @NamedQuery(name = "UserByUsername", query = "SELECT u FROM User u WHERE u.username = :username"),
+    @NamedQuery(name = "User.allUsers", query = "SELECT u " + "FROM User u")
 })
 
 // Util para personalizar la tabla (Nombre, Esquema, Nombre de secuencia, etc). 

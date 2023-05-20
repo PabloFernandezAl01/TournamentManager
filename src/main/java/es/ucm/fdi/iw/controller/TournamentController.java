@@ -1,11 +1,13 @@
 package es.ucm.fdi.iw.controller;
 import es.ucm.fdi.iw.model.Tournament.TournamentStatus;
+import es.ucm.fdi.iw.model.User.Role;
 import es.ucm.fdi.iw.model.TournamentTeam;
 import es.ucm.fdi.iw.model.Tournament;
 import es.ucm.fdi.iw.model.MessageTopic;
 import es.ucm.fdi.iw.model.Match;
 import es.ucm.fdi.iw.model.User;
 import es.ucm.fdi.iw.model.Team;
+import es.ucm.fdi.iw.model.TeamMember;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -45,7 +47,7 @@ public class TournamentController {
 
     @PostMapping("/joinTournament")
     @Transactional
-    public RedirectView joinTournament(@RequestParam("tournamentId") long tournamentId, @RequestParam("userId") long userId) {
+    public RedirectView joinTournament(HttpSession session, @RequestParam("tournamentId") long tournamentId, @RequestParam("userId") long userId) {
 
         Tournament tournamentToJoin = entityManager.find(Tournament.class, tournamentId);
 
@@ -73,6 +75,13 @@ public class TournamentController {
         // Se persisten el TournamentTeam
         entityManager.persist(tournamentTeam);
 
+        User user = (User) session.getAttribute("u");
+        if(!user.hasRole(Role.ADMIN)){
+            String currentTopics = (String) session.getAttribute("topics");
+            currentTopics = currentTopics + "," + tournamentToJoin.getMessageTopic().getTopicId();
+            session.setAttribute("topics", currentTopics);
+        }
+
         return new RedirectView("/join");
     }
 
@@ -93,7 +102,9 @@ public class TournamentController {
         model.addAttribute("tournament", t);
         model.addAttribute("match", m);
 
-
+        User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
+        model.addAttribute("isUserInMatch", isUserInMatch(m,user));
+        
         model.addAttribute("coachingTeam", userCoachingTeam(session) );
 
         return "match";
@@ -183,9 +194,12 @@ public class TournamentController {
             log.info("MaxRound: " + maxRound);
              
             // SI ES EL ULTIMO PARTIDO
-            if (maxRound == tournament.getRounds() - 1) {
-                if (lastMatch.getWinner() != null) {
+            if ((tournament.getType() == 0 && maxRound == tournament.getRounds() - 1) 
+                ||(tournament.getType() == 1 && maxRound == tournament.getRounds())) {
+
+                if (lastMatch.getWinner() != null && tournament.getStatus() != TournamentStatus.FINISHED) {
                     tournament.setStatus(TournamentStatus.FINISHED);
+                    entityManager.persist(tournament);
                 }
             }
 
@@ -204,10 +218,10 @@ public class TournamentController {
                 // SI LA JORNADA ANTERIOR HA ACABADO CREAMOS NUEVOS PARTIDOS
                 if (allMatchesFinished) {
                     if (tournament.getType() == 0) {
-                        createMatches(tournament, maxRound + 1, winners);
+                        createMatches(session, tournament, maxRound + 1, winners);
                     }
                     else {
-                        createMatchesLeague(tournament, maxRound);
+                        createMatchesLeague(session, tournament, maxRound);
                     }
 
                     matches = entityManager.createQuery(
@@ -223,24 +237,15 @@ public class TournamentController {
            
             model.addAttribute("tournament", tournament);
             model.addAttribute("partidosPorRonda", partidosPorRonda);
-            model.addAttribute("lastRound", maxRound);
+            if(maxRound == tournament.getRounds()-1)
+                model.addAttribute("lastRound", maxRound);
+            else 
+                model.addAttribute("lastRound", -1);
             model.addAttribute("lastMatch", lastMatch);
-            model.addAttribute("tournamentTopic", tournament.getMessageTopic().getTopicId());
             model.addAttribute("userInTournament", isUserInTournament(tournament, session));
-
-            User u = (User) session.getAttribute("u");
-
-            // INSERTAR TOPICSIDS DE USUARIO
-            List<Tournament> tournaments = getAllUserTournaments(u);
-            List<Match> matchestopics = getAllUserMatches(u);
-
-            String topics = String.join(",", getAllTopicIds(tournaments, matchestopics));
-            session.setAttribute("topics", topics);
-            log.info("Topics for {} are {}", u.getUsername(), topics);
 
             if (tournament.getType() == 0) {
                 return "bracket";
-
             } else {
 
                 List<TournamentTeam> teamsList = entityManager.createQuery(
@@ -283,7 +288,7 @@ public class TournamentController {
 
     @PostMapping("/createTournament")
     @Transactional
-    public RedirectView createTournament(@ModelAttribute Tournament tournament,
+    public RedirectView createTournament(HttpSession session, @ModelAttribute Tournament tournament,
             Model model) throws Exception {
 
         if (LocalDateTime.now()
@@ -311,11 +316,21 @@ public class TournamentController {
         entityManager.persist(mt);
         entityManager.persist(tournament);
 
+        User user = (User) session.getAttribute("u");
+        if(user.hasRole(Role.ADMIN)){
+            String currentTopics = (String) session.getAttribute("topics");
+            currentTopics = currentTopics + "," + mt.getTopicId();
+            session.setAttribute("topics", currentTopics);
+        }
+
+
         return new RedirectView("/join");
     }
 
-    private void createMatches(Tournament tournament, int round, List<Team> winners) {
+    private void createMatches(HttpSession session,Tournament tournament, int round, List<Team> winners) {
 
+        User u = (User) session.getAttribute("u");
+        String currentTopics = (String) session.getAttribute("topics");
         // Hacerlo random en el futuro, en lugar de por orden de union
         int matchNumber = 1;
         for (int i = 0; i < winners.size(); i += 2) {
@@ -336,13 +351,33 @@ public class TournamentController {
 
             matchNumber++;
 
+            if(u.hasRole(User.Role.ADMIN) || isUserInMatch(match, u)) {
+                currentTopics = currentTopics + "," + mt.getTopicId();
+                session.setAttribute("topics", currentTopics);
+            }
+
             entityManager.persist(mt);
             entityManager.persist(match);
         }
 
     }
 
-    private void createMatchesLeague(Tournament tournament, int currentRound) {
+    private boolean isUserInMatch(Match m, User user){
+        try{
+            List<TeamMember> tm = entityManager.createQuery("select t from TeamMember t where (t.team.id = :team1Id or t.team.id = :team2Id) and t.user.id = :userId",TeamMember.class)
+            .setParameter("team1Id", m.getTeam1().getId())
+            .setParameter("team2Id", m.getTeam2().getId())
+            .setParameter("userId", user.getId())
+            .getResultList();
+            if(tm.isEmpty())
+                return false;
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+    }
+
+    private void createMatchesLeague(HttpSession session, Tournament tournament, int currentRound) {
         List<Match> currentRoundMatches = getMatchesByRound(tournament, currentRound);
         List<Team> teams = getTeamsForTournament(tournament);
 
@@ -354,6 +389,9 @@ public class TournamentController {
 
         int nextRound = currentRound + 1;
         int matchNumber = 1;
+
+        User u = (User) session.getAttribute("u");
+        String currentTopics = (String) session.getAttribute("topics");
 
         // Crear los partidos de la siguiente jornada
         for (int i = 0; i < teams.size() - 1; i++) {
@@ -371,12 +409,24 @@ public class TournamentController {
                 }
 
                 Match match = new Match();
+
+                MessageTopic mt = new MessageTopic();
+                mt.setTopicId(UserController.generateRandomBase64Token(6));
+
+                match.setMessageTopic(mt);
+
                 match.setRoundNumber(nextRound);
                 match.setMatchNumber(matchNumber);
                 match.setTeam1(teams.get(i));
                 match.setTeam2(teams.get(j));
                 match.setTournament(tournament);
 
+                if(u.hasRole(User.Role.ADMIN) || isUserInMatch(match, u)) {
+                    currentTopics = currentTopics + "," + mt.getTopicId();
+                    session.setAttribute("topics", currentTopics);
+                }
+
+                entityManager.persist(mt);
                 entityManager.persist(match);
 
                 matchNumber++;
@@ -561,49 +611,4 @@ public class TournamentController {
             winnerTeam.setPuntuacion(winnerTeam.getPuntuacion() + 3);
 
     }
-
-    private List<Tournament> getAllUserTournaments(User u) {
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Tournament> query = entityManager.createQuery(
-				"SELECT e.tournament FROM TournamentTeam e WHERE e.team.id = :teamId",
-				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Tournament m : query) {
-			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<Match> getAllUserMatches(User u) {
-
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Match> query = entityManager.createQuery(
-				"SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId",
-				Match.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Match m : query) {
-			log.info("My team is {}, and one of my matches is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
-		List<String> topicsId = new ArrayList<>();
-		for (Tournament tournament : tournaments) {
-			if (tournament.getMessageTopic() != null) {
-				log.info("my topicid tournament", tournament.getMessageTopic().getTopicId());
-				topicsId.add(tournament.getMessageTopic().getTopicId());
-			}
-		}
-		for (Match match : matches) {
-			if (match.getMessageTopic().getTopicId() != null) {
-				topicsId.add(match.getMessageTopic().getTopicId());
-			}
-		}
-		return topicsId;
-	}
 }
