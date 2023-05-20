@@ -180,15 +180,6 @@ WHERE ID = 7;
     VALUES (45, null, null, null, null, 25, 11);
 
     INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (46, null, null, null, null, 20, 12);
-
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (47, null, null, null, null, 22, 12);
-
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    VALUES (48, null, null, null, null, 24, 12);
-
-    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
     VALUES (52, 0, 0, 0, 0, 22, 12);
 
     INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
