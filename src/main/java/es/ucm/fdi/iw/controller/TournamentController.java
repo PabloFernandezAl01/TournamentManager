@@ -608,48 +608,4 @@ public class TournamentController {
             winnerTeam.setPuntuacion(winnerTeam.getPuntuacion() + 3);
 
     }
-
-    private List<Tournament> getAllUserTournaments(User u) {
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Tournament> query = entityManager.createQuery(
-				"SELECT e.tournament FROM TournamentTeam e WHERE e.team.id = :teamId",
-				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Tournament m : query) {
-			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<Match> getAllUserMatches(User u) {
-
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Match> query = entityManager.createQuery(
-				"SELECT e FROM Match e WHERE e.team1.id = :teamId OR e.team2.id = :teamId",
-				Match.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Match m : query) {
-			log.info("My team is {}, and one of my matches is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
-		List<String> topicsId = new ArrayList<>();
-		for (Tournament tournament : tournaments) {
-			if (tournament.getMessageTopic() != null) {
-				topicsId.add(tournament.getMessageTopic().getTopicId());
-			}
-		}
-		for (Match match : matches) {
-			if (match.getMessageTopic() != null) {
-				topicsId.add(match.getMessageTopic().getTopicId());
-			}
-		}
-		return topicsId;
-	}
 }

@@ -401,34 +401,4 @@ public class RootController {
             return false;
         }
     }
-
-    private List<Tournament> getAllUserTournaments(User u) {
-		if (u.getTeam() == null) {
-			return new ArrayList<>();
-		}
-		List<Tournament> query = entityManager.createQuery(
-				"SELECT e.tournament FROM TournamentTeam e WHERE e.team.id = :teamId",
-				Tournament.class).setParameter("teamId", u.getTeam().getId()).getResultList();
-
-		for (Tournament m : query) {
-			log.info("My team is {}, and one of my tournaments is {}", u.getTeam().getId(), m.getId());
-		}
-		return query;
-	}
-
-	private List<String> getAllTopicIds(List<Tournament> tournaments, List<Match> matches) {
-		List<String> topicsId = new ArrayList<>();
-		for (Tournament tournament : tournaments) {
-			if (tournament.getMessageTopic() != null) {
-				log.info("my topicid tournament", tournament.getMessageTopic().getTopicId());
-				topicsId.add(tournament.getMessageTopic().getTopicId());
-			}
-		}
-		for (Match match : matches) {
-			if (match.getMessageTopic().getTopicId() != null) {
-				topicsId.add(match.getMessageTopic().getTopicId());
-			}
-		}
-		return topicsId;
-	}
 }
