@@ -11,6 +11,13 @@
   color: white;
 }
 
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
 .tournament-list {
   list-style: none;
   margin-top: 40px;
@@ -28,7 +35,7 @@
   padding: 10px;
 }
 
-.tournament-info {
+.adminUsers-info {
   display: flex;
   align-items: center;
 }

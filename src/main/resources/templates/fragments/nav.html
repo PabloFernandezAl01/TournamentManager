@@ -21,7 +21,7 @@
                 <div class="navbar-brand nav-menu">
                     <a th:href="@{/create}"><div  class="nav-item nav-link text-light" th:classappend="${create}">Crear</div></a>
                     <a th:href="@{/join}"><div  class="nav-item nav-link text-light" th:classappend="${join}">Unirse</div></a>
-                    <a th:href="@{/ongoing}"><div  class="nav-item nav-link text-light" th:classappend="${onGoing}">Torneos</div></a>
+                    <a id="ongoingButton" th:href="@{/ongoing}"><div  class="nav-item nav-link text-light" th:classappend="${onGoing}">Torneos</div></a>
                     <a th:href="@{/record}"><div  class="nav-item nav-link text-light" th:classappend="${record}">Historial</div></a>
                     <a th:if="${session.u}" th:href="@{/user/{id}/teams(id=${session.u.id})}"><div  class="nav-item nav-link text-light" th:classappend="${teams}">Equipos</div></a>
                 </div>
@@ -76,14 +76,14 @@
                             */-->
                             <li class="nav-item debug align-self-center" th:if="${application.debug}">
                                 <form class="d-flex" th:action="@{/login}" method="post">
-                                    <input type="hidden" name="username" value="Peibol">
+                                    <input type="hidden" name="username" value="User1">
                                     <input type="hidden" name="password" value="aa">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">ADMIN</button>
                                 </form>
                             </li>
                             <li class="nav-item debug align-self-center" th:if="${application.debug}">
                                 <form class="d-flex" th:action="@{/login}" method="post">
-                                    <input type="hidden" name="username" value="Ivan">
+                                    <input type="hidden" name="username" value="User2">
                                     <input type="hidden" name="password" value="aa">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">USER</button>
                                 </form>

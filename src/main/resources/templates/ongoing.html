@@ -36,7 +36,7 @@
                 <div class="tournament-joined" th:if="${tourney.data.userWithTeamIn}">Tu equipo esta jugando este torneo!</div>
               </div>
 
-              <a class="brackets-button" th:href="@{|/tournament/${tourney.t.id}/bracket|}">Ver torneo</a>
+              <a id="verTorneoButton" class="brackets-button" th:href="@{|/tournament/${tourney.t.id}/bracket|}">Ver torneo</a>
 
               <!-- Informacion sobre el nombre del torneo-->
               <div class="tournament-name" th:text="${tourney.t.name}"></div>

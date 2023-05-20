@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <th:block th:replace="fragments/head :: header" />
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}" type="text/css" />
+    <!-- <link rel="stylesheet" th:href="@{/css/join.css}" type="text/css" /> -->
+    <title>Admin</title>
+  </head>
+
+  <body class="d-flex flex-column h-100 body">
+    <header th:replace="fragments/nav.html :: nav"></header>
+
+    <!-- Imagen de fondo -->
+    <div class="background"></div>
+
+    <main class="flex-shrink-0">
+      <div class="container">
+        <h1 class="text-center page-title">Gestión de usuarios</h1>
+        <h2 class="mt-3 text-center" th:text="'LISTA DE MENSAJES DE: ' + ${username}"></h2>
+        <ul class="tournament-list">
+          <!-- Se recorre la lista con la información de los usuarios -->
+          <li th:each="message : ${messages}">
+            <div class="tournament-info">
+              <div>
+                <span class="username" th:text="${message.text}"></span>          
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </main>
+
+    <th:block th:replace="fragments/footer.html :: footer" />
+  </body>
+</html>

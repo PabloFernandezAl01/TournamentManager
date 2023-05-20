@@ -64,7 +64,7 @@
           <td th:if="${session.u.hasRole('ADMIN')}">
             <form th:action="@{|/tournament/sendResults/setWinner/${tournament.id}/${match.id}/${match.team1.id}|}"
               class="resultsForm" method="POST">
-              <button class="btn btn-primary">Establecer ganador</button>
+              <button id="establecerGanadorButton" class="btn btn-primary">Establecer ganador</button>
             </form>
           </td>
         </tr>
