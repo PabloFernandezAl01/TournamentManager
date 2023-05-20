@@ -12,7 +12,6 @@ import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.LocalData;
 
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
