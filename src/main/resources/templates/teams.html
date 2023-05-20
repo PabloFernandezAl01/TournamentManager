@@ -63,7 +63,7 @@
                     <div class="container center">
                         <ul class="teams-list">
                         <!-- Se recorre la lista con la informacion de los equipos -->
-                        <li class="team mt-5" th:each="team : ${Teams}">
+                        <li class="team mt-3" th:each="team : ${Teams}">
 
                             <!-- Nombre del equipo -->
                             <h3 class="text-center" th:text="${team.t.name}"></h3>
@@ -93,6 +93,7 @@
                                         <input type="text" id="name" name="name" class="form-control cuadro" 
                                                         placeholder="Nombre de usuario" required="required">
                                     </p>
+
                                     <button type="submit" class="btn btn-primary">Añadir</button>
                                 </form>
 
@@ -126,6 +127,9 @@
 
     <!-- Comportamiento del modal (crear equipo) -->
     <script th:src="@{/js/modal-controller.js}"></script>
+
+    <!-- Alerta para avisar si el usuario se ha podido unir al team -->
+    <script th:src="@{/js/add-player-alert.js}"></script>
 
 </body>
 
