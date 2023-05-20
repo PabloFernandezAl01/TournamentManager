@@ -20,7 +20,7 @@ Feature: login en servidor
 
   @register_d
   Scenario: Registrar correcto como d
-   Given driver 'http://localhost:8080' + '/register'
+   Given driver baseUrl + '/register'
     And input('#username', 'd')
     And input('#firstName', 'd')
     And input('#lastName', 'd')

@@ -25,6 +25,7 @@ function fn() {
         executable: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         //executable: "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
         showDriverLog: true,
+
     })
 
     if (env == 'dev') {
