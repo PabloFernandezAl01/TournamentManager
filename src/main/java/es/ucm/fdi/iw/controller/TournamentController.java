@@ -186,8 +186,7 @@ public class TournamentController {
             log.info("MaxRound: " + maxRound);
              
             // SI ES EL ULTIMO PARTIDO
-            if ((tournament.getType() == 0 && maxRound == tournament.getRounds() - 1) 
-                ||(tournament.getType() == 1 && maxRound == tournament.getRounds())) {
+            if ((tournament.getType() == 0 && maxRound == tournament.getRounds() - 1) || (tournament.getType() == 1 && maxRound == tournament.getRounds())) {
                     
                 if (lastMatch.getWinner() != null) {
                     tournament.setStatus(TournamentStatus.FINISHED);
@@ -228,7 +227,10 @@ public class TournamentController {
            
             model.addAttribute("tournament", tournament);
             model.addAttribute("partidosPorRonda", partidosPorRonda);
-            model.addAttribute("lastRound", maxRound);
+            if(maxRound == tournament.getRounds()-1)
+                model.addAttribute("lastRound", maxRound);
+            else 
+                model.addAttribute("lastRound", -1);
             model.addAttribute("lastMatch", lastMatch);
             model.addAttribute("tournamentTopic", tournament.getMessageTopic().getTopicId());
             model.addAttribute("userInTournament", isUserInTournament(tournament, session));
