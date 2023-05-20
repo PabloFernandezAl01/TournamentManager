@@ -154,6 +154,7 @@ public class RootController {
     }
 
     @GetMapping("/record")
+    @Transactional
     public String record(Model model, HttpSession session) {
         model.addAttribute("record", "active");
 
