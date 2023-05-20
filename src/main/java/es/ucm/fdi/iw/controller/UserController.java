@@ -12,6 +12,7 @@ import es.ucm.fdi.iw.model.Team;
 import es.ucm.fdi.iw.LocalData;
 
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -487,6 +488,9 @@ public class UserController {
 			log.error(e.getMessage());
 		}
 
+		// Si el usuario no se puede unir al equipo
+		if (!isTeamJoinable(u, t)) return new RedirectView("/user/{id}/teams");
+
 		// Se crea un nuevo miembro de equipo
 		TeamMember member = new TeamMember();
 
@@ -503,6 +507,32 @@ public class UserController {
 		entityManager.persist(member);
 
 		return new RedirectView("/user/{id}/teams");
+	}
+
+	/*
+	 * Devuelve un bool indicando si un usuario puede unirse a un team
+	 * El usuario debe no estar ya en el equipo y debe ser un nombre de usuario existente
+	 */
+	private Boolean isTeamJoinable(User u, Team t) {
+		
+		if (u == null) return false;
+
+		List<User> members = null;
+
+		// Obtiene los miembros de un equipo
+		try {
+			members = entityManager.createNamedQuery("MembersByTeam", User.class)
+										  .setParameter("teamId", t.getId()).getResultList();
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+
+		// Si el usuario coincide con alguno de los miembros del equipo, el usuario ya se encuentra en el equipo
+		for (User m : members) {
+			if (m.getId() == u.getId()) return false;
+		}
+		
+		return true;
 	}
 
 	/*
