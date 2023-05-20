@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html class="h-100" xmlns:th="http://www.thymeleaf.org">
-
-<head>
+  <head>
     <th:block th:replace="fragments/head :: header" />
 
     <link rel="stylesheet" th:href="@{/css/admin.css}" type="text/css" />
-
+    <!-- <link rel="stylesheet" th:href="@{/css/join.css}" type="text/css" /> -->
     <title>Admin</title>
-</head>
+  </head>
 
-<body class="d-flex flex-column h-100 body">
+  <body class="d-flex flex-column h-100 body">
     <header th:replace="fragments/nav.html :: nav"></header>
 
     <!-- Imagen de fondo -->
     <div class="background"></div>
 
     <main class="flex-shrink-0">
-        <div class="container">
-            <h1 class="text-center page-title">ADMINISTRACIÓN</h1>
-            <h2 class="mt-3 text-center">No hay nada por aquí, vuelve más tarde...</h2>
-        
-        </div>
+      <div class="container">
+        <h1 class="text-center page-title">ADMINISTRACIÓN</h1>
+        <h2 class="mt-3 text-center">
+          No hay nada por aquí, vuelve más tarde...
+        </h2>
+        <a class="btn btn-primary" href="/admin/adminUsers">
+          Gestionar Usuarios</a
+        >
+      </div>
     </main>
 
     <th:block th:replace="fragments/footer.html :: footer" />
-</body>
-
+  </body>
 </html>
