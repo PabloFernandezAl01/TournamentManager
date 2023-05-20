@@ -47,7 +47,7 @@ WHERE ID = 7;
     VALUES (11, '2023-04-28', 'Torneo de Apex', 3.0, 'Apex', 4, 'APX', 2.0, 3, '13:00', 1, 0, 1976, null);
 
     INSERT INTO Tournament (id, date, description, entry_price, game, max_teams, name, prize_pool, rounds, starting_hour, status, type, message_topic_id, winner_id)
-    VALUES (12, '2023-04-29', 'Torneo de COD', 3.0, 'COD', 2, 'COD', 2.0, 1, '14:00', 2, 0, 1977, 22);
+    VALUES (12, '2023-04-29', 'Torneo de COD', 3.0, 'COD', 2, 'COD', 2.0, 1, '14:00', 2, 0, 1977, null);
 
 
 -- Teams
@@ -82,37 +82,16 @@ WHERE ID = 7;
     VALUES (31, 0, 20, 2);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (32, 0, 20, 3);  
+    VALUES (32, 0, 21, 3);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (33, 0, 20, 4);  
+    VALUES (33, 0, 21, 4);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (34, 0, 20, 5);  
+    VALUES (34, 0, 22, 5);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (35, 0, 20, 6);  
-
-    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (30, 1, 20, 1);  
-
-    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (31, 0, 20, 2);  
-
-    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (32, 0, 20, 3);  
-
-    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (33, 0, 20, 4);  
-
-    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (34, 0, 20, 5);  
-
-    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (35, 0, 20, 6);  
-
-    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (36, 0, 20, 7);  
+    VALUES (35, 0, 22, 6);  
 
 
     -- TournamentTeams

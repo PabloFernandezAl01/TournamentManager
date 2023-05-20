@@ -19,7 +19,7 @@
   <main class="flex-shrink-0 main">
     <div class="container">
       <h1 class="text-center page-title">Visualización de partido</h1>
-     
+
       <h2>
         <a class="back-button" th:href="@{|/tournament/${tournament.id}/bracket|}">Volver al torneo</a>
       </h2>
@@ -34,32 +34,36 @@
         <tr>
           <td th:text="${match.team1.name}"></td>
           <td class="result">
-              <form th:if="${match.winner == null && coachingTeam != null && coachingTeam == match.team1}"
-              th:action="@{|/tournament/sendResults/${tournament.id}/${match.id}/${match.team1.id}|}" class="resultsForm"
-              method="POST">          
-                  <label for="resultados1" class="input-label" th:text="${match.team1.name}"></label>  
-                  <input type="number" id="resultados1" class="matchResult" name="resultadoTeam1" min="0" required />
+            <form th:if="${match.winner == null && coachingTeam != null && coachingTeam == match.team1}"
+              th:action="@{|/tournament/sendResults/${tournament.id}/${match.id}/${match.team1.id}|}"
+              class="resultsForm" method="POST">
+              <label for="resultados1" class="input-label" th:text="${match.team1.name}"></label>
+              <input type="number" id="resultados1" class="matchResult" name="resultadoTeam1" min="0" required />
 
-                  <label for="resultados2" class="input-label" th:text="${match.team2.name}"></label>
-                  <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" min="0"
-                    required />
-                  <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
-              </form>
-              
-              <span th:if="${match.resultTeam1 != null}" th:text="${match.resultTeam1}"></span>
-              <span th:if="${match.resultTeam1 == null &&(coachingTeam == null || coachingTeam != match.team1)}" >Solo el entrenador del equipo puede enviar el resultado</span>
+              <label for="resultados2" class="input-label" th:text="${match.team2.name}"></label>
+              <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" min="0" required />
+              <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
+            </form>
+
+            <span th:if="${match.resultTeam1 != null}" th:text="${match.resultTeam1}"></span>
+            <span th:if="${match.resultTeam1 == null &&(coachingTeam == null || coachingTeam != match.team1)}">Solo el
+              entrenador del equipo puede enviar el resultado</span>
 
           </td>
 
-          <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null && match.winner != null}" th:classappend="${match.winner == match.team1} ? 'winner' : 'loser'" th:text="${match.winner == match.team1} ? 'GANADOR' : 'PERDEDOR'"></td>
+          <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null && match.winner != null}"
+            th:classappend="${match.winner == match.team1} ? 'winner' : 'loser'"
+            th:text="${match.winner == match.team1} ? 'GANADOR' : 'PERDEDOR'"></td>
 
-          <td th:if="${(match.resultTeam1 != null && match.resultTeam2 != null && match.winner == null) || (match.resultTeam1 == null || match.resultTeam2 == null)}"  
-            th:text="${match.resultTeam1 != null && match.resultTeam2 != null && (match.resultTeam1 != match.resultTeam2 || match.winner == null) } ? 'Esperando a que un administrador decida' : 'Esperando resultados'" class="result" rowspan="2">
+          <td
+            th:if="${(match.resultTeam1 != null && match.resultTeam2 != null && match.winner == null) || (match.resultTeam1 == null || match.resultTeam2 == null)}"
+            th:text="${match.resultTeam1 != null && match.resultTeam2 != null && (match.resultTeam1 != match.resultTeam2 || match.winner == null) } ? 'Esperando a que un administrador decida' : 'Esperando resultados'"
+            class="result" rowspan="2">
           </td>
 
           <td th:if="${session.u.hasRole('ADMIN')}">
-            <form th:action="@{|/tournament/sendResults/setWinner/${tournament.id}/${match.id}/${match.team1.id}|}" class="resultsForm"
-            method="POST">
+            <form th:action="@{|/tournament/sendResults/setWinner/${tournament.id}/${match.id}/${match.team1.id}|}"
+              class="resultsForm" method="POST">
               <button class="btn btn-primary">Establecer ganador</button>
             </form>
           </td>
@@ -71,32 +75,55 @@
           <td th:text="${match.team2.name}"></td>
           <td class="result">
             <form th:if="${match.winner == null && coachingTeam != null && coachingTeam == match.team2}"
-            th:action="@{|/tournament/sendResults/${tournament.id}/${match.id}/${match.team2.id}|}" class="resultsForm"
-            method="POST">            
-                <label for="resultados1" class="input-label" th:text="${match.team1.name}"></label>  
-                  <input type="number" id="resultados1" class="matchResult" name="resultadoTeam1" min="0" required />
-                  
-                  <label for="resultados2" class="input-label" th:text="${match.team2.name}"></label>
-                  <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" min="0"
-                    required />
-                  <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
+              th:action="@{|/tournament/sendResults/${tournament.id}/${match.id}/${match.team2.id}|}"
+              class="resultsForm" method="POST">
+              <label for="resultados1" class="input-label" th:text="${match.team1.name}"></label>
+              <input type="number" id="resultados1" class="matchResult" name="resultadoTeam1" min="0" required />
+
+              <label for="resultados2" class="input-label" th:text="${match.team2.name}"></label>
+              <input type="number" id="resultados2" class="matchResult" name="resultadoTeam2" min="0" required />
+              <button id="sendButtonResults" class="btn btn-primary" type="submit">Enviar</button>
             </form>
             <span th:if="${match.resultTeam2 != null}" th:text="${match.resultTeam2}"></span>
-            <span th:if="${match.resultTeam2 == null && (coachingTeam == null || coachingTeam != match.team2)}" >Solo el entrenador del equipo puede enviar el resultado</span>
-        </td>
-        <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null  && match.winner != null}" th:classappend="${match.winner == match.team2} ? 'winner' : 'loser'" th:text="${match.winner == match.team2} ? 'GANADOR' : 'PERDEDOR'"></td>
-        
-        <td th:if="${session.u.hasRole('ADMIN')}">
-          <form th:action="@{|/tournament/sendResults/setWinner/${tournament.id}/${match.id}/${match.team2.id}|}" class="resultsForm"
-          method="POST">
-            <button class="btn btn-primary">Establecer ganador</button>
-          </form>
-        </td>
+            <span th:if="${match.resultTeam2 == null && (coachingTeam == null || coachingTeam != match.team2)}">Solo el
+              entrenador del equipo puede enviar el resultado</span>
+          </td>
+          <td th:if="${match.resultTeam1 == match.resultTeam2 && match.resultTeam1 != null  && match.winner != null}"
+            th:classappend="${match.winner == match.team2} ? 'winner' : 'loser'"
+            th:text="${match.winner == match.team2} ? 'GANADOR' : 'PERDEDOR'"></td>
+
+          <td th:if="${session.u.hasRole('ADMIN')}">
+            <form th:action="@{|/tournament/sendResults/setWinner/${tournament.id}/${match.id}/${match.team2.id}|}"
+              class="resultsForm" method="POST">
+              <button class="btn btn-primary">Establecer ganador</button>
+            </form>
+          </td>
         </tr>
 
       </table>
-      
 
+
+    </div>
+
+
+    <div class="margin d-flex justify-content-center align-items-center h-50">
+      <div  th:if="${userMatch != null}" id="chat" class="chat col-md-6">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 th:text="${userMatch.team1.name +' - '+ userMatch.team2.name}">Partido y equipos</h5>
+          <button th:id="${userMatch.id}" class="matchButton" hidden="true">chat</button>
+        </div>
+
+        <!--RECEPCIÓN DE MENSAJES-->
+        <div id="mensajes" class="messages"></div>
+
+        <!--ENVÍO DE MENSAJES-->
+        <div class="input-group">
+          <form th:action="@{|/user/sendMsg/match/${userMatch.id}|}" class="formMessage" method="POST">
+            <input type="text" id="messageInput" class="inputMessage" placeholder="Escribe tu mensaje..." />
+            <button id="sendButton" class="buttonMensaje" type="submit">Enviar</button>
+          </form>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -111,6 +138,7 @@
     var today = new Date().toISOString().split("T")[0];
     document.getElementById("date").min = today;
   </script>
+  <script th:src="@{/js/ajax-message-match.js}"></script>
 </body>
 
 </html>
