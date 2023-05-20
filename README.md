@@ -1,21 +1,5 @@
 # Aplicación de Plantilla de IW
 
-## Cómo subir nota antes del examen
-
-* administración:
-  - como poco, mostrar usuarios, y poder ver sus perfiles pulsando en nombres
-  - y poder eliminarlos cuando estás viendo el perfil (o desde la lista de administración)
-  - y poder ver sus mensajes <-- importante para saber si eliminar o no 
-  - mejor que eliminar, marcar como "enabled = false" para que no puedan hacer login sin perder su contenido
-  - interesante mostrar también qué partidos hay (todos, y sus estados)
-
-* tema de topics:
-  - hacer chats con sentido, funcionales y bonitos
-
-## 
-
-Debes buscar todos los lugares donde aparece la palabra "plantilla" (incluido este párrafo) y reemplazar las ocurrencias, y el contexto circundante, por valores que tengan sentido en tu aplicación. Por ejemplo, este párrafo deberías eliminarlo de tu proyecto.
-
 ## Contenido de la plantilla
 
 - en [src/main/java/es/ucm/fdi/iw](https://github.com/manuel-freire/iw/tree/main/plantilla/src/main/java/es/ucm/fdi/iw) están los ficheros de configuración-mediante-código de la aplicación (ojo porque en otro sitio está el fichero principal de configuración-mediante-propiedades, [application.properties](https://github.com/manuel-freire/iw/blob/main/plantilla/src/main/resources/application.properties)):
