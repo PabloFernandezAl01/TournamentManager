@@ -64,11 +64,11 @@ WHERE ID = 7;
     INSERT INTO Team (id, name)
     VALUES (23, 'Cuarto Equipo');
 
-    -- INSERT INTO Team (id, name)
-    -- VALUES (24, 'Quinto Equipo');
+    INSERT INTO Team (id, name)
+    VALUES (24, 'Quinto Equipo');
 
-    -- INSERT INTO Team (id, name)
-    -- VALUES (25, 'Sexto Equipo');  
+    INSERT INTO Team (id, name)
+    VALUES (25, 'Sexto Equipo');  
 
 
 -- Relaciones (TeamMember y TournamentTeam)
@@ -93,26 +93,26 @@ WHERE ID = 7;
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
     VALUES (35, 0, 20, 6);  
 
-    -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    -- VALUES (30, 1, 20, 1);  
+    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+    VALUES (30, 1, 20, 1);  
 
-    -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    -- VALUES (31, 0, 20, 2);  
+    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+    VALUES (31, 0, 20, 2);  
 
-    -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    -- VALUES (32, 0, 20, 3);  
+    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+    VALUES (32, 0, 20, 3);  
 
-    -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    -- VALUES (33, 0, 20, 4);  
+    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+    VALUES (33, 0, 20, 4);  
 
-    -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    -- VALUES (34, 0, 20, 5);  
+    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+    VALUES (34, 0, 20, 5);  
 
-    -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    -- VALUES (35, 0, 20, 6);  
+    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+    VALUES (35, 0, 20, 6);  
 
-    -- INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    -- VALUES (36, 0, 20, 7);  
+    INSERT INTO Team_Member (id, is_coach, team_id, user_id)
+    VALUES (36, 0, 20, 7);  
 
 
     -- TournamentTeams
@@ -129,20 +129,20 @@ WHERE ID = 7;
     INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
     VALUES (43, 0, 0, 0, 0, 23, 10);
 
-    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    -- VALUES (44, null, null, null, null, 24, 11);
+    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    VALUES (44, null, null, null, null, 24, 11);
 
-    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    -- VALUES (45, null, null, null, null, 25, 11);
+    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    VALUES (45, null, null, null, null, 25, 11);
 
-    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    -- VALUES (46, null, null, null, null, 20, 12);
+    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    VALUES (46, null, null, null, null, 20, 12);
 
-    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    -- VALUES (47, null, null, null, null, 22, 12);
+    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    VALUES (47, null, null, null, null, 22, 12);
 
-    -- INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
-    -- VALUES (48, null, null, null, null, 24, 12);
+    INSERT INTO TOURNAMENT_TEAM (id, derrotas, empates, puntuacion, victorias, team_id, tournament_id)
+    VALUES (48, null, null, null, null, 24, 12);
 
 
 -- Apaños

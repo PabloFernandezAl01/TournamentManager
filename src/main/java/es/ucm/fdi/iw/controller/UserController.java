@@ -120,8 +120,21 @@ public class UserController {
 	@GetMapping("{id}")
 	public String user(@PathVariable long id, Model model, HttpSession session) {
 		log.warn("El usuario entra en su perfil");
+		User user = entityManager.find(User.class, id);
+		// User user = (User) session.getAttribute("u");
+		log.info("ESTAMOS EN PERFIL " +  user.getUsername());
+		model.addAttribute("user", user);
 
-		User user = (User) session.getAttribute("u");
+		model.addAttribute("allMatches", getAllMatches(user));
+
+		return "user";
+	}
+
+	@GetMapping("getMessages/{id}")
+	public String getMessages(@PathVariable long id, Model model, HttpSession session) {
+		User user = entityManager.find(User.class, id);
+		// User user = (User) session.getAttribute("u");
+		log.info("ESTAMOS EN PERFIL " +  user.getUsername());
 		model.addAttribute("user", user);
 
 		model.addAttribute("allMatches", getAllMatches(user));
