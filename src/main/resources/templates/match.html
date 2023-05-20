@@ -105,12 +105,13 @@
 
     </div>
 
+    <!-- ISUserInMatch  &&  match-->
 
-    <div class="margin d-flex justify-content-center align-items-center h-50">
-      <div  th:if="${userMatch != null}" id="chat" class="chat col-md-6">
+    <div th:if="${isUserInMatch ||  session.u.hasRole('ADMIN')}" class="margin d-flex justify-content-center align-items-center h-50">
+      <div id="chat" class="chat col-md-6">
         <div class="d-flex justify-content-between align-items-center">
-          <h5 th:text="${userMatch.team1.name +' - '+ userMatch.team2.name}">Partido y equipos</h5>
-          <button th:id="${userMatch.id}" class="matchButton" hidden="true">chat</button>
+          <h5 th:text="${match.team1.name +' - '+ match.team2.name}">Partido y equipos</h5>
+          <button th:id="${match.id}" class="matchButton" hidden="true">chat</button>
         </div>
 
         <!--RECEPCIÓN DE MENSAJES-->
@@ -118,7 +119,7 @@
 
         <!--ENVÍO DE MENSAJES-->
         <div class="input-group">
-          <form th:action="@{|/user/sendMsg/match/${userMatch.id}|}" class="formMessage" method="POST">
+          <form th:action="@{|/user/sendMsg/match/${match.id}|}" class="formMessage" method="POST">
             <input type="text" id="messageInput" class="inputMessage" placeholder="Escribe tu mensaje..." />
             <button id="sendButton" class="buttonMensaje" type="submit">Enviar</button>
           </form>
