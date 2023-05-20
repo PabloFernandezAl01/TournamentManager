@@ -102,7 +102,9 @@ public class TournamentController {
         model.addAttribute("tournament", t);
         model.addAttribute("match", m);
 
-
+        User user = entityManager.find(User.class, ((User)session.getAttribute("u")).getId());
+        model.addAttribute("userMatch", getUserMatch(m,user));
+        
         model.addAttribute("coachingTeam", userCoachingTeam(session) );
 
         return "match";
@@ -650,4 +652,21 @@ public class TournamentController {
 		}
 		return topicsId;
 	}
+    private Match getUserMatch(Match m, User user){
+        try{
+            log.info("USER ID: "+ user.getId());
+            log.info("Team1 id: "+ m.getTeam1().getId() + " - Team2 id: "+m.getTeam2().getId());
+            List<TeamMember> tm = entityManager.createQuery("select t from TeamMember t where (t.team.id = :team1Id or t.team.id = :team2Id) and t.user.id = :userId",TeamMember.class)
+            .setParameter("team1Id", m.getTeam1().getId())
+            .setParameter("team2Id", m.getTeam2().getId())
+            .setParameter("userId", user.getId())
+            .getResultList();
+            if(tm.isEmpty())
+                return null;
+            return m;
+        } catch(NoResultException e){
+            log.info("EXCEPTION");
+            return null;
+        }
+    }
 }

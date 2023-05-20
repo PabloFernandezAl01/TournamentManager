@@ -82,18 +82,17 @@ WHERE ID = 7;
     VALUES (31, 0, 20, 2);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (32, 0, 20, 3);  
+    VALUES (32, 0, 21, 3);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (33, 0, 20, 4);  
+    VALUES (33, 0, 21, 4);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
-    VALUES (34, 0, 20, 5);  
+    VALUES (34, 0, 22, 5);  
 
     INSERT INTO Team_Member (id, is_coach, team_id, user_id)
     VALUES (35, 0, 20, 6);  
-
-
+    
 
  INSERT INTO Team_Member (id, is_coach, team_id, user_id)
     VALUES (30, 1, 22, 1);  
